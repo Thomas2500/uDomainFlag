@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title load-lang="options">uDomainFlag</title>
+
+	<script type="text/javascript" src="/script/jquery.min.js"></script>
+	<script type="text/javascript" src="/script/db.js"></script>
+	<script type="text/javascript" src="/script/debug.js"></script>
+	<script type="text/javascript" src="/script/parameter.js"></script>
+	<script type="text/javascript" src="/script/functions.js"></script>
+	<script type="text/javascript" src="/script/analytics.js"></script>
+	<script type="text/javascript" src="/script/bootstrap.js"></script>
+	<script type="text/javascript" src="/script/options.js"></script>
+	<script type="text/javascript" src="/script/lang.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="/style/bootstrap/bootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="/style/bootstrap/bootstrap-theme.css" />
+	<link rel="stylesheet" type="text/css" href="/style/roboto.css" />
+	<link rel="stylesheet" type="text/css" href="/style/options.css" />
+</head>
+<body>
+
+   <div class="container">
+	  <div class="header">
+		<ul class="nav nav-pills pull-right">
+		  <li class="active"><a href="/options.html" load-lang="options">Options</a></li>
+		  <li><a href="/about.html" load-lang="about">About</a></li>
+		  <li><a href="/feedback.html">Feedback</a></li>
+		</ul>
+		<h3 class="text-muted">uDomainFlag</h3>
+	  </div>
+
+	  <div class="space"></div>
+
+		<div class="row">
+			<div class="col-md-3 bold" load-lang="cache"></div>
+			<div class="col-md-9">
+				<div load-lang="cache_desc"></div>
+				<div>
+					<button type="button" class="btn btn-warning" load-lang="clear_cache" id="clear_cache"></button>
+				</div>
+			</div>
+		</div>
+
+		<div class="space"></div>
+
+		<div class="row">
+			<div class="col-md-3 bold" load-lang="update"></div>
+			<div class="col-md-9">
+				<div load-lang="update_desc"></div>
+				<div>
+					<label class="checkbox">
+						<input type="checkbox" id="update"> <span load-lang="no" id="update_yn"></span>
+					</label>
+				</div>
+			</div>
+		</div>
+
+		<div class="space"></div>
+
+		<div class="row">
+			<div class="col-md-3 bold" load-lang="error_report"></div>
+			<div class="col-md-9">
+				<div load-lang="error_report_desc"></div>
+				<div>
+					<label class="checkbox">
+						<input type="checkbox" id="error_report"> <span load-lang="no" id="error_report_yn"></span>
+					</label>
+				</div>
+			</div>
+		</div>
+
+		<div class="space"></div>
+
+		<div class="row">
+			<div class="col-md-3 bold" load-lang="socialdata"></div>
+			<div class="col-md-9">
+				<div load-lang="socialdata_desc"></div>
+				<div>
+					<label class="checkbox">
+						<input type="checkbox" id="socialdata"> <span load-lang="no" id="socialdata_yn"></span>
+					</label>
+				</div>
+			</div>
+		</div>
+
+		<div class="space"></div>
+
+		<div class="row">
+			<div class="col-md-3 bold" load-lang="restart"></div>
+			<div class="col-md-9">
+				<div load-lang="restart_desc"></div>
+				<div>
+					<button type="button" class="btn btn-default" load-lang="restart" id="restart"></button>
+				</div>
+			</div>
+		</div>
+
+		<div class="space"></div>
+
+		<div class="row">
+			<div class="col-md-3 bold" load-lang="popup"></div>
+			<div class="col-md-9">
+				<div load-lang="popup_desc"></div>
+				<div>
+					<label class="checkbox">
+						<input type="checkbox" id="popup"> <span load-lang="no" id="popup_yn"></span>
+					</label>
+				</div>
+			</div>
+		</div>
+
+		<hr />
+
+		<div class="row">
+			<div class="col-md-3 bold" load-lang="securitykey"></div>
+			<div class="col-md-9">
+				<div load-lang="securitykey_desc"></div>
+				<div>
+					<input type="text" readonly="readonly" style="width: 400px;" id="securitykey" />
+				</div>
+			</div>
+		</div>
+
+		<hr />
+
+		<div class="footer">
+			<p>Copyright &copy; Thomas Bella, 2013-2015</p>
+		</div>
+</div>
+
+</body>
+</html>

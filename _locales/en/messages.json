@@ -1,0 +1,232 @@
+{
+    "about": {
+        "message": "About"
+    },
+    "aboutme": {
+        "message": "I'm Thomas Bella, a young ($age$) developer from Siegenfeld, Austria.\nuDomainFlag is a free service from unterhaltungsbox.com.\nIf you like this plugin or want to support me, please buy me a coffee ;-)",
+        "placeholders": {
+            "age": {
+                "content": "$1",
+                "example": "My age. I'm born on May 5'th 1994"
+            }
+        }
+    },
+    "alexa_noindex": {
+        "message": "Not listed"
+    },
+    "cache": {
+        "message": "Cache"
+    },
+    "cache_desc": {
+        "message": "The cache is already <strong>$size$<\/strong> large. You can clear the cache by clicking the following button.\n<strong>Attention!<\/strong> To delete the entire cache, the uDomainFlag will be restarted.",
+        "placeholders": {
+            "size": {
+                "content": "$1",
+                "example": "Size of the cache with extension (eg. Bytes, KB, MB)"
+            }
+        }
+    },
+    "canbeempty": {
+        "message": "Can be empty ..."
+    },
+    "child": {
+        "message": "Child Safety"
+    },
+    "childsafety": {
+        "message": "Child Safety"
+    },
+    "chrome_extension": {
+        "message": "Chrome extension"
+    },
+    "chrome_ressource": {
+        "message": "Chrome ressource"
+    },
+    "clear_cache": {
+        "message": "Clear Cache"
+    },
+    "close": {
+        "message": "Close"
+    },
+    "description": {
+        "message": "Get additional information about a domain in the omnibar."
+    },
+    "domain_unknown": {
+        "message": "No data could be found for the requested page.\nIt is probable that this is a local or invalid domain."
+    },
+    "donated": {
+        "message": "$count$ persons have spent already a total amount of $amount$ \u20ac.",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "Number of donations"
+            },
+            "amount": {
+                "content": "$2",
+                "example": "ingested money"
+            }
+        }
+    },
+    "donators": {
+        "message": "Donators"
+    },
+    "dynamicip": {
+        "message": "Dynamic IP address"
+    },
+    "email": {
+        "message": "E-mail"
+    },
+    "email_not_required": {
+        "message": "If no email is specified, it can not be replied to your message."
+    },
+    "error_report": {
+        "message": "Crash report"
+    },
+    "error_report_desc": {
+        "message": "Should crash reports be send to the developer automatically? The report of crashes improves the stability and functionality of uDomainFlag."
+    },
+    "feedback_thankyou": {
+        "message": "Thank you very much for your support to improve uDomainFlag."
+    },
+    "general": {
+        "message": "General"
+    },
+    "hostname": {
+        "message": "Hostname"
+    },
+    "language_please": {
+        "message": "Please give me your feedback in German or English."
+    },
+    "like": {
+        "message": "like"
+    },
+    "likes": {
+        "message": "likes"
+    },
+    "local_ip": {
+        "message": "Local IP address"
+    },
+    "local_ressource": {
+        "message": "The requested document was obtained from the local computer."
+    },
+    "more_info": {
+        "message": "Additional information"
+    },
+    "multi_domain": {
+        "message": "Domain refers to multiple IP addresses."
+    },
+    "name": {
+        "message": "Name"
+    },
+    "no": {
+        "message": "No"
+    },
+    "none": {
+        "message": "None"
+    },
+    "open_source": {
+        "message": "uDomainFlag is licensed under the GPL license and so open source. You're invited to submit improvements!\nThe source code is always at <a href=\"https:\/\/github.com\/Thomas2500\/uDomainFlag\"> GitHub &raquo; Thomas2500 &raquo; uDomainFlag<\/a> visible.\nThe translations are expandable at <a href=\"http:\/\/translate.unterhaltungsbox.com\/\"> uTranslate<\/a>."
+    },
+    "options": {
+        "message": "Options"
+    },
+    "popup": {
+        "message": "Popup"
+    },
+    "popup_desc": {
+        "message": "As standard an info-box with useful information is shown when you click on the flag. Do you want to open the uDomainFlag website instead?"
+    },
+    "privacy": {
+        "message": "Privacy"
+    },
+    "project_description": {
+        "message": "This extension shows you the location where the web server from a web page is situated while you visit the page. Also you get shown the IP address and the host name. To ensure that the requested site is secure, the Web of Trust index is displayed.\n\n\nDuring the visit of a page a flag is placed in the address bar of the browser. This flag indicates the country of origin of the server that hosts the website.\nIf you click on the flag you get additional information about the page:\n\u00a0 - More accurate location\n\u00a0 - IP address of the website\n\u00a0 - Hostname of the server\n\u00a0 - Website Security by Web of Trust\n\u00a0 - Google PageRank\n\u00a0 - Website Traffic Analysis by Alexa Rank\n\nIn addition, link links appear to perform actions such as Whois faster.\n\nThe perfect addition for home and developers. Fast check whether a website is safe.\n\n\nPrivacy and technical details:\nAfter calling a website the domain name (for example blog.unterhaltungsbox.com, accounts.google.com) will be\u00b4\u00b4 base64 encoded and transmitted to cp.srv.unterhaltungsbox.com. This page provides all the relevant information back.\nNo personal data will be transmitted or stored. It is only saved a requested domain in the cache of the user."
+    },
+    "report_risk": {
+        "message": "Report risk"
+    },
+    "restart": {
+        "message": "Restart"
+    },
+    "restart_desc": {
+        "message": "Click on the following button to restart uDomainFlag.\nWhen clicking the button the tab will be closed automatically and will be opened after restart."
+    },
+    "securitykey": {
+        "message": "Security key"
+    },
+    "securitykey_desc": {
+        "message": "The security key serves to protect the uDomainFlag service. Each user gets an own private key. This key <strong>must not<\/strong> passed to others in any way."
+    },
+    "socialdata": {
+        "message": "Social data"
+    },
+    "socialdata_desc": {
+        "message": "Should be shown social information in the info-box like \"like\" of facebook and \"+1\" of Google?"
+    },
+    "subject": {
+        "message": "Subject"
+    },
+    "submit": {
+        "message": "Send"
+    },
+    "trustworthiness": {
+        "message": "Trustworthiness"
+    },
+    "tweet": {
+        "message": "tweet"
+    },
+    "tweets": {
+        "message": "tweets"
+    },
+    "unknown": {
+        "message": "Unknown"
+    },
+    "update": {
+        "message": "Update"
+    },
+    "updated": {
+        "message": "The extension has been updated from version $last_version$ to version $new_version$.",
+        "placeholders": {
+            "last_version": {
+                "content": "$1",
+                "example": "Old version number"
+            },
+            "new_version": {
+                "content": "$2",
+                "example": "New version number"
+            }
+        }
+    },
+    "update_desc": {
+        "message": "Do you want to be informed after an update?"
+    },
+    "vendor": {
+        "message": "Vendor reliability"
+    },
+    "wotmessage0": {
+        "message": "There are no reputations for this site yet."
+    },
+    "wotmessage1": {
+        "message": "This website has a very poor reputation."
+    },
+    "wotmessage2": {
+        "message": "This website has a poor reputation."
+    },
+    "wotmessage3": {
+        "message": "This website has a moderate reputation."
+    },
+    "wotmessage4": {
+        "message": "This website has a good reputation."
+    },
+    "wotmessage5": {
+        "message": "This website has a very good reputation."
+    },
+    "yes": {
+        "message": "Yes"
+    },
+    "_export": {
+        "message": "29.01.2015 11:54"
+    },
+    "_lang": {
+        "message": "English"
+    }
+}

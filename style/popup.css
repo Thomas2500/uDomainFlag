@@ -1,0 +1,196 @@
+body {
+	min-width: 280px;
+	overflow-x: hidden;
+	font-family: "lucida grande",tahoma,verdana,arial,sans-serif;
+	font-size: 11px;
+	margin: 0px;
+	padding: 0px;
+}
+.container {
+	margin: 2px;
+	padding: 0px;
+}
+.reload {
+	z-index: 1;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	width: 16px;
+	cursor: pointer;
+}
+hr {
+	margin-top: 3px;
+	margin-bottom: 3px;
+	border: 0;
+	height: 1px;
+	background-image: -webkit-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.75), rgba(0,0,0,0)); 
+	background-image:    -moz-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.75), rgba(0,0,0,0)); 
+	background-image:     -ms-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.75), rgba(0,0,0,0)); 
+	background-image:      -o-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.75), rgba(0,0,0,0)); 
+}
+
+.small {
+	font-size: 10px;
+}
+.very-small {
+	font-size: 9px;
+}
+.title {
+	font-size: 14px;
+	font-family: Roboto;
+}
+a {
+	text-decoration: none;
+	color: blue;
+}
+.button {
+	border: 1px solid #FFF;
+	border-radius: 4px;
+	cursor: pointer;
+	color: #000;
+	outline: none;
+	padding: 1px;
+}
+.button:visited {
+	color: #000;
+}
+.button:hover {
+	background-color: #d5e4ff;
+	border: 1px solid #8492ac;
+	color: #000;
+	-webkit-transition-property: background-color;
+	-webkit-transition-duration: 0.3s;
+	transition-timing-function: linear;
+}
+
+table {
+	width: 100%;
+	vertical-align: middle;
+	border-spacing: 0px;
+}
+table td {
+	vertical-align: middle;
+}
+
+.seperatorline {
+	border-bottom: 1px solid #D3D5CE;
+	margin-top: 3px;
+	margin-bottom: 2px;
+}
+
+.info {
+
+}
+
+@keyframes textloader { /* flame pulses */
+  0%   { opacity: 0.5; }
+  50%  { opacity: 0.2; }
+  100% { opacity: 0.5; }
+}
+@-webkit-keyframes textloader{
+  0%   { opacity: 0.5; }
+  50%  { opacity: 0.2; }
+  100% { opacity: 0.5; }
+}
+.loader {
+	opacity: 0.5;  
+	animation: textloader 1s infinite;
+	-webkit-animation: textloader 1s infinite;
+}
+.loader:before {
+	content: "\25CF\0020\25CF\0020\25CF";
+}
+
+.expandable {
+
+	border-top: 1px solid black;
+	background-image: url('/images/expand.png');
+	background-position: right;
+	height: 16px;
+	background-repeat: no-repeat;
+}
+
+.toexpand{
+	display: none;
+	padding-left: 5px;
+}
+.toexpand table {
+	border-left: #AAAAAA 1px solid;
+	padding-left: 5px;
+}
+
+.clickable * {
+	cursor: pointer;
+}
+
+.cat > .infocontent {
+	padding-top: 3px;
+	/*display: none; */
+}
+
+.good, .warning, .bad, .info {
+	padding: 2px 3px 2px 3px;
+	border: 1px solid;
+	border-radius: 5px;
+	display: inline-block;
+}
+.fullblock {
+	display: block;
+	border-radius: 0px;
+	margin: 0px;
+}
+.good {
+	color: #090;
+	background-color: #efe;
+	border-color: #090;
+}
+.good a, .good a:hover {
+	color: #333;
+}
+.warning {
+	color: #660;
+	background-color: #ffd;
+	border-color: #660;
+}
+.warning a, .warning a:hover {
+	color: #333;
+}
+.bad {
+	color: #c00;
+	background-color: #fee;
+	border-color: #c00;
+}
+.bad a, .bad a:hover {
+	color: #333;
+}
+.info {
+	color: #06f;
+	background-color: #def;
+	border-color: #06f;
+}
+.info a, .info a:hover {
+	color: #333;
+}
+.info .close {
+	float: right;
+}
+
+
+.sor {
+	text-align: right;
+}
+
+.wotexpanded td {
+	padding-left: 5px;
+}
+.links a {
+	border: 1px solid #C5D9EB;
+	border-radius: 3px;
+	background-image: url('/images/logo-16x16.png');
+	background-repeat: no-repeat;
+	background-position: left;
+	padding: 2px 3px 2px 20px;
+}
+.links a:hover {
+	border: 1px solid #467AEB;
+}

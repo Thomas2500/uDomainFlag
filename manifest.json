@@ -1,0 +1,51 @@
+{
+	"name": "uDomainFlag",
+	"description": "__MSG_description__",
+
+	"manifest_version": 2,
+
+	"default_locale": "en",
+
+	"version": "1.0.0.0",
+
+	"background": {
+		"page": "background.html"
+	},
+
+	"icons": {
+		"128": "images/logo-128x128.png",
+		"32": "images/option_favicon.png",
+		"256": "images/logo-256x256.png",
+		"48": "images/logo-48x48.png",
+		"16": "images/logo-16x16.png"
+	},
+
+	"page_action": {
+		"default_icon": "images/info.png"
+	},
+
+	"options_page": "options.html",
+
+	"author": "Thomas Bella",
+
+	"externally_connectable": {
+		"matches": [
+			"*://*.unterhaltungsbox.com/*"
+		]
+	},
+
+	"minimum_chrome_version": "34",
+	
+	"permissions": [
+		"desktopCapture",
+		"notifications",
+		"storage",
+		"unlimitedStorage",
+		"tabs",
+		"webRequest",
+		"<all_urls>"
+	],
+
+	"content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'"
+
+}

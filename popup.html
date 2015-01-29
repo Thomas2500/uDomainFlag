@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>uDomainFlag</title>
+
+	<script type="text/javascript" src="/script/jquery.min.js"></script>
+	<script type="text/javascript" src="/script/db.js"></script>
+	<script type="text/javascript" src="/script/debug.js"></script>
+	<script type="text/javascript" src="/script/parameter.js"></script>
+	<script type="text/javascript" src="/script/functions.js"></script>
+	<script type="text/javascript" src="/script/analytics.js"></script>
+	<script type="text/javascript" src="/script/bootstrap.js"></script>
+	<script type="text/javascript" src="/script/popup.js"></script>
+	<script type="text/javascript" src="/script/lang.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="/style/bootstrap/bootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="/style/bootstrap/bootstrap-theme.css" />
+	<link rel="stylesheet" type="text/css" href="/style/popup.css" />
+	<link rel="stylesheet" type="text/css" href="/style/roboto.css" />
+</head>
+<body>
+
+<div class="container">
+	<!-- Reload button -->
+	<div class="reload"><img src="/images/fugue/arrow-circle.png" alt="Reload" /></div>
+
+	<!-- Country, Region, City -->
+	<div class="country title loader"></div>
+	<div class="country2 very-small loader"></div>
+	<hr />
+
+	<!-- Risk -->
+	<div class="w_msg">
+		<!--
+		Warning message, if risk is detected
+		Important! Add a <hr /> tag at the end of this container if it is filled with data
+		-->
+	</div>
+
+	<!-- Host information -->
+	<table>
+		<tr>
+			<td>IP</td><td class="ip loader"></td>
+		</tr><tr style="display: none;" class="localipdisplay">
+			<td load-lang="local_ip"></td><td class="localip loader"></td>
+		</tr><tr style="display: none;" class="multiip">
+			<td colspan="2" load-lang="multi_domain"></td>
+		</tr><tr>
+			<td load-lang="hostname"></td><td class="host loader"></td>
+		</tr>
+	</table>
+	<hr />
+
+	<!-- Web Of Trust -->
+	<table>
+		<tr>
+			<td id="wotl">Web of Trust</td><td class="wot" style="width: 19px"></td><td class="expand wotex clickable" style="width: 16px;"><img src="/images/expand.png" alt="+" /></td>
+		</tr><tr>
+			<td colspan="3" class="wotexpanded toexpand">
+				<table style="margin-left: 3px;">
+					<tr>
+						<td id="trust_1"></td><td id="trust_2" style="width: 19px;"></td><td id="trust_3" style="width: 30px;"></td>
+					</tr><tr>
+						<td id="vendor_1"></td><td id="vendor_2"></td><td id="vendor_3"></td>
+					</tr><tr>
+						<td id="privacy_1"></td><td id="privacy_2"></td><td id="privacy_3"></td>
+					</tr><tr>
+						<td id="child_1"></td><td id="child_2"></td><td id="child_3"></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+	<hr />
+
+	<!-- Alexa page rank -->
+	<table>
+		<tr>
+			<td id="anl">Alexa Rank</td><td class="sor alexa loader"></td>
+		</tr><tr class="dynamicip" style="display: none;">
+			<td colspan="2" load-lang="dynamicip"></td>
+		</tr>
+	</table>
+	<hr />
+
+	<!-- Social data -->
+	<div class="spcial" style="display: none;">
+		<table>
+			<tr>
+				<td>Google</td><td class="google sor loader"></td>
+			</tr><tr>
+				<td>Facebook</td><td class="facebook sor loader"></td>
+			</tr><tr>
+				<td>Twitter</td><td class="twitter sor loader"></td>
+			</tr><tr>
+				<td>Reddit</td><td class="reddit sor loader"></td>
+			</tr>
+		</table>
+		<hr />
+	</div>
+
+	<!-- Visit web page -->
+	<div class="links">
+		<a href="#" id="report_button" load-lang="report_risk"></a>
+	</div>
+
+	<div class="report" style="text-align: right; font-size: 10px; float: right;"></div>
+	<div style="clear: both;"></div>
+</div>
+
+</body>
+</html>

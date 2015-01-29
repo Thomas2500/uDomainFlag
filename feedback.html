@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript" src="/script/jquery.min.js"></script>
+	<script type="text/javascript" src="/script/db.js"></script>
+	<script type="text/javascript" src="/script/debug.js"></script>
+	<script type="text/javascript" src="/script/parameter.js"></script>
+	<script type="text/javascript" src="/script/functions.js"></script>
+	<script type="text/javascript" src="/script/analytics.js"></script>
+	<script type="text/javascript" src="/script/bootstrap.js"></script>
+	<script type="text/javascript" src="/script/lang.js"></script>
+	<script type="text/javascript" src="/script/feedback.js"></script>
+	<link rel="stylesheet" type="text/css" href="/style/bootstrap/bootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="/style/bootstrap/bootstrap-theme.css" />
+	<link rel="stylesheet" type="text/css" href="/style/roboto.css" />
+	<link rel="stylesheet" type="text/css" href="/style/options.css" />
+
+	<title>Feedback &bull; uDomainFlag</title>
+</head>
+<body>
+
+
+   <div class="container">
+	  <div class="header">
+		<ul class="nav nav-pills pull-right">
+		  <li><a href="/options.html" load-lang="options">Options</a></li>
+		  <li><a href="/about.html" load-lang="about">About</a></li>
+		  <li class="active"><a href="/feedback.html">Feedback</a></li>
+		</ul>
+		<h3 class="text-muted">uDomainFlag</h3>
+	  </div>
+
+	  <div class="row marketing">
+
+		<form class="form-horizontal" id="form">
+			<fieldset>
+
+				<div class="form-group">
+					<label class="col-md-4 control-label" for="textinput" load-lang="name"></label>
+					<div class="col-md-5">
+						<input id="textinput" name="name" type="text" autofocus="autofocus" load-lang-placeholder="canbeempty" class="form-control input-md" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-4 control-label" for="textinput" load-lang="email"></label>
+					<div class="col-md-5">
+						<input id="textinput" name="email" type="email" load-lang-placeholder="canbeempty" class="form-control input-md" />
+						<span class="help-block" load-lang="email_not_required"></span>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-4 control-label" for="textinput" load-lang="subject"></label>
+					<div class="col-md-5">
+						<input id="textinput" name="subject" type="text" load-lang-placeholder="canbeempty" class="form-control input-md" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-md-offset-1 col-md-9">
+						<textarea class="form-control contentinput" style="height: 200px;" id="textarea" name="textarea" load-lang-placeholder="language_please"></textarea>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-md-offset-5 col-md-4">
+						<button id="singlebutton" name="singlebutton" class="btn btn-primary" load-lang="submit">Submit</button>
+					</div>
+				</div>
+
+			</fieldset>
+		</form>
+
+	  </div>
+
+	  <div class="footer">
+		<p>Copyright &copy; Thomas Bella, 2013-2015</p>
+	  </div>
+
+	</div>
+
+</body>
+</html>

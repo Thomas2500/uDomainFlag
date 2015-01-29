@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript" src="/script/jquery.min.js"></script>
+	<script type="text/javascript" src="/script/db.js"></script>
+	<script type="text/javascript" src="/script/debug.js"></script>
+	<script type="text/javascript" src="/script/parameter.js"></script>
+	<script type="text/javascript" src="/script/functions.js"></script>
+	<script type="text/javascript" src="/script/analytics.js"></script>
+	<script type="text/javascript" src="/script/bootstrap.js"></script>
+	<script type="text/javascript" src="/script/lang.js"></script>
+	<script type="text/javascript" src="/script/about.js"></script>
+	<link rel="stylesheet" type="text/css" href="/style/bootstrap/bootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="/style/bootstrap/bootstrap-theme.css" />
+	<link rel="stylesheet" type="text/css" href="/style/roboto.css" />
+	<link rel="stylesheet" type="text/css" href="/style/options.css" />
+
+	<title load-lang="about">uDomainFlag</title>
+</head>
+<body>
+
+
+   <div class="container">
+	  <div class="header">
+		<ul class="nav nav-pills pull-right">
+		  <li><a href="/options.html" load-lang="options">Options</a></li>
+		  <li class="active"><a href="/about.html" load-lang="about" >About</a></li>
+		  <li><a href="/feedback.html">Feedback</a></li>
+		</ul>
+		<h3 class="text-muted">uDomainFlag</h3>
+	  </div>
+
+	  <div class="row marketing">
+
+
+<h1 load-lang="about"></h1>
+
+<section>
+
+	<div class="item">
+		<div load-lang="project_description"></div>
+		<div style="text-align: center; padding: 15px;">
+			<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+			<input type="hidden" name="cmd" value="_s-xclick">
+			<input type="hidden" name="hosted_button_id" value="SJY8YDYTZV9ML">
+			<input type="image" src="/images/paypal-donate.png" border="0" name="submit" alt="Jetzt einfach, schnell und sicher online bezahlen – mit PayPal." style="width: 300px;">
+			<img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1">
+			</form>
+			<div load-lang="donated" id="donated"></div>
+		</div>
+
+		<h2>Thomas Bella</h2>
+		<div id="aboutme"></div>
+
+		<h2 load-lang="donators"></h2>
+		<div class="donators" load-lang="none"></div>
+	</div>
+
+	<h2>Licenses</h2>
+
+	<div load-lang="open_source"></div>
+
+	<div class="item">
+		<div class="title">Icons</div>
+		<div class="option">Some icons by <a href="http://p.yusukekamiyamane.com/" target="_blank">Yusuke Kamiyamane</a>.<br />
+			Flag icons from <a href="http://www.famfamfam.com/" target="_blank">famfamfam</a> free icons.<br />
+			Plugin logo by <a href="http://www.webdesignerdepot.com/" target="_blank">Webdesigner Depot</a>.</div>
+		<div class="clear"></div>
+	</div>
+
+	<div class="item">
+		<div class="title">Web of Trust</div>
+		<div class="option"><a href="http://www.mywot.com" target="_blank"><img src="/images/wot/friend_small.png" alt="Friend of WOT" /></a></div>
+		<div class="clear"></div>
+	</div>
+
+	<div class="item">
+		<div class="title">db.js</div>
+		<div class="option">Copyright by Aaron Powell under the MIT License.</div>
+		<div class="clear"></div>
+	</div>
+	<div class="item">
+		<div class="title">jQuery</div>
+		<div class="option">Copyright by The jQuery Foundation under the MIT License.</div>
+		<div class="clear"></div>
+	</div>
+	<div class="item">
+		<div class="title">Bootstrap</div>
+		<div class="option">Bootstrap is released under the MIT license and is copyright 2014 Twitter.</div>
+		<div class="clear"></div>
+	</div>
+	<div class="item">
+		<div class="title">Font "Roboto"</div>
+		<div class="option">Roboto is released under the Apache License, version 2.0 license and is copyright Christian Robertson.</div>
+		<div class="clear"></div>
+	</div>
+</section>
+
+
+<h1>Changelog</h1>
+
+<section>
+	<div class="item">
+		<div class="title"><span class="v">1.0.0.0</span><br />29.01.2015</div>
+		<div class="option">
+			<ul>
+				<li>Completely rewritten the code</li>
+				<li>Local and remote DNS lookup</li>
+				<li>Updated language system</li>
+				<li>More options</li>
+				<li>Changed domain for data lookup</li>
+				<li>New SecurityKey system for more security</li>
+				<li>Moved source code to <a href="https://github.com/Thomas2500/uDomainFlag">GitHub</a>!</li>
+				<li>Faster data processing</li>
+				<li>Possibility to capture screen for risk report</li>
+				<li>Added list of donators</li>
+				<li>Detection of local domains</li>
+				<li>Detection of local ip addresses for domains</li>
+			</ul>
+		</div>
+		<div class="clear line"></div>
+	</div>
+
+	<div class="item">
+		<div class="title"><span class="v">0.1</span><br />18.07.2014</div>
+		<div class="option">
+			<ul>
+				<li>Increased WoT lookup speed</li>
+				<li>Added whois for unreachable domain</li>
+				<li>Added social counters like Facebook likes and Google +1</li>
+				<li>New design</li>
+				<li>Added feedback form</li>
+				<li>Added more options to settings page</li>
+				<li>Added risk indicator</li>
+				<li>Updated database for better location results</li>
+				<li>Very much code improvements</li>
+			</ul>
+		</div>
+		<div class="clear line"></div>
+	</div>
+
+	<div class="item">
+		<div class="title"><span class="v">0.0.1.6</span><br />13.11.2013</div>
+		<div class="option">
+			<ul>
+				<li>Added IP ranges (RFC6598, RFC5736, RFC1166, RFC3068)</li>
+				<li>Background improvements</li>
+				<li>Added on-/offline detection</li>
+				<li>Better update check</li>
+			</ul>
+		</div>
+		<div class="clear line"></div>
+	</div>
+
+	<div class="item">
+		<div class="title"><span class="v">0.0.1.5</span><br />18.10.2013</div>
+		<div class="option">
+			<ul>
+				<li>Undone Bugfixes. Causes critical errors.</li>
+				<li>Thanks to everyone! More than 1000 active uDomainFlag users per week.</li>
+			</ul>
+		</div>
+		<div class="clear line"></div>
+	</div>
+
+	<div class="item">
+		<div class="title"><span class="v">0.0.1.3</span><br />10.10.2013</div>
+		<div class="option">
+			<ul>
+				<li>Added more private IP ranges</li>
+				<li>Bugfixes</li>
+			</ul>
+		</div>
+		<div class="clear line"></div>
+	</div>
+
+	<div class="item">
+		<div class="title"><span class="v">0.0.1.2</span><br />23.09.2013</div>
+		<div class="option">
+			<ul>
+				<li>Bugfixes</li>
+				<li>Now requires Chrome 4+</li>
+				<li>Fallback to a different storage under Chrome version 20</li>
+				<li>Added instant update if update is available</li>
+			</ul>
+		</div>
+		<div class="clear line"></div>
+	</div>
+
+	<div class="item">
+		<div class="title"><span class="v">0.0.1.1</span><br />06.09.2013</div>
+		<div class="option">
+			<ul>
+				<li>Experimental IPv6 support for domains and ips (Only country, fine location is currently not available)</li>
+				<li>Fixed CPU overload bug after long time of usage (about 6 hours browsing without closing a window)</li>
+				<li>Added report link for incorrect data</li>
+				<li>Other little bug fixes</li>
+			</ul>
+		</div>
+		<div class="clear line"></div>
+	</div>
+
+	<div class="item">
+		<div class="title"><span class="v">0.0.1</span><br />03.09.2013</div>
+		<div class="option">
+			<ul>
+				<li>Faster IP reload time for dynamic DNS domains.</li>
+				<li>Added special support for incognito tabs. Data from incognito tabs will be removed every 15 minutes.</li>
+				<li>Complete new request script. Flags should now be shown faster and correct.</li>
+				<li>Bigger user cache (Added permission "unlimitedStorage")</li>
+				<li>More flexible data managing</li>
+				<li>Fix (all websites seem to come from russia)</li>
+				<li>Many bugfixes. Sorry for the inconvenience. I hope that all the bugs are fixed now</li>
+			</ul>
+		</div>
+		<div class="clear line"></div>
+	</div>
+
+	<div class="item">
+		<div class="title"><span class="v">0.0.0.4</span><br />23.08.2013</div>
+		<div class="option">
+			<ul>
+				<li>Update notification is now off by default</li>
+				<li>Much faster first domain lookup</li>
+				<li>Uses a faster IP to country detection, accurate position is sometimes not available. Fix will come soon</li>
+				<li>Bug fixes</li>
+			</ul>
+		</div>
+		<div class="clear line"></div>
+	</div>
+
+	<div class="item">
+		<div class="title"><span class="v">0.0.0.3</span><br />14.08.2013</div>
+		<div class="option">
+			<ul>
+				<li>Added link to our site for more informations</li>
+				<li>Dotless domain detection</li>
+				<li>Detect if user is online/offline</li>
+				<li>Code cleanup, speedup and compressed</li>
+				<li>Reduced package size</li>
+				<li>Bug fixes</li>
+			</ul>
+		</div>
+		<div class="clear line"></div>
+	</div>
+
+	<div class="item">
+		<div class="title"><span class="v">0.0.0.2</span><br />24.07.2013</div>
+		<div class="option">
+			<ul>
+				<li>Much faster flag lookup</li>
+				<li>Data lifetime extended up to 3 days</li>
+				<li>Extended url detection (.onion, .local, .box)</li>
+				<li>Removed developer guid</li>
+				<li>Automatic cleanup checker set to every 12 hours. No need to close Chrome</li>
+				<li>Added Alexa-Rank</li>
+				<li>Added Google PageRank</li>
+				<li>Bug fixes</li>
+			</ul>
+		</div>
+		<div class="clear line"></div>
+	</div>
+
+	<div class="item">
+		<div class="title"><span class="v">0.0.0.1</span><br />14.07.2013</div>
+		<div class="option">
+			<ul>
+				<li>Initial release</li>
+			</ul>
+		</div>
+		<div class="clear"></div>
+	</div>
+
+</section>
+
+
+	  </div>
+
+	  <div class="footer">
+		<p>Copyright &copy; Thomas Bella, 2013-2015</p>
+	  </div>
+
+	</div>
+</body>
+</html>
