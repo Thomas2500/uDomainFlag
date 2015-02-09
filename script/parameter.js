@@ -11,6 +11,7 @@ var backup_domain = data_domain;							// Secound domain, if first is offline | 
 
 // Security related stuff
 var securityKey   = (typeof localStorage["securityKey"] !== "undefined") ? localStorage["securityKey"] : "";			// Security Key
+var localID		  = (typeof localStorage["localID"] !== "undefined") ? localStorage["localID"] : "";					// Local ID
 
 // Development related stuff
 var errorReports  = (typeof localStorage["errorReports"] !== "undefined") ? localStorage["errorReports"] : "true";	// Send error reports?
@@ -23,12 +24,11 @@ var loglevel	  = (typeof localStorage["loglevel"] !== "undefined") ? parseInt(lo
 	// 3 => 2 & notice
 	// 4 => 3 & debug
 
-// User choise
+/*		User choise		*/
 var popupWebsite  		= (typeof localStorage["popupWebsite"] !== "undefined") ? localStorage["popupWebsite"] : "false"; 				// Open information as new window/tab
 var updateNotification  = (typeof localStorage["updateNotification"] !== "undefined") ? localStorage["updateNotification"] : "false"; 	// Nofification after plugin update
-var updateNotificationB = (typeof localStorage["updateNotificationB"] !== "undefined") ? localStorage["updateNotificationB"] : "true"; 	// Nofification after plugin update with big changes
 var socialData	  		= (typeof localStorage["socialData"] !== "undefined") ? localStorage["socialData"] : "false";					// Display socialData? (Google +1, Facebook likes, ...)
-var usageData			= "true"; 																										// Will be an opt-out option in the future
+var usageData			= (typeof localStorage["usageData"] !== "undefined") ? localStorage["usageData"] : "true";						// Send usage data like language, online users and local time
 
 var DBopen = false;
 
@@ -38,7 +38,7 @@ setTimeout(function(){ remSync = true; }, 1000 * 3); // Set remSync to true afte
 // Get data from global Google sync
 if (typeof chrome.storage !== "undefined" && typeof chrome.storage.sync !== "undefined")
 {
-	chrome.storage.sync.get(["securityKey", "popupWebsite", "socialData", "updateNotification", "updateNotificationB"], function(ret) {
+	chrome.storage.sync.get(["securityKey", "popupWebsite", "socialData", "updateNotification"], function(ret) {
 		if (!$.isEmptyObject(ret))
 		{
 			if (typeof ret.securityKey !== "undefined")
@@ -52,9 +52,6 @@ if (typeof chrome.storage !== "undefined" && typeof chrome.storage.sync !== "und
 
 			if (typeof ret.updateNotification !== "undefined")
 				updateNotification = localStorage["updateNotification"] = ret.updateNotification;
-
-			if (typeof ret.updateNotificationB !== "undefined")
-				updateNotificationB = localStorage["updateNotificationB"] = ret.updateNotificationB;
 		}
 		remSync = true;
 	});
@@ -66,4 +63,10 @@ else
 if (typeof selfhost === "undefined" || selfhost !== chrome.i18n.getMessage("@@extension_id"))
 {
 	loglevel = localStorage["loglevel"] = 4;
+}
+
+// Generate new localID if it is empty
+if (localID === "")
+{
+	localID = localStorage["localID"] = Math.floor( Math.random() * 1000000000 ).toString(16);
 }
