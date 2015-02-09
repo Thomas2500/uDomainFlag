@@ -22,3 +22,6 @@ $RECYCLE.BIN/
 # Dropbox
 .dropbox
 .dropbox.attr
+
+# Chrome
+*.crdownload
