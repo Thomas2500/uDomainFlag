@@ -139,7 +139,7 @@
         "message": "Privacy"
     },
     "project_description": {
-        "message": "This extension shows you the location where the web server from a web page is situated while you visit the page. Also you get shown the IP address and the host name. To ensure that the requested site is secure, the Web of Trust index is displayed.\n\n\nDuring the visit of a page a flag is placed in the address bar of the browser. This flag indicates the country of origin of the server that hosts the website.\nIf you click on the flag you get additional information about the page:\n\u00a0 - More accurate location\n\u00a0 - IP address of the website\n\u00a0 - Hostname of the server\n\u00a0 - Website Security by Web of Trust\n\u00a0 - Google PageRank\n\u00a0 - Website Traffic Analysis by Alexa Rank\n\nIn addition, link links appear to perform actions such as Whois faster.\n\nThe perfect addition for home and developers. Fast check whether a website is safe.\n\n\nPrivacy and technical details:\nAfter calling a website the domain name (for example blog.unterhaltungsbox.com, accounts.google.com) will be\u00b4\u00b4 base64 encoded and transmitted to cp.srv.unterhaltungsbox.com. This page provides all the relevant information back.\nNo personal data will be transmitted or stored. It is only saved a requested domain in the cache of the user."
+        "message": "This extension shows you the location where the web server from a web page is situated while you visit the page. Also you get shown the IP address and the host name.\n\nDuring the visit of a page a flag is placed in the address bar of the browser. This flag indicates the server's country of origin that hosts the website.\n\nIf you click on the flag you get additional information about the page:\n\u00a0 - Location\n\u00a0 - IP address of the website\n\u00a0 - Hostname of the server\n\u00a0 - Website security by Web of Trust\n\u00a0 - Website traffic analysis by Alexa Rank\n\nThe perfect addition for home users and developers.\nThis allows a quick check whether the requested website really comes from the referred country.\n\n\nPrivacy Policy:\nNo personal data will be transmitted or stored. It is exclusively a storage accessed data in the user's browser."
     },
     "report_risk": {
         "message": "Report risk"
@@ -199,6 +199,12 @@
     "update_desc": {
         "message": "Do you want to be informed after an update?"
     },
+    "usagedata": {
+        "message": "Usage data"
+    },
+    "usage_desc": {
+        "message": "Your usage data helps us to improve and ensure the stable operation of uDomainFlag. You can always disable the sending of usage data and switch it on again."
+    },
     "vendor": {
         "message": "Vendor reliability"
     },
@@ -224,7 +230,7 @@
         "message": "Yes"
     },
     "_export": {
-        "message": "29.01.2015 11:54"
+        "message": "11.02.2015 11:12"
     },
     "_lang": {
         "message": "English"

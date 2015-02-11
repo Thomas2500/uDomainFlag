@@ -139,7 +139,7 @@
         "message": "Datenschutz"
     },
     "project_description": {
-        "message": "Diese Erweiterung zeigt dir den Standort an, wo sich der Webserver hinter einer Webseite befindet, w\u00e4hrend du die Seite besuchst. Ebenfalls wird dir die IP Adresse sowie dessen Hostname angezeigt. Um sicherzugehen, ob die aufgerufene Webseite sicher ist, wird der Web of Trust Index angezeigt.\n\nW\u00e4hrend des Besuches einer Seite wird eine Flagge in der Adressenzeile des Browsers platziert. Diese Flagge zeigt das Herkunftsland des Servers, die die Webseite hostet.\nWenn du auf die Flagge klickst, werden dir zus\u00e4tzliche Informationen \u00fcber die Seite angezeigt:\n - Genauerer Standort\n - IP Adresse der Webseite\n - Hostname des Servers\n - Sicherheit der Webseite mittels Web of Trust\n - Webseiten Traffic Analyse mit Alexa Rank\n\nDie perfekte Erweiterung f\u00fcr Privatanwender und Entwickler. Denn so l\u00e4sst sich schnell \u00fcberpr\u00fcfen, ob eine Webseite sicher ist.\n\n\nDatenschutz:\nEs werden keine personenbezogenen Daten \u00fcbermittelt oder gespeichert. Es wird nur eine angeforderte Domain in den Zwischenspeicher des Benutzers gespeichert."
+        "message": "Diese Erweiterung zeigt dir w\u00e4hrend dem Aufruf der Seite den Standort an, aus welchem Land die Seite bezogen wird.\nZus\u00e4tzlich zum Land wird dir auch die IP Adresse sowie dessen Hostname angezeigt.\n\nW\u00e4hrend des Besuches einer Seite wird eine Flagge in der Adresszeile des Browsers platziert. Diese Flagge zeigt das Herkunftsland des Servers an, von wo aus die Webseite bezogen wird.\n\nWenn du auf die Flagge klickst, werden dir zus\u00e4tzliche Informationen \u00fcber die Seite angezeigt:\n - Standort\n - IP Adresse der Webseite\n - Hostname des Servers\n - Sicherheit der Webseite mittels Web of Trust\n - Webseiten Traffic Analyse mit Alexa Rank\n\nDie perfekte Erweiterung f\u00fcr Privatanwender und Entwickler.\nSo l\u00e4sst sich schnell \u00fcberpr\u00fcfen, ob die aufgerufene Webseite auch tats\u00e4chlich aus dem jeweiligen Land stammt.\n\n\nDatenschutz:\nEs werden keine personenbezogenen Daten \u00fcbermittelt oder gespeichert. Es erfolgt ausschlie\u00dflich eine Speicherung abgerufener Daten im Browser des Benutzers."
     },
     "report_risk": {
         "message": "Gefahr melden"
@@ -199,6 +199,12 @@
     "update_desc": {
         "message": "M\u00f6chtest du nach einem Update benachrichtigt werden?"
     },
+    "usagedata": {
+        "message": "Nutzungsdaten"
+    },
+    "usage_desc": {
+        "message": "Deine Nutzungsdaten helfen uns, uDomainFlag weiter zu verbessern und einen stabilen Betrieb zu gew\u00e4hrleisten. Du kannst jederzeit das Senden von Nutzungsdaten abschalten und wieder einschalten."
+    },
     "vendor": {
         "message": "H\u00e4ndlerzuverl\u00e4ssigkeit"
     },
@@ -224,7 +230,7 @@
         "message": "Ja"
     },
     "_export": {
-        "message": "29.01.2015 11:54"
+        "message": "11.02.2015 11:12"
     },
     "_lang": {
         "message": "Deutsch"
