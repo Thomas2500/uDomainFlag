@@ -8,7 +8,7 @@ Requires:
 
 var eudt = {
 
-	var base = {
+	base: {
 		// Base data to avoid duplicates
 		"key": securityKey,
 		"lid": localID,
@@ -17,7 +17,7 @@ var eudt = {
 		"version": chrome.app.getDetails().version,
 	},
 
-	track = {
+	track: {
 
 		// Event - Track an event like a click on a internal link or updating the extension 
 		event: function (category, action, label, value)
