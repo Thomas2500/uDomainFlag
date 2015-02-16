@@ -552,6 +552,8 @@ var udf = {
 	{
 		try
 		{
+			// IPv4 - special addresses
+
 			// Special networks (private, RFC)
 			if (ip.match(/^10\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/))
 				return { icon: "images/fugue/office-network.png", title: "Private network", popup: 'internal.html' };
@@ -607,6 +609,22 @@ var udf = {
 			// Shared - SAS
 			if (ip.match(/^100\.(64|65|66|67|68|69|70|71|72|73|74|75|76|77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|123|124|125|126|127)\.([0-9]{1,3})\.([0-9]{1,3})$/))
 				return { icon: "images/logo-16x16.png", title: "Shared Address Space", popup: 'special.html' };
+
+			// IPv6 - special addresses
+
+			// Link-Local (fe80)
+			if (ip.match(/^fe80\:([0-9A-Fa-f\:\%]*)$/))
+				return { icon: "images/fugue/home-network.png", title: "Private network (Link-Local)", popup: 'internal.html' };
+
+			// 6to4
+			if (ip.match(/^2002\:([0-9A-Fa-f\:\%]*)$/))
+				return { icon: "images/fugue/network.png", title: "IP 6to4 network", popup: 'special.html' };
+
+			// Localhost
+			if (ip == "::1")
+				return { icon: "images/fugue/computer.png", title: "Computer", popup: 'special.html' };
+
+
 
 			return false;
 		}
