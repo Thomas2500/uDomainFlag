@@ -82,7 +82,7 @@ var debug = {
 			return;
 
 		// Send error to developer
-		$.post(data_protocol + "://" + data_domain + "/error.json", { log: this.message.serializeArray(), key: securityKey, version: chrome.app.getDetails().version }, function(data)
+		$.post(data_protocol + "://" + data_domain + "/error.json", { log: JSON.stringify(this.message), key: securityKey, version: chrome.app.getDetails().version }, function(data)
 		{
 			this.clear();
 		});
