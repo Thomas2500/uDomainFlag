@@ -1093,3 +1093,9 @@ function getWoTid( wot, index ) {
 		return 0;
 	}
 }
+
+function getDateObject()
+{
+	var now = new Date();
+	return { day: now.getDate(), month: now.getMonth(), year: now.getFullYear()};
+}
