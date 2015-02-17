@@ -494,47 +494,61 @@ var udf = {
 				throw new Error("no url given");
 
 			// Split domain
-			var match = url.match(/(chrome|chrome-extension|http|https|ftp)\:\/\/([^\/^\:^\[]{1,})/);
+			var reg = /(chrome|chrome-extension|http|https|ftp)\:\/\/([^\/^\:^\[]{1,})/;
 
-			// Chrome extension - internal
-			if (match[1] == 'chrome' || match[1] == 'chrome-extension')
-				return { icon: "images/fugue/computer.png", title: "Chrome browser", popup: 'special.html' };
+			if (reg.test(url))
+			{
+				var match = url.match(/(chrome|chrome-extension|http|https|ftp)\:\/\/([^\/^\:^\[]{1,})/);
 
-			// Dotless domain (mostly internal e.g. start, login, hotspot)
-			if (match[2].indexOf('.') == -1)
-				return { icon: "images/fugue/network.png", title: "Local domain", popup: 'internal.html' };
+				// Chrome extension - internal
+				if (match[1] == 'chrome' || match[1] == 'chrome-extension')
+					return { icon: "images/fugue/computer.png", title: "Chrome browser", popup: 'special.html' };
 
-			// Domain with ending dot -> interpret without dot
-			var tmp = match[2].match(/(.*)\.$/);
-			if (tmp != null) {
-				match[2] = tmp[1];
+				// Dotless domain (mostly internal e.g. start, login, hotspot)
+				if (match[2].indexOf('.') == -1)
+					return { icon: "images/fugue/network.png", title: "Local domain", popup: 'internal.html' };
+
+				// Domain with ending dot -> interpret without dot
+				var tmp = match[2].match(/(.*)\.$/);
+				if (tmp != null) {
+					match[2] = tmp[1];
+				}
+
+				// check tld
+				var domain = match[2];
+				var tld = domain.match(/([^\.]*)$/);
+				tld = tld[1];
+
+				// Home networks
+				if (tld == 'lan')
+					return { icon: "images/fugue/home-network.png", title: "Home network", popup: 'internal.html' };
+
+				// Local network. Can be localhost, home network or office network
+				if (tld == 'local')
+					return { icon: "images/fugue/network.png", title: "Local network", popup: 'internal.html' };
+
+				// Address and Routing Parameter Area
+				if (tld == 'arpa')
+					return { icon: "images/fugue/network.png", title: "IP to domain network", popup: 'special.html' };
+
+				// Company network
+				if (tld == 'corp')
+					return { icon: "images/fugue/network.png", title: "Local network", popup: 'internal.html' };
+
+				// Tor network
+				if (tld == 'onion' || tld == 'exit')
+					return { icon: "images/special-flag/tor.png", title: "Tor network", popup: 'special.html' };
 			}
-
-			// check tld
-			var domain = match[2];
-			var tld = domain.match(/([^\.]*)$/);
-			tld = tld[1];
-
-			// Home networks
-			if (tld == 'lan')
-				return { icon: "images/fugue/home-network.png", title: "Home network", popup: 'internal.html' };
-
-			// Local network. Can be localhost, home network or office network
-			if (tld == 'local')
-				return { icon: "images/fugue/network.png", title: "Local network", popup: 'internal.html' };
-
-			// Address and Routing Parameter Area
-			if (tld == 'arpa')
-				return { icon: "images/fugue/network.png", title: "IP to domain network", popup: 'special.html' };
-
-			// Company network
-			if (tld == 'corp')
-				return { icon: "images/fugue/network.png", title: "Local network", popup: 'internal.html' };
-
-			// Tor network
-			if (tld == 'onion' || tld == 'exit')
-				return { icon: "images/special-flag/tor.png", title: "Tor network", popup: 'special.html' };
-
+			else
+			{
+				// Check if domain is an IPv6 address
+				var reg = /\[([0-9a-fA-F\:\%]*)\]/;
+				if (reg.test(url))
+				{
+					var match = url.match(reg);
+					var domain = match[1];
+				}
+			}
 			// Check if IP is internal
 			var isinternal = this.isInternal(domain);
 			if (isinternal !== false)
@@ -623,8 +637,6 @@ var udf = {
 			// Localhost
 			if (ip == "::1")
 				return { icon: "images/fugue/computer.png", title: "Computer", popup: 'special.html' };
-
-
 
 			return false;
 		}
