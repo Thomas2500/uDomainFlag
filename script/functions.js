@@ -773,27 +773,28 @@ var udf = {
 			if (typeof selfhost == "undefined" || selfhost != chrome.i18n.getMessage("@@extension_id"))
 				return;
 
-			(function (status, details) {
+			chrome.runtime.requestUpdateCheck(function (status, details)
+			{
 				if (typeof status != "undefined")
 				{
 					// If Google Server is overloaded, wait 6 hours for next update request
 					if (status == "throttled")
 					{
-						setTimeout(function(){
+						setTimeout(function() {
 							udf.checkUpdate();
 						}, 1000 * 60 * 60 * 6);
 					}
 					else // Check for Updates every 2 hours
 						 // If a update is available, an other script will handle it
 					{
-						setTimeout(function(){
+						setTimeout(function() {
 							udf.checkUpdate();
 						}, 1000 * 60 * 60 * 2);
 					} // status == "throttled"
 					return;
 				}
 				// If request contains a error, retry it in 4 hours
-				setTimeout(function(){
+				setTimeout(function() {
 					udf.checkUpdate();
 				}, 1000 * 60 * 60 * 4);
 			});
