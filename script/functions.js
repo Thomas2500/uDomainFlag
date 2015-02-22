@@ -566,6 +566,9 @@ var udf = {
 	{
 		try
 		{
+			if (typeof ip === "undefined")
+				return false;
+
 			// IPv4 - special addresses
 
 			// Special networks (private, RFC)
