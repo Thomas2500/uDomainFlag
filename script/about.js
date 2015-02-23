@@ -38,7 +38,7 @@ $(document).ready(function()
 	}
 	$("#aboutme").html(_("aboutme", [ age ]));
 
-
+	$(".yv").html(_("your_version", [chrome.app.getDetails().version]));
 
 	$("title").html($("title").text() + " &bull; uDomainFlag");
 
