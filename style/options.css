@@ -98,3 +98,9 @@ input.seckey {
 	padding: 3px;
 	text-align: center;
 }
+.spoiler .title {
+	cursor: pointer;
+}
+.spoiler .content {
+	display: none;
+}
