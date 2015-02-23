@@ -813,6 +813,10 @@ var udf = {
 	{
 		try
 		{
+			// Check if IndexedDB is loaded
+			if (typeof db.open !== "undefined")
+				return setTimeout(function(){ udf.getDBsize(callback); }, 100);
+
 			total_length = 0;
 			db.domain.query().all().execute().then(function(d){						// IndexedDB - "domain"
 				$.each(d, function(i, v){
