@@ -59,6 +59,12 @@ var debug = {
 		if (typeof notice === "undefined")
 			notice = "";
 
+		// Check if IndexedDB is closed and reload the extension
+		if (error.stack.indexOf("The database connection is closing.") > -1)
+		{
+			return chrome.runtime.reload();
+		}
+
 		this.msgpush( error.message, "catch", error.stack, notice);
 		this.problem = 3;
 	},
