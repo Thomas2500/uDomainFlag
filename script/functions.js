@@ -1107,3 +1107,59 @@ function getDateObject()
 	var now = new Date();
 	return { day: now.getDate(), month: now.getMonth(), year: now.getFullYear()};
 }
+
+/*
+	Compares 2 version strings (based on numbers)
+	By default it returns true, if b is bigger than a
+	otherwise it returns false (< as operator)
+*/
+function compare_version(a, b, operator)
+{
+	operator = typeof operator !== "undefined" ? operator : ">";
+	if (operator === "=")
+		operator = "==";
+
+	var asplit = a.split('.');
+	var bsplit = b.split('.');
+	var maxlen = Math.max(asplit.length, bsplit.length);
+
+	for (i = 0; i < maxlen; i++)
+	{
+		if (typeof asplit[i] === "undefined" || asplit[i] === "")
+			asplit[i] = "0";
+		if (typeof bsplit[i] === "undefined" || bsplit[i] === "")
+			bsplit[i] = "0";
+
+		if (asplit[i] === bsplit[i])
+			continue;
+
+		var anum = parseInt(asplit[i]);
+		var bnum = parseInt(bsplit[i]);
+
+		if (anum === bnum)
+			continue;
+
+		switch (operator)
+		{
+			case '>':
+				return (anum > bnum);
+			case '>=':
+				return (anum >= bnum);
+			case '<':
+				return (anum < bnum);
+			case '<=':
+				return (anum <= bnum);
+			case '==':
+				return (anum == bnum);
+			case '<>':
+			case '!=':
+				return (anum != bnum);
+			default:
+				return (anum < bnum);
+		}
+	}
+
+	if (operator === "==")
+		return true;
+	return false;
+}
