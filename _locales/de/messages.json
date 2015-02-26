@@ -50,6 +50,9 @@
     "description": {
         "message": "Erhalte zus\u00e4tzliche Informationen \u00fcber eine Domain in der Adresszeile."
     },
+    "display_older_versions": {
+        "message": "Zeige \u00e4ltere Versionen"
+    },
     "domain_unknown": {
         "message": "Es konnten keine Daten zur aufgerufenen Seite ermittelt werden.\nWahrscheinlich handelt es sich hierbei um eine lokale oder ung\u00fcltige Domain."
     },
@@ -229,8 +232,17 @@
     "yes": {
         "message": "Ja"
     },
+    "your_version": {
+        "message": "Du benutzt uDomainFlag $version$.",
+        "placeholders": {
+            "version": {
+                "content": "$1",
+                "example": "1.2.3.4"
+            }
+        }
+    },
     "_export": {
-        "message": "11.02.2015 11:12"
+        "message": "26.02.2015 09:24"
     },
     "_lang": {
         "message": "Deutsch"

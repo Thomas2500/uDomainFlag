@@ -50,6 +50,9 @@
     "description": {
         "message": "Get additional information about a domain in the omnibar."
     },
+    "display_older_versions": {
+        "message": "Display older versions"
+    },
     "domain_unknown": {
         "message": "No data could be found for the requested page.\nIt is probable that this is a local or invalid domain."
     },
@@ -229,8 +232,17 @@
     "yes": {
         "message": "Yes"
     },
+    "your_version": {
+        "message": "You are using uDomainFlag $version$.",
+        "placeholders": {
+            "version": {
+                "content": "$1",
+                "example": "1.2.3.4"
+            }
+        }
+    },
     "_export": {
-        "message": "11.02.2015 11:12"
+        "message": "26.02.2015 09:24"
     },
     "_lang": {
         "message": "English"
