@@ -3,7 +3,7 @@
 // Extension related stuff
 var selfhost 	  = "eklbfdpploakpkdakoielobggbhemlnm";		// Unique ID of this extension
 var data_domain   = "udfdata.unterhaltungsbox.com";			// Domain which gets the data
-var data_protocol =	"http";									// Protocol to use (http|https)
+var data_protocol =	"https";								// Protocol to use (http|https)
 var lookup_domain = "domainflag.unterhaltungsbox.com";
 var lookup_protocol = "http";
 
