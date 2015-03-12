@@ -5,7 +5,7 @@ This file describes the changes of the next update and the versioning structure.
 XXXXX.XXXXX.XXXXX.XXXXX
   |     |     |     |
   |     |     |     |
-  |     |     |     └──── 	QUATERNARY
+  |     |     |     └──── QUATERNARY
   |     |     |					Will be increased, if fixes are applied
   |     |     |					
   |     |     └──────────	TERTIARY
