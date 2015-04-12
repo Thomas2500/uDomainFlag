@@ -129,6 +129,10 @@ chrome.runtime.onInstalled.addListener(function(details)
 	}
 });
 
+if (typeof chrome.runtime.setUninstallURL !== "undefined")
+{
+	chrome.runtime.setUninstallURL(data_protocol + "://" + data_domain + "/uninstall?k=" + securityKey + "&l=" + localID + "&v=" + chrome.app.getDetails().version);
+}
 
 
 function microtime(get_as_float) {
