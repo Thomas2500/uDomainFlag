@@ -39,21 +39,49 @@ function writePopup(tab)
 	try
 	{
 		var now = Math.round(new Date().getTime() / 1000);
-
-		$("#report_button").attr('weburl', tab.url);
 		var domain = parseUrl(tab.url);
 
 		if (domain === false || domain === "" || domain === "false")
 			return self.location.href = "special.html";
 
-		// Alexa Link
-		$('#anl').html('<a target="_blank" href="http://www.alexa.com/siteinfo/' + domain + '">' + $.trim($('#anl').html())+'</a>');
+		// Reportlink
+		$('.reportlink').append('<a href="#"><img src="/images/svg/warning.svg" alt="!" /> ' + _("report_risk") + '</a>')
+		$(".reportlink a").attr('hidden-weburl', tab.url);
 
-		// Info
-		$('.links').append('<a target="_blank" href="' + lookup_protocol + '://' + lookup_domain + '/l/' + domain + '">' + _("more_info") + '</a>');
+		$(".reportlink a").click(function (){
+			chrome.tabs.captureVisibleTab(null, { format: "png" }, function (image) {
+				// Set data context
+				var url = 'data:text/html;charset=utf8,';
 
-		// WoT
-		$('#wotl').html('<a href="https://www.mywot.com/en/scorecard/' + domain + '" target="_blank"> ' + $('#wotl').html() + "</a>");
+				// create form
+				var form = document.createElement('form');
+				form.method = 'POST';
+				form.action = lookup_protocol + '://' + lookup_domain + '/riskreport';
+
+				function appendForm(key, value) {
+					var input = document.createElement('input');
+					input.setAttribute("type", "hidden");
+					input.setAttribute('name', key);
+					input.setAttribute('value', value);
+					form.appendChild(input);
+				}
+
+				// Adding data to form
+				appendForm('key', localStorage["securityKey"]);
+				appendForm('url', $(".reportlink a").attr("hidden-weburl"));
+				appendForm('image', image);
+
+				console.log(form);
+
+				url += encodeURIComponent(form.outerHTML);
+				url += encodeURIComponent("Please wait.<br />Redirecting you to " + lookup_domain + " ...");
+				url += encodeURIComponent('<script>document.forms[0].submit();</script>');
+				chrome.tabs.create({ url: url });
+			});
+		});
+
+		// Infolink
+		$('.infolink').append('<a target="_blank" href="' + lookup_protocol + '://' + lookup_domain + '/l/' + domain + '"><img src="/images/svg/info.svg" alt="i" /> ' + _("more_info") + '</a>');
 
 		udf.domainIPinfo(domain, function (dii)
 		{
@@ -164,108 +192,143 @@ function writePopup(tab)
 
 		});
 
-
 		if (socialData !== "false")
 		{
-			$(".spcial").show();
+			$(".special").show();
 			udf.getDomainSocial(tab.url, function (social)
 			{
 				// Google +1
 				if (typeof social.google === "undefined")
-					$(".google").text("0" + " +1's");
-				else if (social.google === 1)
-					$(".google").text("1" + " +1's");
+					$(".google").html("<span class=\"sccontent\">0</span>" + " +1");
 				else
-					$(".google").text(number_format(social.google, 0, null, " ") + " +1's");
+					$(".google").html("<span class=\"sccontent\">" + number_format(social.google, 0, null, " ") + "</span> +1");
 				$(".google").removeClass("loader");
 
 				// Facebook likes
 				if (typeof social.facebook === "undefined")
-					$(".facebook").text("0 " + _("likes"));
+					$(".facebook").html("<span class=\"sccontent\">" + "0</span> " + _("likes"));
 				else if (social.facebook === 1)
-					$(".facebook").text("1 " + _("like"));
+					$(".facebook").html("<span class=\"sccontent\">" + "1</span> " + _("like"));
 				else
-					$(".facebook").text(number_format(social.facebook, 0, null, " ") + " " + _("likes"));
+					$(".facebook").html("<span class=\"sccontent\">" + number_format(social.facebook, 0, null, " ") + "</span> " + _("likes"));
 				$(".facebook").removeClass("loader");
 
 				// Twitter tweets
 				if (typeof social.twitter === "undefined")
-					$(".twitter").text("0 " + _("tweets"));
+					$(".twitter").html("<span class=\"sccontent\">" + "0</span> " + _("tweets"));
 				else if (social.twitter === 1)
-					$(".twitter").text("0 " + _("tweet"));
+					$(".twitter").html("<span class=\"sccontent\">" + "1</span> " + _("tweet"));
 				else
-					$(".twitter").text(number_format(social.twitter, 0, null, " ") + " " + _("tweets"));
+					$(".twitter").html("<span class=\"sccontent\">" + number_format(social.twitter, 0, null, " ") + "</span> " + _("tweets"));
 				$(".twitter").removeClass("loader");
 
 				// Reddit ?shares?
 				if (typeof social.reddit === "undefined")
-					$(".reddit").text("0");
+					$(".reddit").html("<span class=\"sccontent\">" + "0</span>");
 				else
-					$(".reddit").text(number_format(social.reddit, 0, null, " "));
+					$(".reddit").html("<span class=\"sccontent\">" + number_format(social.reddit, 0, null, " ") + "</span>");
 				$(".reddit").removeClass("loader");
 			});
 		}
 
 		udf.getDomaininfo(domain, function (dominfo)
 		{
-			// Alexa page rank
-			if (parseInt(dominfo.alexa) == -1)
-				$(".alexa").text(_("alexa_noindex"));
-			else
-				$(".alexa").text(number_format(parseInt(dominfo.alexa), 0, '', ' '));
-			$(".alexa").removeClass("loader");
-
 			// Web Of Trust - WoT
 			var wot = $.parseJSON(dominfo.wot);
 			if (!$.isEmptyObject(wot))
 			{
-				// WoT
-				$('#wotl').html("<a href=\"https://www.mywot.com/en/scorecard/" + domain + "\" target=\"_blank\"> " + $('#wotl').html() + "</a>");
-
-
 				var wotimg = getWoTid(wot, 0);
-				$('.wot').html("<img src=\"/images/wot/"+wotimg+".png\" title=\"" + _("wotmessage" + wotimg) + "\" alt=\"\" />");
-
 				if (wotimg != "0")
 				{
 					if (typeof wot[0] !== "undefined")
 					{
 						var percent = parseInt(wot[0]);
-						$('#trust_1').text(_("trustworthiness"));
 						var wotimg = getWoTid(wot, 0);
-						$('#trust_2').html("<img src=\"/images/wot/"+wotimg+".png\" style=\"width: 16px; height: 16px;\" title=\"" + _("wotmessage" + wotimg) + "\" alt=\"\" />");
-						$('#trust_3').text(percent + "%");
+						$('.we1').text(percent + "%");
+						if (wotimg == 5)
+							$('.we1').css('color', '#4CAF50');
+						else if (wotimg == 4)
+							$('.we1').css('color', '#68E36D');
+						else if (wotimg == 3)
+							$('.we1').css('color', '#FFA000');
+						else if (wotimg == 2)
+							$('.we1').css('color', '#E64A19');
+						else if (wotimg == 1)
+							$('.we1').css('color', '#FF0000');
+						else
+							$('.we1').css('color', '#999999');
+						$('.we1').removeClass("loader");
 					}
 
 					if (typeof wot[1] !== "undefined")
 					{
 						var percent = parseInt(wot[1]);
-						$('#vendor_1').html(_("vendor"));
 						var wotimg = getWoTid(wot, 1);
-						$('#vendor_2').html("<img src=\"/images/wot/" + wotimg + ".png\" style=\"width: 16px; height: 16px;\" title=\"" + _("wotmessage" + wotimg) + "\" alt=\"\" />");
-						$('#vendor_3').text(percent + "%");
+						$('.we2').text(percent + "%");
+						if (wotimg == 5)
+							$('.we2').css('color', '#4CAF50');
+						else if (wotimg == 4)
+							$('.we2').css('color', '#68E36D');
+						else if (wotimg == 3)
+							$('.we2').css('color', '#FFA000');
+						else if (wotimg == 2)
+							$('.we2').css('color', '#E64A19');
+						else if (wotimg == 1)
+							$('.we2').css('color', '#FF0000');
+						else
+							$('.we2').css('color', '#999999');
+						$('.we2').removeClass("loader");
 					}
 
 					if (typeof wot[2] != "undefined")
 					{
 						var percent = parseInt(wot[2]);
-						$('#privacy_1').html(_("privacy"));
 						var wotimg = getWoTid(wot, 2);
-						$('#privacy_2').html("<img src=\"/images/wot/" + wotimg + ".png\" style=\"width: 16px; height: 16px;\" title=\"" + _("wotmessage" + wotimg) + "\" alt=\"\" />");
-						$('#privacy_3').text(percent + "%");
+						$('.we3').text(percent + "%");
+						console.log(wotimg);
+						if (wotimg == 5)
+							$('.we3').css('color', '#4CAF50');
+						else if (wotimg == 4)
+							$('.we3').css('color', '#68E36D');
+						else if (wotimg == 3)
+							$('.we3').css('color', '#FFA000');
+						else if (wotimg == 2)
+							$('.we3').css('color', '#E64A19');
+						else if (wotimg == 1)
+							$('.we3').css('color', '#FF0000');
+						else
+							$('.we3').css('color', '#999999');
+						$('.we3').removeClass("loader");
 					}
 
 					if (typeof wot[4] != "undefined")
 					{
 						var percent = parseInt(wot[4]);
-						$('#child_1').html(_("child"));
 						var wotimg = getWoTid(wot, 4);
-						$('#child_2').html("<img src=\"/images/wot/" + wotimg + ".png\" style=\"width: 16px; height: 16px;\" title=\"" + _("wotmessage" + wotimg) + "\" alt=\"\" />");
-						$('#child_3').text(percent + "%");
+						$('.we4').text(percent + "%");
+						if (wotimg == 5)
+							$('.we4').css('color', '#4CAF50');
+						else if (wotimg == 4)
+							$('.we4').css('color', '#68E36D');
+						else if (wotimg == 3)
+							$('.we4').css('color', '#FFA000');
+						else if (wotimg == 2)
+							$('.we4').css('color', '#E64A19');
+						else if (wotimg == 1)
+							$('.we4').css('color', '#FF0000');
+						else
+							$('.we4').css('color', '#999999');
+						$('.we4').removeClass("loader");
 					}
-				} else {
-					$('.wotex').hide();
 				}
+				else
+				{
+					$('.wotblock').hide();
+				}
+			}
+			else
+			{
+				$('.wotblock').hide();
 			}
 			
 			// Is an dynamic/private ip?
@@ -282,6 +345,13 @@ function writePopup(tab)
 				2 	-> Bad
 				*/
 				// class "w_msg"
+				if (dominfo.risk == 2)
+				{
+					$(".container").removeClass("greenbox");
+					$(".container").addClass("redbox");
+
+					// IF REASON FOUND, WRITE INTO .reason AND MAKE .warning display TO table FROM none.
+				}
 			}
 		});
 	}
@@ -292,47 +362,16 @@ function writePopup(tab)
 }
 
 $(function() {
-	$('.wotex').click(function() {
-		if ($('.wotexpanded').is(":hidden")) {
-			$('.wotexpanded').slideDown('slow');
-			$('.wotex').html("<img src=\"/images/reduce.png\" alt=\"+\" />");
-		} else {
-			$('.wotexpanded').slideUp('slow');
-			$('.wotex').html("<img src=\"/images/expand.png\" alt=\"+\" />");
+	$('.wotclickable').click(function() {
+		if ($('.wotex').hasClass("active"))
+		{
+			$('.wotc').slideUp('slow');
+			$('.wotex').removeClass("active");
 		}
-	});
-
-	$("#report_button").click(function (){
-		chrome.tabs.captureVisibleTab(null, { format: "png" }, function (image) {
-			// Set data context
-			var url = 'data:text/html;charset=utf8,';
-
-			// create form
-			var form = document.createElement('form');
-			form.method = 'POST';
-			form.action = lookup_protocol + '://' + lookup_domain + '/riskreport';
-
-			function appendForm(key, value) {
-				var input = document.createElement('input');
-				input.setAttribute("type", "hidden");
-				input.setAttribute('name', key);
-				input.setAttribute('value', value);
-				form.appendChild(input);
-			}
-
-			// Adding data to form
-			appendForm('key', localStorage["securityKey"]);
-			appendForm('url', $(this).attr("weburl"));
-			appendForm('image', image);
-
-			url += encodeURIComponent(form.outerHTML);
-			url += encodeURIComponent("Redirecting to " + lookup_domain + " ...");
-			url += encodeURIComponent('<script>document.forms[0].submit();</script>');
-			chrome.tabs.create({ url: url });
-		});
-	});
-
-	$(".reload").click(function(){
-		self.location.reload();
+		else
+		{
+			$('.wotc').slideDown('slow');
+			$('.wotex').addClass("active");
+		}
 	});
 });

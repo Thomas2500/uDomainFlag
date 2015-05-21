@@ -20,92 +20,89 @@
 </head>
 <body>
 
-<div class="container">
-	<!-- Reload button -->
-	<div class="reload"><img src="/images/fugue/arrow-circle.png" alt="Reload" /></div>
-
-	<!-- Country, Region, City -->
-	<div class="country title loader"></div>
-	<div class="country2 very-small loader"></div>
-	<hr />
-
-	<!-- Risk -->
-	<div class="w_msg">
-		<!--
-		Warning message, if risk is detected
-		Important! Add a <hr /> tag at the end of this container if it is filled with data
-		-->
+<div class="container greenbox">
+	<!-- LOCATION INFO -->
+	<div class="header">
+		<div class="country"></div>
+		<div class="country2"></div>
+		<div class="warning">
+			<div class="reason"></div>
+			<div class="image">
+				<img src="/images/svg/warning-white.svg" style="width: 32px;" alt="!" />
+			</div>
+		</div>
 	</div>
 
-	<!-- Host information -->
-	<table>
-		<tr>
-			<td>IP</td><td class="ip loader"></td>
-		</tr><tr style="display: none;" class="localipdisplay">
-			<td load-lang="local_ip"></td><td class="localip loader"></td>
-		</tr><tr style="display: none;" class="multiip">
-			<td colspan="2" load-lang="multi_domain"></td>
-		</tr><tr>
-			<td load-lang="hostname"></td><td class="host loader"></td>
-		</tr>
-	</table>
-	<hr />
+	<!-- BASIC INFO -->
+	<div class="contentblock">
+		<div class="line">
+			<div class="title">IP</div>
+			<div class="content ip ipfield loader"></div>
+		</div>
 
-	<!-- Web Of Trust -->
-	<table>
-		<tr>
-			<td id="wotl">Web of Trust</td><td class="wot" style="width: 19px"></td><td class="expand wotex clickable" style="width: 16px;"><img src="/images/expand.png" alt="+" /></td>
-		</tr><tr>
-			<td colspan="3" class="wotexpanded toexpand">
-				<table style="margin-left: 3px;">
-					<tr>
-						<td id="trust_1"></td><td id="trust_2" style="width: 19px;"></td><td id="trust_3" style="width: 30px;"></td>
-					</tr><tr>
-						<td id="vendor_1"></td><td id="vendor_2"></td><td id="vendor_3"></td>
-					</tr><tr>
-						<td id="privacy_1"></td><td id="privacy_2"></td><td id="privacy_3"></td>
-					</tr><tr>
-						<td id="child_1"></td><td id="child_2"></td><td id="child_3"></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-	</table>
-	<hr />
+		<div style="display: none;" class="line localipdisplay">
+			<div class="title" load-lang="local_ip"></div>
+			<div class="content localip ipfield loader"></div>
+		</div>
 
-	<!-- Alexa page rank -->
-	<table>
-		<tr>
-			<td id="anl">Alexa Rank</td><td class="sor alexa loader"></td>
-		</tr><tr class="dynamicip" style="display: none;">
-			<td colspan="2" load-lang="dynamicip"></td>
-		</tr>
-	</table>
-	<hr />
+		<div style="display: none;" class="line multiip">
+			<div class="longbox" load-lang="multi_domain"></div>
+		</div>
 
-	<!-- Social data -->
-	<div class="spcial" style="display: none;">
-		<table>
-			<tr>
-				<td>Google</td><td class="google sor loader"></td>
-			</tr><tr>
-				<td>Facebook</td><td class="facebook sor loader"></td>
-			</tr><tr>
-				<td>Twitter</td><td class="twitter sor loader"></td>
-			</tr><tr>
-				<td>Reddit</td><td class="reddit sor loader"></td>
-			</tr>
-		</table>
-		<hr />
+		<div class="line">
+			<div class="title" load-lang="hostname">IP</div>
+			<div class="content host"></div>
+		</div>
 	</div>
 
-	<!-- Visit web page -->
-	<div class="links">
-		<a href="#" id="report_button" load-lang="report_risk"></a>
+	<!-- WoT -->
+	<div class="contentblock cbsmall wotblock">
+		<div class="line">
+			<div class="title wotclickable">Web of Trust <div class="expand wotex">&rsaquo;</div></div>
+			<div class="content"></div>
+		</div>
+		<div class="wotc" style="display: none;">
+			<div class="softline">
+				<div class="title" load-lang="trustworthiness"></div>
+				<div class="content loader we1"></div>
+			</div>
+			<div class="softline">
+				<div class="title" load-lang="vendor"></div>
+				<div class="content loader we2"></div>
+			</div>
+			<div class="softline">
+				<div class="title" load-lang="privacy"></div>
+				<div class="content loader we3"></div>
+			</div>
+			<div class="softline">
+				<div class="title" load-lang="childsafety"></div>
+				<div class="content loader we4"></div>
+			</div>
+		</div>
 	</div>
 
-	<div class="report" style="text-align: right; font-size: 10px; float: right;"></div>
-	<div style="clear: both;"></div>
+	<!-- SOCIAL DATA -->
+	<div class="contentblock special" style="display: none;">
+		<div class="line">
+			<div class="title bd-googleplus">Google</div><div class="content google loader"></div>
+		</div>
+		<div class="line">
+			<div class="title bd-facebook">Facebook</div><div class="content facebook loader"></div>
+		</div>
+		<div class="line">
+			<div class="title bd-twitter">Twitter</div><div class="content twitter loader"></div>
+		</div>
+		<div class="line">
+			<div class="title bd-reddit">Reddit</div><div class="content reddit loader"></div>
+		</div>
+	</div>
+
+	<div class="contentblock cbsmall">
+		<div class="line">
+			<div class="neutral reportlink"></div>
+			<div class="neutral infolink"></div>
+		</div>
+	</div>
 </div>
 
 </body>
