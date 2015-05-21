@@ -54,7 +54,7 @@
         "message": "Display older versions"
     },
     "domain_unknown": {
-        "message": "No data could be found for the requested page.\nIt is probable that this is a local or invalid domain."
+        "message": "No data could be found for the requested page. It is probable that this is a local or invalid domain."
     },
     "donated": {
         "message": "$count$ persons have spent already a total amount of $amount$ \u20ac.",
@@ -106,7 +106,7 @@
         "message": "likes"
     },
     "local_ip": {
-        "message": "Local IP address"
+        "message": "Local IP"
     },
     "local_ressource": {
         "message": "The requested document was obtained from the local computer."
@@ -242,7 +242,7 @@
         }
     },
     "_export": {
-        "message": "09.04.2015 11:06"
+        "message": "21.05.2015 20:14"
     },
     "_lang": {
         "message": "English"

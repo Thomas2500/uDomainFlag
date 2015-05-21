@@ -54,7 +54,7 @@
         "message": "Zeige \u00e4ltere Versionen"
     },
     "domain_unknown": {
-        "message": "Es konnten keine Daten zur aufgerufenen Seite ermittelt werden.\nWahrscheinlich handelt es sich hierbei um eine lokale oder ung\u00fcltige Domain."
+        "message": "Es konnten keine Daten zur aufgerufenen Seite ermittelt werden. Wahrscheinlich handelt es sich hierbei um eine lokale oder ung\u00fcltige Domain."
     },
     "donated": {
         "message": "Es haben bereits $count$ Personen gespendet, dass insgesamt $amount$ \u20ac eingebracht hat.",
@@ -106,7 +106,7 @@
         "message": "Gef\u00e4llt mir"
     },
     "local_ip": {
-        "message": "Lokale IP Adresse"
+        "message": "Lokale IP"
     },
     "local_ressource": {
         "message": "Die aufgerufene Datei wurde vom lokalen Computer bezogen."
@@ -242,7 +242,7 @@
         }
     },
     "_export": {
-        "message": "09.04.2015 11:07"
+        "message": "21.05.2015 20:14"
     },
     "_lang": {
         "message": "Deutsch"
