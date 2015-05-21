@@ -46,19 +46,16 @@ $(document).ready(function()
 		$(".spoiler .content").slideToggle("fast");
 	});
 
-	// Get releases from github
-	$.get("https://api.github.com/repos/Thomas2500/uDomainFlag/releases", function (data)
+	// Get releases and changelog
+	$.get(data_protocol + '://' + data_domain + "/changelog", function (data)
 	{
 		$.each(data, function (i, v)
 		{
-			var date = v.published_at.split('T');
-			date = date[0].split('-');
-
 			var html = "<div class=\"item\">";
-			html += "<div class=\"title\"><span class=\"v\"><a href=\""+v.html_url+"\">"+v.tag_name+"</a></span><br />"+date[2]+"."+date[1]+"."+date[0]+"</div>";
+			html += "<div class=\"title\"><span class=\"v\"><a href=\"" + v.url + "\">" + v.version + "</a></span><br />" + v.releasedate + "</div>";
 			html += "<div class=\"option\">";
 
-			var lines = v.body.match(/[^\r\n]+/g);
+			var lines = v.description.match(/[^\r\n]+/g);
 			var ul = 0;
 
 			$.each(lines, function (i2, l)
@@ -78,6 +75,11 @@ $(document).ready(function()
 				{
 					html += "</ul>";
 					ul = 0;
+					html += l.trim() + "<br />";
+				}
+				else
+				{
+					html += l.trim() + "<br />";
 				}
 			});
 			if (ul == 1)
