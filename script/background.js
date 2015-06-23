@@ -59,13 +59,23 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab)
 		udf.formRequest( { tab: tabId, url: tab.url, source: 4 } );
 });
 
-// Get all opened tabs
+// Get all open tabs
 chrome.windows.getAll({populate: true}, function(windows)
 {
+	allTabs(windows);
+});
+
+function allTabs(windows)
+{
+	if (typeof db === "undefined" || typeof db.open !== "undefined")
+	{
+		setTimeout(function(){ allTabs(windows); }, 100);
+		return false;
+	}
 	for (var i = 0; i < windows.length; i++)
 		for (var j = 0; j < windows[i].tabs.length; j++)
 			udf.formRequest( { tab: windows[i].tabs[j].id, url: windows[i].tabs[j].url, source: 3 } );
-});
+}
 
 // Restart extension if a new version is available (after 60 secounds)
 chrome.runtime.onUpdateAvailable.addListener(function(details)
