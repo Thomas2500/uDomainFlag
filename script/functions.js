@@ -569,6 +569,13 @@ var udf = {
 			if (typeof ip === "undefined")
 				return false;
 
+			// Convert to string
+			ip = String(ip);
+
+			// Check if IP is empty
+			if (ip.length == 0)
+				return false;
+
 			// IPv4 - special addresses
 
 			// Special networks (private, RFC)
