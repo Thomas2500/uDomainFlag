@@ -633,6 +633,10 @@ var udf = {
 			if (ip.match(/^fe80\:([0-9A-Fa-f\:\%]*)$/))
 				return { icon: "images/fugue/home-network.png", title: "Private network (Link-Local)", popup: 'internal.html' };
 
+			// Unique Local Unicast (Private network)
+			if (ip.match(/^f(c|d)([0-9A-Fa-f]{1,2}|)\:([0-9A-Fa-f\:\%]*)$/))
+				return { icon: "images/fugue/home-network.png", title: "Private network (Unique Local Unicast)", popup: 'internal.html' };
+
 			// 6to4
 			if (ip.match(/^2002\:([0-9A-Fa-f\:\%]*)$/))
 				return { icon: "images/fugue/network.png", title: "IP 6to4 network", popup: 'special.html' };
