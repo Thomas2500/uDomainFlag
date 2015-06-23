@@ -259,6 +259,11 @@ function writePopup(tab)
 							$('.we1').css('color', '#999999');
 						$('.we1').removeClass("loader");
 					}
+					else
+					{
+						$('.we1').text(_("unknown"));
+						$('.we1').removeClass("loader");
+					}
 
 					if (typeof wot[1] !== "undefined")
 					{
@@ -277,6 +282,11 @@ function writePopup(tab)
 							$('.we2').css('color', '#FF0000');
 						else
 							$('.we2').css('color', '#999999');
+						$('.we2').removeClass("loader");
+					}
+					else
+					{
+						$('.we2').text(_("unknown"));
 						$('.we2').removeClass("loader");
 					}
 
@@ -300,6 +310,11 @@ function writePopup(tab)
 							$('.we3').css('color', '#999999');
 						$('.we3').removeClass("loader");
 					}
+					else
+					{
+						$('.we3').text(_("unknown"));
+						$('.we3').removeClass("loader");
+					}
 
 					if (typeof wot[4] != "undefined")
 					{
@@ -318,6 +333,11 @@ function writePopup(tab)
 							$('.we4').css('color', '#FF0000');
 						else
 							$('.we4').css('color', '#999999');
+						$('.we4').removeClass("loader");
+					}
+					else
+					{
+						$('.we4').text(_("unknown"));
 						$('.we4').removeClass("loader");
 					}
 				}
