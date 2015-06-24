@@ -273,206 +273,176 @@ var udf = {
 		}
 	},
 
-	domainIPinfo: function(hostname, callback)
-	{
-		try
-		{
-			db.domain.query().filter('domain', hostname).execute().then(function(en)
-			{
-				if ($.isEmptyObject(en) === false)
-				{
-					return callback(en[0]);
+	domainIPinfo: function(hostname, callback) {
+		db.domain.query().filter('domain', hostname).execute().then(function(en) {
+			if ($.isEmptyObject(en) === false) {
+				sessionStorage.removeItem(hostname + "_domainIPinfo");
+				return callback(en[0]);
+			}
+			if (typeof sessionStorage[hostname + "_domainIPinfo"] !== "undefined" || sessionStorage[hostname + "_domainIPinfo"] < Math.round(new Date().getTime() / 1000) - 60)	{
+				setTimeout(function(){ udf.domainIPinfo(hostname, callback); }, 400);
+				return false;
+			}
+			sessionStorage[hostname + "_domainIPinfo"] = Math.round(new Date().getTime() / 1000);
+			
+			$.post(data_protocol + "://" + data_domain + "/domain_ip.json", {key: securityKey, domain: hostname }, function(data) {
+				if (typeof data === "undefined" || typeof data.ok === "undefined") {
+					sessionStorage.removeItem(hostname + "_domainIPinfo");
+					return callback(false);
 				}
-				
-				$.post(data_protocol + "://" + data_domain + "/domain_ip.json", {key: securityKey, domain: hostname }, function(data) {
-					if (typeof data === "undefined" || typeof data.ok === "undefined")
-						return callback(false);
 
-					db.domain.add({
-						domain: hostname,
-						ip: data.ip,
-						multiip: parseInt(data.multiip),
-						internal: -1,
-						time: Math.round(new Date().getTime() / 1000),
-						incognito: chrome.extension.inIncognitoContext,
-						ok: parseInt(data.ok)
-					}).then( function ( item ){
-						return callback( {domain: hostname, ip: data.ip, multiip: parseInt(data.multiip), internal: -1, time: Math.round(new Date().getTime() / 1000), incognito: chrome.extension.inIncognitoContext, ok: parseInt(data.ok)} );
-					});
-				}, "json");
-				
-			});
-		}
-		catch (e)
-		{
-			return debug.track(e, "c:domainIPinfo");
-		}
+				db.domain.add({
+					domain: hostname,
+					ip: data.ip,
+					multiip: parseInt(data.multiip),
+					internal: -1,
+					time: Math.round(new Date().getTime() / 1000),
+					incognito: chrome.extension.inIncognitoContext,
+					ok: parseInt(data.ok)
+				}).then( function ( item ){
+					sessionStorage.removeItem(hostname + "_domainIPinfo");
+					return callback( {domain: hostname, ip: data.ip, multiip: parseInt(data.multiip), internal: -1, time: Math.round(new Date().getTime() / 1000), incognito: chrome.extension.inIncognitoContext, ok: parseInt(data.ok)} );
+				});
+			}, "json");
+		});
 	},
 
 	getLocalIP: function(hostname, ip, callback)
 	{
-		try
-		{
-			// Check if ip is stored in sessionStorage
-			if (typeof ip === "undefined" || ip === "" || ip === 0 || ip === null)
-				if (typeof sessionStorage[hostname] !== "undefined")
-				{
-					ip = sessionStorage[hostname];
-					delete sessionStorage[hostname];
-				}
-				else
-					ip = "";
-
-			db.localip.query().filter('domain', hostname).execute().then(function(en)
-			{
-				if ($.isEmptyObject(en) === false)
-				{
-					if (typeof en[0].ip !== "undefined" || ip !== "" && en[0].ip !== ip)
-						return callback(en[0]);
-					else
-						db.localip.remove( en[0].id ).then( function ( key ) {
-							return getLocalIP(hostname, ip, callback);
-						} );
-					return;
-				}				
-
-				if (typeof ip !== "undefined" && ip !== "")
-				{
-					db.localip.add({
-						domain: hostname,
-						ip: ip,
-
-						time: Math.round(new Date().getTime() / 1000),
-						incognito: chrome.extension.inIncognitoContext,
-						ok: 1
-					}).then( function(item) {
-						return callback( {domain: hostname, ip: ip, time: Math.round(new Date().getTime() / 1000), incognito: chrome.extension.inIncognitoContext, ok: 1 } );
-					});
-				}
-				else
-				{
-					return callback(false);
-				}
-			});
+		// Check if ip is stored in sessionStorage
+		if (typeof ip === "undefined" || ip === "" || ip === 0 || ip === null) {
+			if (typeof sessionStorage[hostname] !== "undefined") {
+				ip = sessionStorage[hostname];
+				sessionStorage.removeItem(hostname);
+			} else {
+				ip = "";
+			}
 		}
-		catch (e)
-		{
-			return debug.track(e, "c:getLocalIP");
-		}
+
+		db.localip.query().filter('domain', hostname).execute().then(function(en) {
+			if ($.isEmptyObject(en) === false) {
+				if (typeof en[0].ip !== "undefined" || ip !== "" && en[0].ip !== ip) {
+					return callback(en[0]);
+				} else {
+					db.localip.remove( en[0].id ).then( function ( key ) {
+						return getLocalIP(hostname, ip, callback);
+					} );
+				}
+				return;
+			}
+
+			if (typeof ip !== "undefined" && ip !== "")	{
+				db.localip.add({
+					domain: hostname,
+					ip: ip,
+
+					time: Math.round(new Date().getTime() / 1000),
+					incognito: chrome.extension.inIncognitoContext,
+					ok: 1
+				}).then( function(item) {
+					return callback( {domain: hostname, ip: ip, time: Math.round(new Date().getTime() / 1000), incognito: chrome.extension.inIncognitoContext, ok: 1 } );
+				});
+			} else {
+				return callback(false);
+			}
+		});
 	},
 
 	getIPinfo: function(ip, callback)
 	{
-		try
-		{
-			db.ip.query().filter('ip', ip).execute().then(function(en)
-			{
-				if ($.isEmptyObject(en) === false)
-				{
-					return callback(en[0]);
+		db.ip.query().filter('ip', ip).execute().then(function(en) {
+			if ($.isEmptyObject(en) === false) {
+				sessionStorage.removeItem(ip + "_getIPinfo");
+				return callback(en[0]);
+			}
+			if (typeof sessionStorage[ip + "_getIPinfo"] !== "undefined" || sessionStorage[ip + "_getIPinfo"] < Math.round(new Date().getTime() / 1000) - 60)	{
+				setTimeout(function(){ udf.getIPinfo(ip, callback); }, 400);
+				return false;
+			}
+			sessionStorage[ip + "_getIPinfo"] = Math.round(new Date().getTime() / 1000);
+
+			$.post(data_protocol + "://" + data_domain + "/ip.json", {key: securityKey, ip: ip }, function(data) {
+				if (typeof data === "undefined" || typeof data.ok === "undefined") {
+					sessionStorage.removeItem(ip + "_getIPinfo");
+					return callback(false);
 				}
 
-				$.post(data_protocol + "://" + data_domain + "/ip.json", {key: securityKey, ip: ip }, function(data)
-				{
-					if (typeof data === "undefined" || typeof data.ok === "undefined")
-						return callback(false);
-
-					db.ip.add({
-						ip: ip,
-						internal: data.internal,
-						country: data.country,
-						region: data.region,
-						city: data.city,
-						shortcountry: data.shortcountry,
-						hostname: data.hostname,
-						time: Math.round(new Date().getTime() / 1000),
-						incognito: chrome.extension.inIncognitoContext,
-						ok: parseInt(data.ok)
-					}).then( function ( item ){
-						return callback( {ip: data.ip, internal: -1, country: data.country, region: data.region, city: data.city, shortcountry: data.shortcountry, hostname: data.hostname, time: Math.round(new Date().getTime() / 1000), incognito: chrome.extension.inIncognitoContext, ok: parseInt(data.ok)} );
-					});
-				}, "json");
-			});
-		}
-		catch (e)
-		{
-			return debug.track(e, "c:getIPinfo");
-		}
+				db.ip.add({
+					ip: ip,
+					internal: data.internal,
+					country: data.country,
+					region: data.region,
+					city: data.city,
+					shortcountry: data.shortcountry,
+					hostname: data.hostname,
+					time: Math.round(new Date().getTime() / 1000),
+					incognito: chrome.extension.inIncognitoContext,
+					ok: parseInt(data.ok)
+				}).then( function ( item ){
+					sessionStorage.removeItem(ip + "_getIPinfo");
+					return callback( {ip: data.ip, internal: -1, country: data.country, region: data.region, city: data.city, shortcountry: data.shortcountry, hostname: data.hostname, time: Math.round(new Date().getTime() / 1000), incognito: chrome.extension.inIncognitoContext, ok: parseInt(data.ok)} );
+				});
+			}, "json");
+		});
 	},
 
 	getDomaininfo: function(hostname, callback)
 	{
-		try
-		{
-			db.domainsocial.query().filter('domain', hostname).execute().then(function(en)
-			{
-				if ($.isEmptyObject(en) === false)
-				{
-					return callback(en[0]);
+		db.domainsocial.query().filter('domain', hostname).execute().then(function(en) {
+			if ($.isEmptyObject(en) === false) {
+				return callback(en[0]);
+			}
+
+			$.post(data_protocol + "://" + data_domain + "/domaininfo.json", {key: securityKey, domain: hostname }, function(data) {
+
+				if (typeof data === "undefined" || typeof data.ok === "undefined") {
+					return callback(false);
 				}
 
-				$.post(data_protocol + "://" + data_domain + "/domaininfo.json", {key: securityKey, domain: hostname }, function(data) {
+				db.domainsocial.add({
+					domain: hostname,
+					wot: JSON.stringify(data.wot),
+					alexa: parseInt(data.alexa),
+					risk: parseInt(data.risk),
+					dyn: parseInt(data.dyn),
 
-					if (typeof data === "undefined" || typeof data.ok === "undefined")
-						return callback(false);
-
-					db.domainsocial.add({
-						domain: hostname,
-						wot: JSON.stringify(data.wot),
-						alexa: parseInt(data.alexa),
-						risk: parseInt(data.risk),
-						dyn: parseInt(data.dyn),
-
-						time: Math.round(new Date().getTime() / 1000),
-						incognito: chrome.extension.inIncognitoContext,
-						ok: parseInt(data.ok)
-					}).then( function ( item ){
-						return callback( {domain: hostname, wot: JSON.stringify(data.wot), alexa: parseInt(data.alexa), risk: parseInt(data.risk), dyn: parseInt(data.dyn), time: Math.round(new Date().getTime() / 1000), incognito: chrome.extension.inIncognitoContext, ok: parseInt(data.ok)} );
-					});
-				}, "json");
-			});
-		}
-		catch (e)
-		{
-			return debug.track(e, "c:getDomaininfo");
-		}
+					time: Math.round(new Date().getTime() / 1000),
+					incognito: chrome.extension.inIncognitoContext,
+					ok: parseInt(data.ok)
+				}).then( function ( item ){
+					return callback( {domain: hostname, wot: JSON.stringify(data.wot), alexa: parseInt(data.alexa), risk: parseInt(data.risk), dyn: parseInt(data.dyn), time: Math.round(new Date().getTime() / 1000), incognito: chrome.extension.inIncognitoContext, ok: parseInt(data.ok)} );
+				});
+			}, "json");
+		});
 	},
 
 	getDomainSocial: function(hostname, callback)
 	{
-		try
-		{
-			db.domaininfo.query().filter('url', hostname).execute().then(function(en)
-			{
-				if ($.isEmptyObject(en) === false)
-				{
-					return callback(en);
+		db.domaininfo.query().filter('url', hostname).execute().then(function(en) {
+			if ($.isEmptyObject(en) === false) {
+				return callback(en);
+			}
+
+			$.post(data_protocol + "://" + data_domain + "/domainsocial.json", {key: securityKey, url: hostname }, function(data) {
+
+				if (typeof data === "undefined" || typeof data.ok === "undefined") {
+					return callback(false);
 				}
 
-				$.post(data_protocol + "://" + data_domain + "/domainsocial.json", {key: securityKey, url: hostname }, function(data) {
-
-					if (typeof data === "undefined" || typeof data.ok === "undefined")
-						return callback(false);
-
-					db.domaininfo.add({
-						url: hostname,
-						google: parseInt(data.google),
-						facebook: parseInt(data.facebook),
-						twitter: parseInt(data.twitter),
-						reddit: parseInt(data.reddit),
-						time: Math.round(new Date().getTime() / 1000),
-						incognito: chrome.extension.inIncognitoContext,
-						ok: parseInt(data.ok)
-					}).then( function ( item ){
-						return callback( {url: hostname, google: parseInt(data.google), facebook: parseInt(data.facebook), twitter: parseInt(data.twitter), reddit: parseInt(data.reddit), time: Math.round(new Date().getTime() / 1000), incognito: chrome.extension.inIncognitoContext, ok: parseInt(data.ok)} );
-					});
-				}, "json");
-			});
-		}
-		catch (e)
-		{
-			return debug.track(e, "c:getDomainSocial");
-		}
+				db.domaininfo.add({
+					url: hostname,
+					google: parseInt(data.google),
+					facebook: parseInt(data.facebook),
+					twitter: parseInt(data.twitter),
+					reddit: parseInt(data.reddit),
+					time: Math.round(new Date().getTime() / 1000),
+					incognito: chrome.extension.inIncognitoContext,
+					ok: parseInt(data.ok)
+				}).then( function ( item ){
+					return callback( {url: hostname, google: parseInt(data.google), facebook: parseInt(data.facebook), twitter: parseInt(data.twitter), reddit: parseInt(data.reddit), time: Math.round(new Date().getTime() / 1000), incognito: chrome.extension.inIncognitoContext, ok: parseInt(data.ok)} );
+				});
+			}, "json");
+		});
 	},
 
 	isSpecial: function(tab)
