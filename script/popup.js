@@ -71,8 +71,6 @@ function writePopup(tab)
 				appendForm('url', $(".reportlink a").attr("hidden-weburl"));
 				appendForm('image', image);
 
-				console.log(form);
-
 				url += encodeURIComponent(form.outerHTML);
 				url += encodeURIComponent("Please wait.<br />Redirecting you to " + lookup_domain + " ...");
 				url += encodeURIComponent('<script>document.forms[0].submit();</script>');
@@ -83,22 +81,65 @@ function writePopup(tab)
 		// Infolink
 		$('.infolink').append('<a target="_blank" href="' + lookup_protocol + '://' + lookup_domain + '/l/' + domain + '"><img src="/images/svg/info.svg" alt="i" /> ' + _("more_info") + '</a>');
 
-		udf.domainIPinfo(domain, function (dii)
-		{
+		udf.domainIPinfo(domain, function (dii)	{
 			// IP, fetched from server
-			if (dii.ip === 0)
+			if (dii.ip === 0) {
 				$(".ip").text(_("unknown"));
-			else
+			} else {
 				$(".ip").text(dii.ip);
+			}
 			$(".ip").removeClass("loader");
 			
 			// DNS contains multiple IPs
-			if (dii.multiip !== 0)
+			if (dii.multiip !== 0) {
 				$(".multiip").slideDown('fast');
+			}
 
 			// Difference local ip / remote ip
 			if ($(".localip").text().trim() !== "" && $(".localip").text().trim() !== dii.ip)
 				$(".localipdisplay").slideDown('fast');
+
+			// Color the box to match warning
+			if (dii.risk == 1) {
+				$(".container").removeClass("greenbox");
+				$(".container").addClass("graybox");
+			} else if (dii.risk == 2) {
+				$(".container").removeClass("greenbox");
+				$(".container").addClass("yellowbox");
+			} else if (dii.risk == 3) {
+				$(".container").removeClass("greenbox");
+				$(".container").addClass("redbox");
+			}
+
+			// Display warning message
+			var msg;
+			switch (dii.risktype) {
+				case 0:
+					msg = "possible spam";
+					break;
+				case 1:
+					msg = "phishing";
+					break;
+				case 2:
+					msg = "malware";
+					break;
+				case 3:
+					msg = "botnet C&C";
+					break;
+				case 4:
+					msg = "spam redirect";
+				case 5:
+				default:
+					msg = "";
+			}
+			if (typeof msg !== "undefined" && msg.length > 0) {
+				// Only one space
+				if (msg.indexOf(" ") !== -1 && msg.indexOf(" ", msg.indexOf(" ") + 1) === -1) {
+					msg = msg.replace(" ", "<br />");
+				}
+				$(".reason").html(msg.toUpperCase());
+				$(".warning").slideDown('fast');
+			}
 		});
 
 		udf.getLocalIP(domain, null, function (localip)
@@ -295,7 +336,6 @@ function writePopup(tab)
 						var percent = parseInt(wot[2]);
 						var wotimg = getWoTid(wot, 2);
 						$('.we3').text(percent + "%");
-						console.log(wotimg);
 						if (wotimg == 5)
 							$('.we3').css('color', '#4CAF50');
 						else if (wotimg == 4)
@@ -355,24 +395,6 @@ function writePopup(tab)
 			if (dominfo.dyn !== 0)
 				$(".dynamicip").slideDown('fast');
 
-			// Risk -> near future
-			if (dominfo.risk !== 0)
-			{
-				/*
-				-1 	-> Good
-				0 	-> Nothing / No data
-				1 	-> Warning
-				2 	-> Bad
-				*/
-				// class "w_msg"
-				if (dominfo.risk == 2)
-				{
-					$(".container").removeClass("greenbox");
-					$(".container").addClass("redbox");
-
-					// IF REASON FOUND, WRITE INTO .reason AND MAKE .warning display TO table FROM none.
-				}
-			}
 		});
 	}
 	catch (e)

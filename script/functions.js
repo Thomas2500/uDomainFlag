@@ -86,6 +86,8 @@ db.open( {
 				ip: { },					// Primatry IP (fetched from uDomainFlag server)
 				multiip: { },				// More than 1 ip from DNS
 				internal: { },				// Internal domain (e.g. 10.0.0.138)
+				risk: { },					// [int] Risk index
+				risktype: { },				// [int] Type index of risk
 				
 				time: { },					// Time of last change/online fetch
 				incognito: { },				// Incognito, delete unused/session close
@@ -128,7 +130,6 @@ db.open( {
 				domain: { unique: true },	// example.com
 				wot: { },					// [JSON Array]
 				alexa: { },					// [int] Place
-				risk: { },					// [int] Risk index
 				dyn: { },					// [bool] Dynamic IP with fast DNS change
 
 				time: { },					// Time of last change/online fetch
@@ -171,45 +172,50 @@ var udf = {
 	setFlag: function (data)
 	{
 		/*
-			{ tab: obj [, risk: num][, popup: "target.html"][, title: "Title"] }
+			{ tab: obj [, risk: { level: 0, type: 1}][, popup: "target.html"][, title: "Title"] }
 			
 		*/
-		try
-		{
+		try	{
 			// Check if data is correct
-			if (typeof data !== "object")
+			if (typeof data !== "object") {
 				throw new Error("First argument must be an object");
+			}
 
 			// check if tab is available
-			if (typeof data.tab === "undefined")
+			if (typeof data.tab === "undefined") {
 				throw new Error("Object.tab must be specified");
+			}
 
 			// Get/Find icon
 			var icon = "images/logo-16x16.png";
-			if (typeof data.icon !== "undefined" && data.icon !== "")
-			{
-				if (data.icon.length === 2 || data.icon === "null")
+			if (typeof data.icon !== "undefined" && data.icon !== "") {
+				if (data.icon.length === 2 || data.icon === "null") {
 					icon = "images/flag/" + data.icon + ".png";
-				else
+				} else {
 					icon = data.icon;
+				}
 			}
 
 			// Get risk number
 			var risk = 0;
-			if (typeof data.risk !== "undefined")
-				risk = parseInt(data.risk);
+			if (typeof data.risk !== "undefined" && typeof data.risk.level !== "undefined") {
+				risk = parseInt(data.risk.level);
+			}
 
 			// Get risk icon
-			switch (risk)
-			{
+			switch (risk) {
+				case -1:
+					riskicon = "images/fugue/tick-circle.png";
+					break;
 				case 1:
-					risk = "images/fugue/exclamation.png";
+					riskicon = "images/fugue/question-white.png";
 					break;
-
 				case 2:
-					risk = "images/fugue/exclamation_red.png";
+					riskicon = "images/fugue/exclamation.png";
 					break;
-
+				case 3:
+					riskicon = "images/fugue/exclamation_red.png";
+					break;
 				case 0:
 				default:
 					risk = 0;
@@ -217,17 +223,18 @@ var udf = {
 			}
 
 			// No risk detected
-			if (risk === 0)
-			{
+			if (risk === 0)	{
 				chrome.pageAction.setIcon({ tabId: data.tab, path: icon });
 
-				if (typeof data.popup !== "undefined")
+				if (typeof data.popup !== "undefined") {
 					chrome.pageAction.setPopup({ tabId: data.tab, popup: data.popup });
-				else
+				} else {
 					chrome.pageAction.setPopup({ tabId: data.tab, popup: 'popup.html' });
+				}
 
-				if (typeof data.title !== "undefined")
+				if (typeof data.title !== "undefined") {
 					chrome.pageAction.setTitle({ tabId: data.tab, title: data.title });
+				}
 
 				return chrome.pageAction.show(data.tab);
 			}
@@ -241,25 +248,24 @@ var udf = {
 			ctx.clearRect(0,0,19,19);
 
 			var image = new Image();
-			image.onload = function()
-			{
+			image.onload = function() {
 				ctx.drawImage(image, Math.floor((19 - image.width)/3)-1, Math.floor((19 - image.height) / 2)-2);
 				var image2 = new Image();
-				image2.onload = function()
-				{
-					paddingx = 19-14;
-					paddingy = 19-13;
-					ctx.drawImage(image2, paddingx, paddingy, 14, 14);
+				image2.onload = function() {
+					paddingx = 19-12;
+					paddingy = 19-14;
+					ctx.drawImage(image2, paddingx, paddingy, 12, 12);
 					chrome.pageAction.setIcon({ tabId: data.tab, imageData: ctx.getImageData(0, 0, 19, 19) });
-					debug.warn(runtime.lastError);
 
-					if (typeof data.popup !== "undefined")
+					if (typeof data.popup !== "undefined") {
 						chrome.pageAction.setPopup({ tabId: data.tab, popup: data.popup });
-					else
+					} else {
 						chrome.pageAction.setPopup({ tabId: data.tab, popup: 'popup.html' });
+					}
 
-					if (typeof data.title !== "undefined")
+					if (typeof data.title !== "undefined") {
 						chrome.pageAction.setTitle({ tabId: data.tab, title: data.title });
+					}
 
 					return chrome.pageAction.show(data.tab);
 				}
@@ -267,8 +273,7 @@ var udf = {
 			};
 			image.src = icon;
 		}
-		catch (e)
-		{
+		catch (e) {
 			debug.track(e, "c:setFlag");
 		}
 	},
@@ -296,6 +301,9 @@ var udf = {
 					ip: data.ip,
 					multiip: parseInt(data.multiip),
 					internal: -1,
+					risk: parseInt(data.risk.level),
+					risktype: parseInt(data.risk.type),
+
 					time: Math.round(new Date().getTime() / 1000),
 					incognito: chrome.extension.inIncognitoContext,
 					ok: parseInt(data.ok)
@@ -669,73 +677,76 @@ var udf = {
 			if (typeof data.ip !== "undefined")
 				ip = data.ip;
 
-			udf.domainIPinfo(domain, function (domip)
-			{
-				if (typeof domip.ip !== "undefined" && domip.ip !== 0)
-				{
-					udf.getIPinfo(domip.ip, function (ipinfo)
-					{
-						// Check if resolved ip is special (internal, tor, ...)
+			udf.domainIPinfo(domain, function (domip) {
+				if (typeof domip.risk !== "undefined") {
+					$.extend( true, data, { risk: { level: parseInt(domip.risk), risktype: parseInt(domip.risktype) }} );
+				}
+				if (typeof domip.ip !== "undefined" && domip.ip !== 0) {
+					udf.getIPinfo(domip.ip, function (ipinfo) {
+						// Check if resolved ip is special (internal, RFC, ...)
 						special = udf.isInternal(ipinfo.ip);
-						if (special !== false)
+						if (special !== false) {
 							return udf.setFlag($.extend({}, special, data));
-						else	// Domain got resolved with an ip
-							udf.getLocalIP(domain, ip, function (storedinfo)
-							{
-								if (storedinfo !== false)
-								{
+						} else {	// Domain got resolved with an ip
+							udf.getLocalIP(domain, ip, function (storedinfo) {
+								if (storedinfo !== false) {
 									// Check if local IP is different to remote ip
-									if (storedinfo.ip !== domip.ip && storedinfo.ip !== null)
-									{
+									if (storedinfo.ip !== domip.ip && storedinfo.ip !== null) {
 										// Check if local ip is a private ip
 										special = udf.isInternal(storedinfo.ip);
-										if (special !== false)
+										if (special !== false) {
 											return udf.setFlag($.extend({}, special, data));
+										}
 									}
 								}
 
 								var title = "";
 
-								if (typeof ipinfo.country !== "undefined")
+								if (typeof ipinfo.country !== "undefined") {
 									title += ipinfo.country + "\n";
-								else
+								} else {
 									title += ipinfo.shortcountry + "\n";
+								}
 
-								if (typeof ipinfo.region !== "undefined")
+								if (typeof ipinfo.region !== "undefined") {
 									title += ipinfo.region + "\n";
+								}
 
-								if (typeof ipinfo.city !== "undefined")
+								if (typeof ipinfo.city !== "undefined") {
 									title += ipinfo.city;
+								}
 
 								return udf.setFlag($.extend({}, data, { icon: ipinfo.shortcountry.toLowerCase(), title: title }));
 							});
+						}
 					});
-				}
-				else
-				{
-					udf.getLocalIP(domain, ip, function (storedinfo)
-					{
-						if (storedinfo === false)
+				} else {
+					udf.getLocalIP(domain, ip, function (storedinfo) {
+						if (storedinfo === false) {
 							return udf.setFlag($.extend({}, { icon: 'images/fugue/question-white.png', title: 'Unknown location', popup: 'special.html' }, data));
+						}
 						
 						special = udf.isInternal(storedinfo.ip);
-						if (special !== false)
+						if (special !== false) {
 							return udf.setFlag($.extend({}, special, data));
+						}
 
-						udf.getIPinfo(storedinfo.ip, function (ipinfo)
-						{
+						udf.getIPinfo(storedinfo.ip, function (ipinfo) {
 
 							var title = "";
-							if (typeof ipinfo.country !== "undefined")
+							if (typeof ipinfo.country !== "undefined") {
 								title += ipinfo.country + "\n";
-							else
+							} else {
 								ipinfo.shortcountry;
+							}
 
-							if (typeof ipinfo.region !== "undefined")
+							if (typeof ipinfo.region !== "undefined") {
 								title += ipinfo.region + "\n";
+							}
 
-							if (typeof ipinfo.city !== "undefined")
+							if (typeof ipinfo.city !== "undefined") {
 								title += ipinfo.city;
+							}
 
 							return udf.setFlag($.extend({}, data, { icon: ipinfo.shortcountry.toLowerCase(), title: title }));
 						});

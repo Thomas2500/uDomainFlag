@@ -23,6 +23,7 @@ body {
 .header .warning .reason {
 	display: table-cell;
 	vertical-align: middle;
+	text-align: right;
 }
 .header .warning .image {
 	display: table-cell;
@@ -187,6 +188,20 @@ body {
 .information {
 	color: #999999;
 	text-align: center;
+}
+
+/* YELLOW BOX */
+.yellowbox > .header {
+	background-color: #FFA000;
+}
+.yellowbox > .header > .country2 {
+	color: #000000;
+}
+.yellowbox > .contentblock > .line > .title {
+	color: #F59B00;
+}
+.yellowbox > .contentblock > .line > .content {
+	color: #FFA000;
 }
 
 /* RED BOX */
