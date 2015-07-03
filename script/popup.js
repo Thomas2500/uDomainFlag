@@ -13,10 +13,9 @@ var getCurrentTab = function (callback) {
 // Load data if ressources are loaded
 $(function(){
 	getCurrentTab(function(data){
-		if (localStorage["popupOpenWebsite"] !== "true")
+		if (localStorage["popupOpenWebsite"] !== "true") {
 			return writePopup(data);
-		else
-		{
+		} else {
 			// Open informations at domainflag.unterhaltungsbox.com
 			chrome.tabs.create({ url: lookup_protocol + "://" + lookup_domain + "/l/" + parseUrl(data.url) });
 			return;
@@ -26,23 +25,27 @@ $(function(){
 
 var ip = "";
 
-function writePopup(tab)
-{
+function writePopup(tab) {
 	// Check if IndexedDB is open
-	if (typeof db === "undefined" || typeof db.open !== "undefined")
-	{
+	if (typeof db === "undefined" || typeof db.open !== "undefined") {
 		// Delaying start to initiate database 
 		setTimeout(function(){ writePopup(tab); }, 100);
 		return false;
 	}
 
-	try
-	{
+	try {
+		if (typeof tab.incognito !== "undefined" && tab.incognito == true) {
+			var inc = true;
+		} else {
+			var inc = false;
+		}
+
 		var now = Math.round(new Date().getTime() / 1000);
 		var domain = parseUrl(tab.url);
 
-		if (domain === false || domain === "" || domain === "false")
+		if (domain === false || domain === "" || domain === "false") {
 			return self.location.href = "special.html";
+		}
 
 		// Reportlink
 		$('.reportlink').append('<a href="#"><img src="/images/svg/warning.svg" alt="!" /> ' + _("report_risk") + '</a>')
@@ -124,7 +127,7 @@ function writePopup(tab)
 					msg = "malware";
 					break;
 				case 3:
-					msg = "botnet C&C";
+					msg = "botnet Command\nand Control";
 					break;
 				case 4:
 					msg = "spam redirect";
@@ -136,282 +139,276 @@ function writePopup(tab)
 				// Only one space
 				if (msg.indexOf(" ") !== -1 && msg.indexOf(" ", msg.indexOf(" ") + 1) === -1) {
 					msg = msg.replace(" ", "<br />");
+				} else if (msg.indexOf("\n") !== -1) {
+					msg = msg.replace("\n", "<br />");
 				}
 				$(".reason").html(msg.toUpperCase());
 				$(".warning").slideDown('fast');
 			}
-		});
+		}, { incognito: inc });
 
-		udf.getLocalIP(domain, null, function (localip)
-		{
+		udf.getLocalIP(domain, null, function (localip) {
 			// Get local ip, fetched from client
-			if (localip.ip === 0 || localip.ip === null)
+			if (localip.ip === 0 || localip.ip === null) {
 				$(".localip").text(_("unknown"));
-			else
+			} else {
 				$(".localip").text(localip.ip);
+			}
 			$(".localip").removeClass("loader");
 
 			// Difference local ip / remote ip
-			if ($(".ip").text().trim() !== "" && $(".ip").text().trim() !== localip.ip)
+			if ($(".ip").text().trim() !== "" && $(".ip").text().trim() !== localip.ip) {
 				$(".localipdisplay").slideDown('fast');
+			}
 
-			if (typeof localip.ip === "undefined")
-			{
-				udf.domainIPinfo(domain, function (dii)
-				{
-					udf.getIPinfo(dii.ip, function (ipinfo)
-					{
+			if (typeof localip.ip === "undefined") {
+				udf.domainIPinfo(domain, function (dii) {
+					udf.getIPinfo(dii.ip, function (ipinfo) {
 						// Hostname
-						if (ipinfo.hostname === "")
+						if (ipinfo.hostname === ""){
 							$(".host").text(_("unknown"));
-						else
+						} else {
 							$(".host").text(ipinfo.hostname);
+						}
 						$(".host").removeClass("loader");
 
 						// Country
-						if (typeof ipinfo.country === "undefined" || ipinfo.country === "")
+						if (typeof ipinfo.country === "undefined" || ipinfo.country === ""){
 							$(".country").text(_("unknown"));
-						else
+						} else {
 							$(".country").text(ipinfo.country);
+						}
 						$(".country").removeClass("loader");
 
 						// Region and City
 						var tx = "";
-						if (typeof ipinfo.region !== "undefined" || ipinfo.region !== "")
+						if (typeof ipinfo.region !== "undefined" || ipinfo.region !== "") {
 							tx = ipinfo.region;
+						}
 
-						if (typeof ipinfo.city !== "undefined" || ipinfo.city !== "")
-							if (tx === "")
+						if (typeof ipinfo.city !== "undefined" || ipinfo.city !== "") {
+							if (tx === "") {
 								tx = ipinfo.city;
-							else if (tx !== ipinfo.city)
+							} else if (tx !== ipinfo.city) {
 								tx += ", " + ipinfo.city;
+							}
+						}
 
-						if (tx === "")
+						if (tx === "") {
 							$(".country2").text(_("unknown"));
-						else
+						} else {
 							$(".country2").text(tx);
+						}
 						$(".country2").removeClass("loader");
-					});
-				});
-			}
-			else
+					}, { incognito: inc });
+				}, { incognito: inc });
+			} else {
 				domip = localip.ip;
+			}
 
-			udf.getIPinfo(domip, function (ipinfo)
-			{
+			udf.getIPinfo(domip, function (ipinfo) {
 				// Hostname
-				if (ipinfo.hostname === "")
+				if (ipinfo.hostname === "") {
 					$(".host").text(_("unknown"));
-				else
+				} else {
 					$(".host").text(ipinfo.hostname);
+				}
 				$(".host").removeClass("loader");
 
 				// Country
-				if (typeof ipinfo.country === "undefined" || ipinfo.country === "")
+				if (typeof ipinfo.country === "undefined" || ipinfo.country === "") {
 					$(".country").text(_("unknown"));
-				else
+				} else {
 					$(".country").text(ipinfo.country);
+				}
 				$(".country").removeClass("loader");
 
 				// Region and City
 				var tx = "";
-				if (typeof ipinfo.region !== "undefined" || ipinfo.region !== "")
+				if (typeof ipinfo.region !== "undefined" || ipinfo.region !== "") {
 					tx = ipinfo.region;
+				}
 
-				if (typeof ipinfo.city !== "undefined" || ipinfo.city !== "")
-					if (tx === "")
+				if (typeof ipinfo.city !== "undefined" || ipinfo.city !== "") {
+					if (tx === "") {
 						tx = ipinfo.city;
-					else if (tx !== ipinfo.city)
+					} else if (tx !== ipinfo.city) {
 						tx += ", " + ipinfo.city;
+					}
+				}
 
-				if (tx === "")
+				if (tx === "") {
 					$(".country2").text(_("unknown"));
-				else
+				} else {
 					$(".country2").text(tx);
+				}
 				$(".country2").removeClass("loader");
-			});
+			}, { incognito: inc });
 
-		});
+		}, { incognito: inc });
 
-		if (socialData !== "false")
-		{
+		if (socialData !== "false") {
 			$(".special").show();
-			udf.getDomainSocial(tab.url, function (social)
-			{
+			udf.getDomainSocial(tab.url, function (social) {
 				// Google +1
-				if (typeof social.google === "undefined")
+				if (typeof social.google === "undefined") {
 					$(".google").html("<span class=\"sccontent\">0</span>" + " +1");
-				else
+				} else {
 					$(".google").html("<span class=\"sccontent\">" + number_format(social.google, 0, null, " ") + "</span> +1");
+				}
 				$(".google").removeClass("loader");
 
 				// Facebook likes
-				if (typeof social.facebook === "undefined")
+				if (typeof social.facebook === "undefined") {
 					$(".facebook").html("<span class=\"sccontent\">" + "0</span> " + _("likes"));
-				else if (social.facebook === 1)
+				} else if (social.facebook === 1) {
 					$(".facebook").html("<span class=\"sccontent\">" + "1</span> " + _("like"));
-				else
+				} else {
 					$(".facebook").html("<span class=\"sccontent\">" + number_format(social.facebook, 0, null, " ") + "</span> " + _("likes"));
+				}
 				$(".facebook").removeClass("loader");
 
 				// Twitter tweets
-				if (typeof social.twitter === "undefined")
+				if (typeof social.twitter === "undefined") {
 					$(".twitter").html("<span class=\"sccontent\">" + "0</span> " + _("tweets"));
-				else if (social.twitter === 1)
+				} else if (social.twitter === 1) {
 					$(".twitter").html("<span class=\"sccontent\">" + "1</span> " + _("tweet"));
-				else
+				} else {
 					$(".twitter").html("<span class=\"sccontent\">" + number_format(social.twitter, 0, null, " ") + "</span> " + _("tweets"));
+				}
 				$(".twitter").removeClass("loader");
 
 				// Reddit ?shares?
-				if (typeof social.reddit === "undefined")
+				if (typeof social.reddit === "undefined") {
 					$(".reddit").html("<span class=\"sccontent\">" + "0</span>");
-				else
+				} else {
 					$(".reddit").html("<span class=\"sccontent\">" + number_format(social.reddit, 0, null, " ") + "</span>");
+				}
 				$(".reddit").removeClass("loader");
-			});
+			}, { incognito: inc });
 		}
 
-		udf.getDomaininfo(domain, function (dominfo)
-		{
+		udf.getDomaininfo(domain, function (dominfo) {
 			// Web Of Trust - WoT
 			var wot = $.parseJSON(dominfo.wot);
-			if (!$.isEmptyObject(wot))
-			{
+			if (!$.isEmptyObject(wot)) {
 				var wotimg = getWoTid(wot, 0);
-				if (wotimg != "0")
-				{
-					if (typeof wot[0] !== "undefined")
-					{
+				if (wotimg != "0") {
+					if (typeof wot[0] !== "undefined") {
 						var percent = parseInt(wot[0]);
 						var wotimg = getWoTid(wot, 0);
 						$('.we1').text(percent + "%");
-						if (wotimg == 5)
+						if (wotimg == 5) {
 							$('.we1').css('color', '#4CAF50');
-						else if (wotimg == 4)
+						} else if (wotimg == 4) {
 							$('.we1').css('color', '#68E36D');
-						else if (wotimg == 3)
+						} else if (wotimg == 3) {
 							$('.we1').css('color', '#FFA000');
-						else if (wotimg == 2)
+						} else if (wotimg == 2) {
 							$('.we1').css('color', '#E64A19');
-						else if (wotimg == 1)
+						} else if (wotimg == 1) {
 							$('.we1').css('color', '#FF0000');
-						else
+						} else {
 							$('.we1').css('color', '#999999');
+						}
 						$('.we1').removeClass("loader");
-					}
-					else
-					{
+					} else {
 						$('.we1').text(_("unknown"));
 						$('.we1').removeClass("loader");
 					}
 
-					if (typeof wot[1] !== "undefined")
-					{
+					if (typeof wot[1] !== "undefined") {
 						var percent = parseInt(wot[1]);
 						var wotimg = getWoTid(wot, 1);
 						$('.we2').text(percent + "%");
-						if (wotimg == 5)
+						if (wotimg == 5) {
 							$('.we2').css('color', '#4CAF50');
-						else if (wotimg == 4)
+						} else if (wotimg == 4) {
 							$('.we2').css('color', '#68E36D');
-						else if (wotimg == 3)
+						} else if (wotimg == 3) {
 							$('.we2').css('color', '#FFA000');
-						else if (wotimg == 2)
+						} else if (wotimg == 2) {
 							$('.we2').css('color', '#E64A19');
-						else if (wotimg == 1)
+						} else if (wotimg == 1) {
 							$('.we2').css('color', '#FF0000');
-						else
+						} else {
 							$('.we2').css('color', '#999999');
+						}
 						$('.we2').removeClass("loader");
-					}
-					else
-					{
+					} else {
 						$('.we2').text(_("unknown"));
 						$('.we2').removeClass("loader");
 					}
 
-					if (typeof wot[2] != "undefined")
-					{
+					if (typeof wot[2] != "undefined") {
 						var percent = parseInt(wot[2]);
 						var wotimg = getWoTid(wot, 2);
 						$('.we3').text(percent + "%");
-						if (wotimg == 5)
+						if (wotimg == 5) {
 							$('.we3').css('color', '#4CAF50');
-						else if (wotimg == 4)
+						} else if (wotimg == 4) {
 							$('.we3').css('color', '#68E36D');
-						else if (wotimg == 3)
+						} else if (wotimg == 3) {
 							$('.we3').css('color', '#FFA000');
-						else if (wotimg == 2)
+						} else if (wotimg == 2) {
 							$('.we3').css('color', '#E64A19');
-						else if (wotimg == 1)
+						} else if (wotimg == 1) {
 							$('.we3').css('color', '#FF0000');
-						else
+						} else {
 							$('.we3').css('color', '#999999');
+						}
 						$('.we3').removeClass("loader");
-					}
-					else
-					{
+					} else {
 						$('.we3').text(_("unknown"));
 						$('.we3').removeClass("loader");
 					}
 
-					if (typeof wot[4] != "undefined")
-					{
+					if (typeof wot[4] != "undefined") {
 						var percent = parseInt(wot[4]);
 						var wotimg = getWoTid(wot, 4);
 						$('.we4').text(percent + "%");
-						if (wotimg == 5)
+						if (wotimg == 5) {
 							$('.we4').css('color', '#4CAF50');
-						else if (wotimg == 4)
+						} else if (wotimg == 4) {
 							$('.we4').css('color', '#68E36D');
-						else if (wotimg == 3)
+						} else if (wotimg == 3) {
 							$('.we4').css('color', '#FFA000');
-						else if (wotimg == 2)
+						} else if (wotimg == 2) {
 							$('.we4').css('color', '#E64A19');
-						else if (wotimg == 1)
+						} else if (wotimg == 1) {
 							$('.we4').css('color', '#FF0000');
-						else
+						} else {
 							$('.we4').css('color', '#999999');
+						}
 						$('.we4').removeClass("loader");
-					}
-					else
-					{
+					} else {
 						$('.we4').text(_("unknown"));
 						$('.we4').removeClass("loader");
 					}
-				}
-				else
-				{
+				} else {
 					$('.wotblock').hide();
 				}
-			}
-			else
-			{
+			} else {
 				$('.wotblock').hide();
 			}
 			
 			// Is an dynamic/private ip?
-			if (dominfo.dyn !== 0)
+			if (dominfo.dyn !== 0) {
 				$(".dynamicip").slideDown('fast');
-
-		});
+			}
+		}, { incognito: inc });
 	}
-	catch (e)
-	{
+	catch (e) {
 		debug.track(e, "p:writePopup");
 	}
 }
 
 $(function() {
 	$('.wotclickable').click(function() {
-		if ($('.wotex').hasClass("active"))
-		{
+		if ($('.wotex').hasClass("active")) {
 			$('.wotc').slideUp('slow');
 			$('.wotex').removeClass("active");
-		}
-		else
-		{
+		} else {
 			$('.wotc').slideDown('slow');
 			$('.wotex').addClass("active");
 		}

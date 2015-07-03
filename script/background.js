@@ -13,18 +13,20 @@ chrome.webRequest.onBeforeRequest.addListener(function(ret)
 */
 
 // Get ip address of domain
-chrome.webRequest.onResponseStarted.addListener(function(ret)
-{
+chrome.webRequest.onResponseStarted.addListener(function(ret) {
 	// Check if ip is available from Chrome (over local DNS request)
 	var ip = 0;
-	if (typeof ret.ip !== "undefined")
+	if (typeof ret.ip !== "undefined") {
 		ip = ret.ip;
+	}
 
-	if (typeof ret.tabId === "undefined" || ret.tabId < 0 || ret.tabId === "")
+	if (typeof ret.tabId === "undefined" || ret.tabId < 0 || ret.tabId === "") {
 		return;
+	}
 
-	if (ip !== 0)
+	if (ip !== 0) {
 		sessionStorage[parseUrl(ret.url)] = ip;
+	}
 
 	// udf.formRequest( { tab: ret.tabId, url: ret.url, ip: ip, source: 2 } );
 	// 		###### ATTENTION ######
@@ -34,15 +36,11 @@ chrome.webRequest.onResponseStarted.addListener(function(ret)
 	// 
 	// https://code.google.com/p/chromium/issues/detail?id=93646 	- Aug. 20, 2011
 	// https://code.google.com/p/chromium/issues/detail?id=418193 	- Sep. 26, 2014
-	// Checking, if tab id exists -> 
-	chrome.tabs.get(ret.tabId, function(t)
-	{
-		if (chrome.runtime.lastError)
-		{
+	// Checking, if tab id exists ->
+	chrome.tabs.get(ret.tabId, function(t) {
+		if (chrome.runtime.lastError) {
 			// TabId does not exist. Do nothing.
-		}
-		else
-		{
+		} else {
 			// Tab exists
 			udf.formRequest( { tab: t.id, url: t.url, incognito: t.incognito, source: 5 } );
 		}
@@ -53,57 +51,49 @@ chrome.webRequest.onResponseStarted.addListener(function(ret)
 });
 
 // Fire if page is loading
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab)
-{
-	if(changeInfo.status == "loading")
-		udf.formRequest( { tab: tabId, url: tab.url, source: 4 } );
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+	if(changeInfo.status == "loading") {
+		udf.formRequest( { tab: tabId, url: tab.url, source: 4, incognito: tab.incognito } );
+	}
 });
 
 // Get all open tabs
-chrome.windows.getAll({populate: true}, function(windows)
-{
+chrome.windows.getAll({populate: true}, function(windows) {
 	allTabs(windows);
 });
 
-function allTabs(windows)
-{
-	if (typeof db === "undefined" || typeof db.open !== "undefined")
-	{
+function allTabs(windows) {
+	if (typeof db === "undefined" || typeof db.open !== "undefined") {
 		setTimeout(function(){ allTabs(windows); }, 100);
 		return false;
 	}
-	for (var i = 0; i < windows.length; i++)
-		for (var j = 0; j < windows[i].tabs.length; j++)
-			udf.formRequest( { tab: windows[i].tabs[j].id, url: windows[i].tabs[j].url, source: 3 } );
+	for (var i = 0; i < windows.length; i++) {
+		for (var j = 0; j < windows[i].tabs.length; j++) {
+			udf.formRequest( { tab: windows[i].tabs[j].id, url: windows[i].tabs[j].url, source: 3, incognito: windows[i].tabs[j].incognito } );
+		}
+	}
 }
 
 // Restart extension if a new version is available (after 60 secounds)
-chrome.runtime.onUpdateAvailable.addListener(function(details)
-{
-	if (typeof details.version != "undefined")
-	{
-		if (chrome.app.getDetails().version != details.version)
-		{
+chrome.runtime.onUpdateAvailable.addListener(function(details) {
+	if (typeof details.version != "undefined") {
+		if (chrome.app.getDetails().version != details.version) {
 			debug.notice("Update available");
 			setTimeout(function(){  debug.notice("Reloading extension"); chrome.runtime.reload(); }, 1000 * 60);
 		}
 	}
-	
 });
 
 // Fired if a new version was installed
-chrome.runtime.onInstalled.addListener(function(details)
-{
-	try
-	{
-		if (details.reason === "update")
-		{
+chrome.runtime.onInstalled.addListener(function(details) {
+	try {
+		if (details.reason === "update") {
 			// Check the update was a real update
-			if (details.previousVersion === chrome.app.getDetails().version)
+			if (details.previousVersion === chrome.app.getDetails().version) {
 				return false;
+			}
 
-			if (updateNotification === "true")
-			{
+			if (updateNotification === "true") {
 				// Create notification data
 				var opt = {
 					type: "basic",
@@ -117,13 +107,10 @@ chrome.runtime.onInstalled.addListener(function(details)
 				var uid = Math.floor((Math.random()*10000)+1);
 
 				// Create notification
-				chrome.notifications.create("udn" + uid, opt, function(retdata)
-				{
-					chrome.notifications.onButtonClicked.addListener(function(retdata, btnid)
-					{
+				chrome.notifications.create("udn" + uid, opt, function(retdata) {
+					chrome.notifications.onButtonClicked.addListener(function(retdata, btnid) {
 						// "about" clicked
-						if (btnid == 0)
-						{
+						if (btnid == 0) {
 							chrome.tabs.create({ url: "/about.html" });
 						}
 					});
@@ -133,14 +120,12 @@ chrome.runtime.onInstalled.addListener(function(details)
 			}
 		}
 	}
-	catch (e)
-	{
+	catch (e) {
 		debug.track(e, "b:onInstalled");
 	}
 });
 
-if (typeof chrome.runtime.setUninstallURL !== "undefined")
-{
+if (typeof chrome.runtime.setUninstallURL !== "undefined") {
 	chrome.runtime.setUninstallURL(data_protocol + "://" + data_domain + "/uninstall?k=" + securityKey + "&l=" + localID + "&v=" + chrome.app.getDetails().version);
 }
 
@@ -166,11 +151,9 @@ function microtime(get_as_float) {
 
 // Storage cleanup - every 1 hour
 //     Remove old entries
-setInterval(function(){
-	if (typeof udf !== "undefined")
-	{
-		udf.getDBsize(function(size)
-		{
+setInterval(function() {
+	if (typeof udf !== "undefined") {
+		udf.getDBsize(function(size) {
 			udf.StorageCleanup();
 			udf.getDBsize(function(new_size)
 			{
@@ -183,4 +166,3 @@ setInterval(function(){
 
 // Check for new updates
 udf.checkUpdate();
-

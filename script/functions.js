@@ -1,46 +1,37 @@
 /*! uDomainFlag | Copyright 2015 Thomas Bella */
 
 // Detect if a new version is installed
-try
-{
-	if (typeof localStorage !== "undefined")
-	{
-		if (typeof localStorage["version"] !== "undefined" && localStorage["version"] != chrome.app.getDetails().version)
-		{
+try {
+	if (typeof localStorage !== "undefined") {
+		if (typeof localStorage["version"] !== "undefined" && localStorage["version"] != chrome.app.getDetails().version) {
 			debug.notice("New Version available. Removing old storage ...");
 			localStorage["clearDB"] = 1;
 		}
 		localStorage["version"] = chrome.app.getDetails().version;
 	}
 }
-catch (e)
-{
+catch (e) {
 	debug.track(e, "c:dbVersion");
 }
 
 // Check if specific data is not available after 5 secounds of timeout
 setTimeout(function(){
-	if (securityKey === "" || securityKey === "undefined")
-	{
+	if (securityKey === "" || securityKey === "undefined") {
 		// First request for an security key
 		$.post(data_protocol + "://" + data_domain + "/security", { type: "newkey" }, function(data) {
 			
 			// Unknown error on requesting a key. Retry after 30 secounds
-			if (typeof data === "undefined" || typeof data.ok === "undefined" || parseInt(data.ok) === 0 || typeof data.securityKey === "undefined")
-			{
+			if (typeof data === "undefined" || typeof data.ok === "undefined" || parseInt(data.ok) === 0 || typeof data.securityKey === "undefined") {
 				return setTimeout(function() { chrome.runtime.reload(); }, 1000 * 30);
 			}
 
 			securityKey = localStorage["securityKey"] = data.securityKey;
-			if (typeof chrome.storage !== "undefined" && typeof chrome.storage.sync !== "undefined")
-			{
+			if (typeof chrome.storage !== "undefined" && typeof chrome.storage.sync !== "undefined") {
 				chrome.storage.sync.set({ securityKey: securityKey }, function(){ chrome.runtime.reload(); });
 			}
 			return;
 		}, "json");
-	}
-	else if (securityKey === "" || securityKey === "undefined")
-	{
+	} else if (securityKey === "" || securityKey === "undefined") {
 		// Problems?
 		// Using slow, limited and unsecure securityKey.
 		securityKey = localStorage["securityKey"] = "d";
@@ -49,15 +40,12 @@ setTimeout(function(){
 
 // Check if stored secuityKey is valid
 setTimeout(function(){
-	if (securityKey !== "" && securityKey !== "undefined")
-	{
+	if (securityKey !== "" && securityKey !== "undefined") {
 		$.post(data_protocol + "://" + data_domain + "/security", { type: "verify", key: securityKey }, function(data) {
 			// Check if data is correct
-			if (typeof data !== "undefined" && typeof data.ok !== "undefined")
-			{
+			if (typeof data !== "undefined" && typeof data.ok !== "undefined") {
 				// Check if key is valid by the server
-				if (parseInt(data.valid) === 0)
-				{
+				if (parseInt(data.valid) === 0) {
 					// Delete securityKey and reload the extension
 					delete localStorage["securityKey"];
 					delete securityKey;
@@ -69,8 +57,7 @@ setTimeout(function(){
 }, 1000);
 
 var db;
-if (typeof localStorage["clearDB"] !== "undefined")
-{
+if (typeof localStorage["clearDB"] !== "undefined") {
 	delete localStorage["clearDB"];
 	db.delete("udf");
 }
@@ -158,8 +145,7 @@ db.open( {
 	DBopen = true;
 } );
 
-if (typeof localStorage["openOptions"] !== "undefined")
-{
+if (typeof localStorage["openOptions"] !== "undefined") {
 	chrome.tabs.create({url: "chrome-extension://"+chrome.i18n.getMessage("@@extension_id")+"/options.html"});
 	delete localStorage["openOptions"];
 }
@@ -169,8 +155,7 @@ if (typeof localStorage["openOptions"] !== "undefined")
 var udf = {
 	pendingRequests: [],
 
-	setFlag: function (data)
-	{
+	setFlag: function (data) {
 		/*
 			{ tab: obj [, risk: { level: 0, type: 1}][, popup: "target.html"][, title: "Title"] }
 			
@@ -278,14 +263,17 @@ var udf = {
 		}
 	},
 
-	domainIPinfo: function(hostname, callback) {
+	domainIPinfo: function(hostname, callback, addt) {
+		if (typeof addt === "undefined") {
+			addt = [];
+		}
 		db.domain.query().filter('domain', hostname).execute().then(function(en) {
 			if ($.isEmptyObject(en) === false) {
 				sessionStorage.removeItem(hostname + "_domainIPinfo");
 				return callback(en[0]);
 			}
 			if (typeof sessionStorage[hostname + "_domainIPinfo"] !== "undefined" || sessionStorage[hostname + "_domainIPinfo"] < Math.round(new Date().getTime() / 1000) - 60)	{
-				setTimeout(function(){ udf.domainIPinfo(hostname, callback); }, 400);
+				setTimeout(function(){ udf.domainIPinfo(hostname, callback, addt); }, 400);
 				return false;
 			}
 			sessionStorage[hostname + "_domainIPinfo"] = Math.round(new Date().getTime() / 1000);
@@ -294,6 +282,11 @@ var udf = {
 				if (typeof data === "undefined" || typeof data.ok === "undefined") {
 					sessionStorage.removeItem(hostname + "_domainIPinfo");
 					return callback(false);
+				}
+				if (typeof addt.incognito !== "undefined" && (addt.incognito == true || addt.incognito == 1)) {
+					var inc = 1;
+				} else {
+					var inc = 0;
 				}
 
 				db.domain.add({
@@ -305,18 +298,20 @@ var udf = {
 					risktype: parseInt(data.risk.type),
 
 					time: Math.round(new Date().getTime() / 1000),
-					incognito: chrome.extension.inIncognitoContext,
+					incognito: inc,
 					ok: parseInt(data.ok)
 				}).then( function ( item ){
 					sessionStorage.removeItem(hostname + "_domainIPinfo");
-					return callback( {domain: hostname, ip: data.ip, multiip: parseInt(data.multiip), internal: -1, time: Math.round(new Date().getTime() / 1000), incognito: chrome.extension.inIncognitoContext, ok: parseInt(data.ok)} );
+					return callback( {domain: hostname, ip: data.ip, multiip: parseInt(data.multiip), internal: -1, risk: parseInt(data.risk.level), risktype: parseInt(data.risk.type), time: Math.round(new Date().getTime() / 1000), incognito: inc, ok: parseInt(data.ok)} );
 				});
 			}, "json");
 		});
 	},
 
-	getLocalIP: function(hostname, ip, callback)
-	{
+	getLocalIP: function(hostname, ip, callback, addt) {
+		if (typeof addt === "undefined") {
+			addt = [];
+		}
 		// Check if ip is stored in sessionStorage
 		if (typeof ip === "undefined" || ip === "" || ip === 0 || ip === null) {
 			if (typeof sessionStorage[hostname] !== "undefined") {
@@ -333,22 +328,27 @@ var udf = {
 					return callback(en[0]);
 				} else {
 					db.localip.remove( en[0].id ).then( function ( key ) {
-						return getLocalIP(hostname, ip, callback);
+						return getLocalIP(hostname, ip, callback, addt);
 					} );
 				}
 				return;
 			}
 
 			if (typeof ip !== "undefined" && ip !== "")	{
+				if (typeof addt.incognito !== "undefined" && (addt.incognito == true || addt.incognito == 1)) {
+					var inc = 1;
+				} else {
+					var inc = 0;
+				}
 				db.localip.add({
 					domain: hostname,
 					ip: ip,
 
 					time: Math.round(new Date().getTime() / 1000),
-					incognito: chrome.extension.inIncognitoContext,
+					incognito: inc,
 					ok: 1
 				}).then( function(item) {
-					return callback( {domain: hostname, ip: ip, time: Math.round(new Date().getTime() / 1000), incognito: chrome.extension.inIncognitoContext, ok: 1 } );
+					return callback( {domain: hostname, ip: ip, time: Math.round(new Date().getTime() / 1000), incognito: inc, ok: 1 } );
 				});
 			} else {
 				return callback(false);
@@ -356,15 +356,17 @@ var udf = {
 		});
 	},
 
-	getIPinfo: function(ip, callback)
-	{
+	getIPinfo: function(ip, callback, addt) {
+		if (typeof addt === "undefined") {
+			addt = [];
+		}
 		db.ip.query().filter('ip', ip).execute().then(function(en) {
 			if ($.isEmptyObject(en) === false) {
 				sessionStorage.removeItem(ip + "_getIPinfo");
 				return callback(en[0]);
 			}
 			if (typeof sessionStorage[ip + "_getIPinfo"] !== "undefined" || sessionStorage[ip + "_getIPinfo"] < Math.round(new Date().getTime() / 1000) - 60)	{
-				setTimeout(function(){ udf.getIPinfo(ip, callback); }, 400);
+				setTimeout(function(){ udf.getIPinfo(ip, callback, addt); }, 400);
 				return false;
 			}
 			sessionStorage[ip + "_getIPinfo"] = Math.round(new Date().getTime() / 1000);
@@ -373,6 +375,11 @@ var udf = {
 				if (typeof data === "undefined" || typeof data.ok === "undefined") {
 					sessionStorage.removeItem(ip + "_getIPinfo");
 					return callback(false);
+				}
+				if (typeof addt.incognito !== "undefined" && (addt.incognito == true || addt.incognito == 1)) {
+					var inc = 1;
+				} else {
+					var inc = 0;
 				}
 
 				db.ip.add({
@@ -384,18 +391,20 @@ var udf = {
 					shortcountry: data.shortcountry,
 					hostname: data.hostname,
 					time: Math.round(new Date().getTime() / 1000),
-					incognito: chrome.extension.inIncognitoContext,
+					incognito: inc,
 					ok: parseInt(data.ok)
 				}).then( function ( item ){
 					sessionStorage.removeItem(ip + "_getIPinfo");
-					return callback( {ip: data.ip, internal: -1, country: data.country, region: data.region, city: data.city, shortcountry: data.shortcountry, hostname: data.hostname, time: Math.round(new Date().getTime() / 1000), incognito: chrome.extension.inIncognitoContext, ok: parseInt(data.ok)} );
+					return callback( {ip: data.ip, internal: -1, country: data.country, region: data.region, city: data.city, shortcountry: data.shortcountry, hostname: data.hostname, time: Math.round(new Date().getTime() / 1000), incognito: inc, ok: parseInt(data.ok)} );
 				});
 			}, "json");
 		});
 	},
 
-	getDomaininfo: function(hostname, callback)
-	{
+	getDomaininfo: function(hostname, callback, addt) {
+		if (typeof addt === "undefined") {
+			addt = [];
+		}
 		db.domainsocial.query().filter('domain', hostname).execute().then(function(en) {
 			if ($.isEmptyObject(en) === false) {
 				return callback(en[0]);
@@ -406,6 +415,11 @@ var udf = {
 				if (typeof data === "undefined" || typeof data.ok === "undefined") {
 					return callback(false);
 				}
+				if (typeof addt.incognito !== "undefined" && (addt.incognito == true || addt.incognito == 1)) {
+					var inc = 1;
+				} else {
+					var inc = 0;
+				}
 
 				db.domainsocial.add({
 					domain: hostname,
@@ -415,26 +429,32 @@ var udf = {
 					dyn: parseInt(data.dyn),
 
 					time: Math.round(new Date().getTime() / 1000),
-					incognito: chrome.extension.inIncognitoContext,
+					incognito: inc,
 					ok: parseInt(data.ok)
 				}).then( function ( item ){
-					return callback( {domain: hostname, wot: JSON.stringify(data.wot), alexa: parseInt(data.alexa), risk: parseInt(data.risk), dyn: parseInt(data.dyn), time: Math.round(new Date().getTime() / 1000), incognito: chrome.extension.inIncognitoContext, ok: parseInt(data.ok)} );
+					return callback( {domain: hostname, wot: JSON.stringify(data.wot), alexa: parseInt(data.alexa), risk: parseInt(data.risk), dyn: parseInt(data.dyn), time: Math.round(new Date().getTime() / 1000), incognito: inc, ok: parseInt(data.ok)} );
 				});
 			}, "json");
 		});
 	},
 
-	getDomainSocial: function(hostname, callback)
-	{
+	getDomainSocial: function(hostname, callback, addt) {
+		if (typeof addt === "undefined") {
+			addt = [];
+		}
 		db.domaininfo.query().filter('url', hostname).execute().then(function(en) {
 			if ($.isEmptyObject(en) === false) {
 				return callback(en);
 			}
 
 			$.post(data_protocol + "://" + data_domain + "/domainsocial.json", {key: securityKey, url: hostname }, function(data) {
-
 				if (typeof data === "undefined" || typeof data.ok === "undefined") {
 					return callback(false);
+				}
+				if (typeof addt.incognito !== "undefined" && (addt.incognito == true || addt.incognito == 1)) {
+					var inc = 1;
+				} else {
+					var inc = 0;
 				}
 
 				db.domaininfo.add({
@@ -444,47 +464,48 @@ var udf = {
 					twitter: parseInt(data.twitter),
 					reddit: parseInt(data.reddit),
 					time: Math.round(new Date().getTime() / 1000),
-					incognito: chrome.extension.inIncognitoContext,
+					incognito: inc,
 					ok: parseInt(data.ok)
 				}).then( function ( item ){
-					return callback( {url: hostname, google: parseInt(data.google), facebook: parseInt(data.facebook), twitter: parseInt(data.twitter), reddit: parseInt(data.reddit), time: Math.round(new Date().getTime() / 1000), incognito: chrome.extension.inIncognitoContext, ok: parseInt(data.ok)} );
+					return callback( {url: hostname, google: parseInt(data.google), facebook: parseInt(data.facebook), twitter: parseInt(data.twitter), reddit: parseInt(data.reddit), time: Math.round(new Date().getTime() / 1000), incognito: inc, ok: parseInt(data.ok)} );
 				});
 			}, "json");
 		});
 	},
 
-	isSpecial: function(tab)
-	{
+	isSpecial: function(tab) {
 		/*
 			url -> string | url.url -> string
 			return { icon: "images/...", title: "Title", popup: "Popup.html"} | false
 		*/
-		try
-		{
-			if (typeof tab === "object")
+		try	{
+			if (typeof tab === "object") {
 				var url = tab.url;
-			else if (typeof tab === "string")
+			} else if (typeof tab === "string") {
 				var url = tab;
-			else
+			} else {
 				throw new Error("No url given");
+			}
 
-			if (url === "")
+			if (url === "") {
 				throw new Error("no url given");
+			}
 
 			// Split domain
 			var reg = /(chrome|chrome-extension|http|https|ftp)\:\/\/([^\/^\:^\[]{1,})/;
 
-			if (reg.test(url))
-			{
+			if (reg.test(url)) {
 				var match = url.match(/(chrome|chrome-extension|http|https|ftp)\:\/\/([^\/^\:^\[]{1,})/);
 
 				// Chrome extension - internal
-				if (match[1] == 'chrome' || match[1] == 'chrome-extension')
+				if (match[1] == 'chrome' || match[1] == 'chrome-extension') {
 					return { icon: "images/fugue/computer.png", title: "Chrome browser", popup: 'special.html' };
+				}
 
 				// Dotless domain (mostly internal e.g. start, login, hotspot)
-				if (match[2].indexOf('.') == -1)
+				if (match[2].indexOf('.') == -1) {
 					return { icon: "images/fugue/network.png", title: "Local domain", popup: 'internal.html' };
+				}
 
 				// Domain with ending dot -> interpret without dot
 				var tmp = match[2].match(/(.*)\.$/);
@@ -498,184 +519,208 @@ var udf = {
 				tld = tld[1];
 
 				// Home networks
-				if (tld == 'lan')
+				if (tld == 'lan') {
 					return { icon: "images/fugue/home-network.png", title: "Home network", popup: 'internal.html' };
+				}
 
 				// Local network. Can be localhost, home network or office network
-				if (tld == 'local')
+				if (tld == 'local') {
 					return { icon: "images/fugue/network.png", title: "Local network", popup: 'internal.html' };
+				}
 
 				// Address and Routing Parameter Area
-				if (tld == 'arpa')
+				if (tld == 'arpa') {
 					return { icon: "images/fugue/network.png", title: "IP to domain network", popup: 'special.html' };
+				}
 
 				// Company network
-				if (tld == 'corp')
+				if (tld == 'corp') {
 					return { icon: "images/fugue/network.png", title: "Local network", popup: 'internal.html' };
+				}
 
 				// Tor network
-				if (tld == 'onion' || tld == 'exit')
+				if (tld == 'onion' || tld == 'exit') {
 					return { icon: "images/special-flag/tor.png", title: "Tor network", popup: 'special.html' };
-			}
-			else
-			{
+				}
+			} else {
 				// Check if domain is an IPv6 address
 				var reg = /\[([0-9a-fA-F\:\%]*)\]/;
-				if (reg.test(url))
-				{
+				if (reg.test(url)) {
 					var match = url.match(reg);
 					var domain = match[1];
 				}
 			}
 			// Check if IP is internal
 			var isinternal = this.isInternal(domain);
-			if (isinternal !== false)
+			if (isinternal !== false) {
 				return isinternal;
-
+			}
 			return false;
 		}
-		catch (e)
-		{
+		catch (e) {
 			debug.track(e, "c:isSpecial");
 		}
 	},
 
-	isInternal: function(ip)
-	{
-		try
-		{
-			if (typeof ip === "undefined")
+	isInternal: function(ip) {
+		try	{
+			if (typeof ip === "undefined") {
 				return false;
+			}
 
 			// Convert to string
 			ip = String(ip);
 
 			// Check if IP is empty
-			if (ip.length == 0)
+			if (ip.length == 0) {
 				return false;
+			}
 
 			// IPv4 - special addresses
 
 			// Special networks (private, RFC)
-			if (ip.match(/^10\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/))
+			if (ip.match(/^10\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/)) {
 				return { icon: "images/fugue/office-network.png", title: "Private network", popup: 'internal.html' };
+			}
 
 			// Localhost
-			if (ip == "127.0.0.1")
+			if (ip == "127.0.0.1") {
 				return { icon: "images/fugue/computer.png", title: "Computer", popup: 'special.html' };
+			}
 
 			// Localnet
-			if (ip.match(/^127\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/))
+			if (ip.match(/^127\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/)) {
 				return { icon: "images/fugue/computer-network.png", title: "Computer network", popup: 'special.html' };
+			}
 
 			// Link local
-			if (ip.match(/^169\.254\.([0-9]{1,3})\.([0-9]{1,3})$/))
+			if (ip.match(/^169\.254\.([0-9]{1,3})\.([0-9]{1,3})$/)) {
 				return { icon: "images/fugue/computer-network.png", title: "Link local - No DHCP found", popup: 'special.html' };
+			}
 
 			// Private - 172.16-31.XXX.XXX
-			if (ip.match(/^172\.(16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31)\.([0-9]{1,3})\.([0-9]{1,3})$/))
+			if (ip.match(/^172\.(16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31)\.([0-9]{1,3})\.([0-9]{1,3})$/)) {
 				return { icon: "images/fugue/network.png", title: "Private network", popup: 'internal.html' };
+			}
 
 			// IETF protocol assignments
-			if (ip.match(/^192\.0\.0\.([0-9]{1,3})$/))
+			if (ip.match(/^192\.0\.0\.([0-9]{1,3})$/)) {
 				return { icon: "images/fugue/network.png", title: "IETF protocol assignments", popup: 'special.html' };
+			}
 
 			// Documentation range
-			if (ip.match(/^192\.0\.2\.([0-9]{1,3})$/))
+			if (ip.match(/^192\.0\.2\.([0-9]{1,3})$/)) {
 				return { icon: "images/fugue/network.png", title: "Example range for documentation and private use", popup: 'special.html' };
+			}
 
 			// IP 6to4 relay anycast
-			if (ip.match(/^192\.88\.99\.([0-9]{1,3})$/))
+			if (ip.match(/^192\.88\.99\.([0-9]{1,3})$/)) {
 				return { icon: "images/fugue/network.png", title: "IP 6to4 relay anycast", popup: 'special.html' };
+			}
 
 			// Private - 192.168.XXX.XXX
-			if (ip.match(/^192\.168\.([0-9]{1,3})\.([0-9]{1,3})$/))
+			if (ip.match(/^192\.168\.([0-9]{1,3})\.([0-9]{1,3})$/)) {
 				return { icon: "images/fugue/home-network.png", title: "Private network", popup: 'internal.html' };
+			}
 
 			// ISP - Benchmark network
-			if (ip.match(/^198\.(18|19)\.([0-9]{1,3})\.([0-9]{1,3})$/))
+			if (ip.match(/^198\.(18|19)\.([0-9]{1,3})\.([0-9]{1,3})$/)) {
 				return { icon: "images/fugue/home-network.png", title: "Benchmark network", popup: 'special.html' };
+			}
 
 			// Private & documantation
-			if (ip.match(/^198\.51\.100\.([0-9]{1,3})$/))
+			if (ip.match(/^198\.51\.100\.([0-9]{1,3})$/)) {
 				return { icon: "images/fugue/home-network.png", title: "Example range for documentation and private use", popup: 'internal.html' };
+			}
 
 			// Private & documantation
-			if (ip.match(/^203\.0\.113\.([0-9]{1,3})$/))
+			if (ip.match(/^203\.0\.113\.([0-9]{1,3})$/)){
 				return { icon: "images/fugue/home-network.png", title: "Example range for documentation and private use", popup: 'special.html' };
+			}
 
 			// Multicast
-			if (ip.match(/^224\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/))
+			if (ip.match(/^224\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/)) {
 				return { icon: "images/fugue/computer-network.png", title: "Multicast network", popup: 'special.html' };
+			}
 
 			// Shared - SAS
-			if (ip.match(/^100\.(64|65|66|67|68|69|70|71|72|73|74|75|76|77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|123|124|125|126|127)\.([0-9]{1,3})\.([0-9]{1,3})$/))
+			if (ip.match(/^100\.(64|65|66|67|68|69|70|71|72|73|74|75|76|77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|123|124|125|126|127)\.([0-9]{1,3})\.([0-9]{1,3})$/)) {
 				return { icon: "images/logo-16x16.png", title: "Shared Address Space", popup: 'special.html' };
+			}
 
 			// IPv6 - special addresses
 
 			// Link-Local (fe80)
-			if (ip.match(/^fe80\:([0-9A-Fa-f\:\%]*)$/))
+			if (ip.match(/^fe80\:([0-9A-Fa-f\:\%]*)$/)) {
 				return { icon: "images/fugue/home-network.png", title: "Private network (Link-Local)", popup: 'internal.html' };
+			}
 
 			// Unique Local Unicast (Private network)
-			if (ip.match(/^f(c|d)([0-9A-Fa-f]{1,2}|)\:([0-9A-Fa-f\:\%]*)$/))
+			if (ip.match(/^f(c|d)([0-9A-Fa-f]{1,2}|)\:([0-9A-Fa-f\:\%]*)$/)) {
 				return { icon: "images/fugue/home-network.png", title: "Private network (Unique Local Unicast)", popup: 'internal.html' };
+			}
 
 			// 6to4
-			if (ip.match(/^2002\:([0-9A-Fa-f\:\%]*)$/))
+			if (ip.match(/^2002\:([0-9A-Fa-f\:\%]*)$/)) {
 				return { icon: "images/fugue/network.png", title: "IP 6to4 network", popup: 'special.html' };
+			}
 
 			// Localhost
-			if (ip == "::1")
+			if (ip == "::1") {
 				return { icon: "images/fugue/computer.png", title: "Computer", popup: 'special.html' };
+			}
 
 			return false;
 		}
-		catch (e)
-		{
+		catch (e) {
 			return debug.track(e, "c:isInternal");
 		}
 	},
 
-	formRequest: function(data)
-	{
-		try
-		{
+	formRequest: function(data)	{
+		try	{
 			// Check if IndexedDB is opened
-			if (DBopen !== true)
+			if (DBopen !== true) {
 				return setTimeout(function(){ udf.formRequest(data); }, 500);
+			}
 
 			// Check if tabId is available
-			if (typeof data.tab === "undefined")
+			if (typeof data.tab === "undefined") {
 				return;
+			}
 
 			// Check source
-			if (typeof data.source === "undefined")
+			if (typeof data.source === "undefined") {
 				return;
+			}
 
 			// Check if url is provided
-			if (typeof data.url === "undefined")
+			if (typeof data.url === "undefined") {
 				return;
+			}
 
-			if (typeof data.incognito === "undefined")
+			if (typeof data.incognito === "undefined") {
 				data.incognito = false;
+			}
 
 			// Convert url to domain
 			var domain = parseUrl(data.url);
 
 			// If something is wrong with the domain, display a question symbol
-			if (domain === false || domain === "" || domain === "false")
+			if (domain === false || domain === "" || domain === "false") {
 				return udf.setFlag({tab: data.tab, icon: "images/fugue/question-white.png", title: "No data found", popup: 'special.html'});
+			}
 
 			// Check if local domain or local ip is requested
 			var special = udf.isSpecial(data.url);
-			if (special !== false)
+			if (special !== false) {
 				return udf.setFlag($.extend({}, special, data));
+			}
 
 			var ip = "";
-			if (typeof data.ip !== "undefined")
+			if (typeof data.ip !== "undefined") {
 				ip = data.ip;
+			}
 
 			udf.domainIPinfo(domain, function (domip) {
 				if (typeof domip.risk !== "undefined") {
@@ -717,9 +762,9 @@ var udf = {
 								}
 
 								return udf.setFlag($.extend({}, data, { icon: ipinfo.shortcountry.toLowerCase(), title: title }));
-							});
+							}, { incognito: data.incognito });
 						}
-					});
+					}, { incognito: data.incognito });
 				} else {
 					udf.getLocalIP(domain, ip, function (storedinfo) {
 						if (storedinfo === false) {
@@ -749,10 +794,10 @@ var udf = {
 							}
 
 							return udf.setFlag($.extend({}, data, { icon: ipinfo.shortcountry.toLowerCase(), title: title }));
-						});
-					});
+						}, { incognito: data.incognito });
+					}, { incognito: data.incognito });
 				}
-			});
+			}, { incognito: data.incognito });
 
 		}
 		catch (e)
@@ -761,31 +806,26 @@ var udf = {
 		}
 	},
 
-	checkUpdate: function()
-	{
-		try
-		{
-			if (typeof selfhost == "undefined" || selfhost != chrome.i18n.getMessage("@@extension_id"))
+	checkUpdate: function()	{
+		try	{
+			if (typeof selfhost == "undefined" || selfhost != chrome.i18n.getMessage("@@extension_id")) {
 				return;
+			}
 
-			chrome.runtime.requestUpdateCheck(function (status, details)
-			{
-				if (typeof status != "undefined")
-				{
+			chrome.runtime.requestUpdateCheck(function (status, details) {
+				if (typeof status != "undefined") {
 					// If Google Server is overloaded, wait 6 hours for next update request
-					if (status == "throttled")
-					{
+					if (status == "throttled") {
 						setTimeout(function() {
 							udf.checkUpdate();
 						}, 1000 * 60 * 60 * 6);
-					}
-					else // Check for Updates every 2 hours
-						 // If a update is available, an other script will handle it
-					{
+					} else {
+						// Check for Updates every 2 hours
+						// If an update is available, another script will handle it
 						setTimeout(function() {
 							udf.checkUpdate();
 						}, 1000 * 60 * 60 * 2);
-					} // status == "throttled"
+					}
 					return;
 				}
 				// If request contains a error, retry it in 4 hours
@@ -793,21 +833,18 @@ var udf = {
 					udf.checkUpdate();
 				}, 1000 * 60 * 60 * 4);
 			});
-
 		}
-		catch (e)
-		{
+		catch (e) {
 			debug.track(e, "c:checkUpdate");
 		}
 	},
 
-	getDBsize: function(callback)
-	{
-		try
-		{
+	getDBsize: function(callback) {
+		try	{
 			// Check if IndexedDB is loaded
-			if (typeof db.open !== "undefined")
+			if (typeof db.open !== "undefined") {
 				return setTimeout(function(){ udf.getDBsize(callback); }, 100);
+			}
 
 			total_length = 0;
 			db.domain.query().all().execute().then(function(d){						// IndexedDB - "domain"
@@ -838,19 +875,17 @@ var udf = {
 				});
 			});
 		}
-		catch (e)
-		{
+		catch (e) {
 			debug.track(e, "c:getDBsize");
 		}
 	},
 
-	StorageCleanup: function()
-	{
-		try
-		{
+	StorageCleanup: function() {
+		try	{
 			// Retry if database is not initialized yet
-			if (typeof db === "undefined" || typeof db.open !== "undefined")
+			if (typeof db === "undefined" || typeof db.open !== "undefined") {
 				return setTimeout(function(){ StorageCleanup(); }, 1500);
+			}
 
 			// Check "domain" IndexedDB
 			db.domain.query().all().execute().then(function(r){
@@ -858,20 +893,24 @@ var udf = {
 					var now = Math.round(new Date().getTime() / 1000);
 
 					// Abort if val has no value or errors could occur
-					if (typeof val === "undefined" || typeof val.id === "undefined" || typeof val.domain === "undefined" || typeof val.time === "undefined" || typeof val.incognito === "undefined")
+					if (typeof val === "undefined" || typeof val.id === "undefined" || typeof val.domain === "undefined" || typeof val.time === "undefined" || typeof val.incognito === "undefined") {
 						return true;
+					}
 
 					// Check if unique key is set
-					if (typeof val.domain === "undefined")
+					if (typeof val.domain === "undefined") {
 						db.domain.remove( val.id );
+					}
 
 					// Check if entry is outdated - 1 month
-					if (val.time <= now - 60 * 60 * 24 * 7 * 4)
+					if (val.time <= now - 60 * 60 * 24 * 7 * 4) {
 						db.domain.remove( val.id );
+					}
 
-					// Check if data was stored in incognito mode and is outdated - 1 hour
-					if (val.incognito === "1" && val.time <= now - 60 * 60)
+					// Check if data was stored in incognito mode and is outdated - 30 minutes
+					if (val.incognito === "1" && val.time <= now - 60 * 30) {
 						db.domain.remove( val.id );
+					}
 				});
 			});
 
@@ -881,20 +920,24 @@ var udf = {
 					var now = Math.round(new Date().getTime() / 1000);
 
 					// Abort if val has no value or errors could occur
-					if (typeof val === "undefined" || typeof val.ip === "undefined" || typeof val.id === "undefined" || typeof val.time === "undefined" || typeof val.incognito === "undefined")
+					if (typeof val === "undefined" || typeof val.ip === "undefined" || typeof val.id === "undefined" || typeof val.time === "undefined" || typeof val.incognito === "undefined") {
 						return true;
+					}
 
 					// Check if unique key is set
-					if (typeof val.ip === "undefined")
+					if (typeof val.ip === "undefined") {
 						db.ip.remove( val.id );
+					}
 
 					// Check if entry is outdated - 3 months
-					if (val.time <= now - 60 * 60 * 24 * 7 * 4 * 3)
+					if (val.time <= now - 60 * 60 * 24 * 7 * 4 * 3) {
 						db.ip.remove( val.id );
+					}
 
-					// Check if data was stored in incognito mode and is outdated - 1 hour
-					if (val.incognito === "1" && val.time <= now - 60 * 60)
+					// Check if data was stored in incognito mode and is outdated - 30 minutes
+					if (val.incognito === "1" && val.time <= now - 60 * 30) {
 						db.ip.remove( val.id );
+					}
 				});
 			});
 
@@ -904,20 +947,24 @@ var udf = {
 					var now = Math.round(new Date().getTime() / 1000);
 
 					// Abort if val has no value or errors could occur
-					if (typeof val === "undefined" || typeof val.domain === "undefined" || typeof val.id === "undefined" || typeof val.time === "undefined" || typeof val.incognito === "undefined")
+					if (typeof val === "undefined" || typeof val.domain === "undefined" || typeof val.id === "undefined" || typeof val.time === "undefined" || typeof val.incognito === "undefined") {
 						return true;
+					}
 
 					// Check if unique key is set
-					if (typeof val.domain === "undefined")
+					if (typeof val.domain === "undefined") {
 						db.domaininfo.remove( val.id );
+					}
 
 					// Check if entry is outdated - 7 days
-					if (val.time <= now - 60 * 60 * 24 * 7)
+					if (val.time <= now - 60 * 60 * 24 * 7) {
 						db.domaininfo.remove( val.id );
+					}
 
-					// Check if data was stored in incognito mode and is outdated - 1 hour
-					if (val.incognito === "1" && val.time <= now - 60 * 60)
+					// Check if data was stored in incognito mode and is outdated - 30 minutes
+					if (val.incognito === "1" && val.time <= now - 60 * 30) {
 						db.domaininfo.remove( val.id );
+					}
 				});
 			});
 
@@ -927,20 +974,24 @@ var udf = {
 					var now = Math.round(new Date().getTime() / 1000);
 
 					// Abort if val has no value or errors could occur
-					if (typeof val === "undefined" || typeof val.url === "undefined" || typeof val.id === "undefined" || typeof val.time === "undefined" || typeof val.incognito === "undefined")
+					if (typeof val === "undefined" || typeof val.url === "undefined" || typeof val.id === "undefined" || typeof val.time === "undefined" || typeof val.incognito === "undefined") {
 						return true;
+					}
 
 					// Check if unique key is set
-					if (typeof val.url === "undefined")
+					if (typeof val.url === "undefined") {
 						db.domainsocial.remove( val.id );
+					}
 
 					// Check if entry is outdated - 3 days
-					if (val.time <= now - 60 * 60 * 24 * 3)
+					if (val.time <= now - 60 * 60 * 24 * 3) {
 						db.domainsocial.remove( val.id );
+					}
 
-					// Check if data was stored in incognito mode and is outdated - 1 hour
-					if (val.incognito === "1" && val.time <= now - 60 * 60)
+					// Check if data was stored in incognito mode and is outdated - 30 minutes
+					if (val.incognito === "1" && val.time <= now - 60 * 30) {
 						db.domainsocial.remove( val.id );
+					}
 				});
 			});
 
@@ -950,58 +1001,58 @@ var udf = {
 					var now = Math.round(new Date().getTime() / 1000);
 
 					// Abort if val has no value or errors could occur
-					if (typeof val === "undefined" || typeof val.domain === "undefined" || typeof val.id === "undefined" || typeof val.time === "undefined" || typeof val.incognito === "undefined")
+					if (typeof val === "undefined" || typeof val.domain === "undefined" || typeof val.id === "undefined" || typeof val.time === "undefined" || typeof val.incognito === "undefined") {
 						return true;
+					}
 
 					// Check if unique key is set
-					if (typeof val.domain === "undefined")
+					if (typeof val.domain === "undefined") {
 						db.localip.remove( val.id );
+					}
 
 					// Check if entry is outdated - 1 day
-					if (val.time <= now - 60 * 60 * 24)
+					if (val.time <= now - 60 * 60 * 24) {
 						db.localip.remove( val.id );
+					}
 
-					// Check if data was stored in incognito mode and is outdated - 5 minutes
-					if (val.incognito === "1" && val.time <= now - 60 * 5)
+					// Check if data was stored in incognito mode and is outdated - 30 minutes
+					if (val.incognito === "1" && val.time <= now - 60 * 30) {
 						db.localip.remove( val.id );
+					}
 				});
 			});
 
 		}
-		catch (e)
-		{
+		catch (e) {
 			error.track(e, "c:StorageCleanup");
 		}
 	},
 
-	isServerInMaintenanceMode: function(callback)
-	{
-		try
-		{
+	isServerInMaintenanceMode: function(callback) {
+		try	{
 			$.get(data_protocol + "://" + data_domain + "/status.json", function(data) {
-				if (typeof data === "undefined" || typeof data.ok === "undefined")
+				if (typeof data === "undefined" || typeof data.ok === "undefined") {
 					return callback(false);
+				}
 				return callback(data);
 			}, "json");
 		}
-		catch (e)
-		{
+		catch (e) {
 			return debug.track(e, "c:isServerInMaintenanceMode");
 		}
 	},
 }
 
 // Simple internationalization 
-function _(variable, object)
-{
+function _(variable, object) {
 	var lang = variable;
-	if (typeof object === "undefined")
+	if (typeof object === "undefined") {
 		lang = chrome.i18n.getMessage(variable).replace(/\n/g,"<br />");
-	else
+	} else {
 		lang = chrome.i18n.getMessage(variable, object).replace(/\n/g,"<br />");
+	}
 
-	if (lang.length == 0)
-	{
+	if (lang.length == 0) {
 		debug.warn("Language variable \"" + variable + "\" not found. Please help us improving your language!");
 		lang = "#>>"+variable+"<< unknown#";
 	}
@@ -1038,14 +1089,13 @@ function number_format (number, decimals, dec_point, thousands_sep) {
   return s.join(dec);
 }
 
-function parseUrl(url)
-{
+function parseUrl(url) {
 	var match = url.match(/(chrome|chrome-extension|http|https|ftp)\:\/\/([^\/^\:^\[]{1,})/);
-	if (match == null)
-	{
+	if (match == null) {
 		match = url.match(/\[([^\.]{3,})\]/);
-		if (match == null)
+		if (match == null) {
 			return false;
+		}
 		return match[1];
 	}
 	var tmp = match[2].match(/(.*)\.$/);
@@ -1094,8 +1144,7 @@ function getWoTid( wot, index ) {
 	}
 }
 
-function getDateObject()
-{
+function getDateObject() {
 	var now = new Date();
 	return { day: now.getDate(), month: now.getMonth(), year: now.getFullYear()};
 }
@@ -1105,34 +1154,36 @@ function getDateObject()
 	By default it returns true, if b is bigger than a
 	otherwise it returns false (< as operator)
 */
-function compare_version(a, b, operator)
-{
+function compare_version(a, b, operator) {
 	operator = typeof operator !== "undefined" ? operator : ">";
-	if (operator === "=")
+	if (operator === "=") {
 		operator = "==";
+	}
 
 	var asplit = a.split('.');
 	var bsplit = b.split('.');
 	var maxlen = Math.max(asplit.length, bsplit.length);
 
-	for (i = 0; i < maxlen; i++)
-	{
-		if (typeof asplit[i] === "undefined" || asplit[i] === "")
+	for (i = 0; i < maxlen; i++) {
+		if (typeof asplit[i] === "undefined" || asplit[i] === "") {
 			asplit[i] = "0";
-		if (typeof bsplit[i] === "undefined" || bsplit[i] === "")
+		}
+		if (typeof bsplit[i] === "undefined" || bsplit[i] === "") {
 			bsplit[i] = "0";
+		}
 
-		if (asplit[i] === bsplit[i])
+		if (asplit[i] === bsplit[i]) {
 			continue;
+		}
 
 		var anum = parseInt(asplit[i]);
 		var bnum = parseInt(bsplit[i]);
 
-		if (anum === bnum)
+		if (anum === bnum) {
 			continue;
+		}
 
-		switch (operator)
-		{
+		switch (operator) {
 			case '>':
 				return (anum > bnum);
 			case '>=':
@@ -1151,7 +1202,8 @@ function compare_version(a, b, operator)
 		}
 	}
 
-	if (operator === "==")
+	if (operator === "==") {
 		return true;
+	}
 	return false;
 }
