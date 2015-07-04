@@ -64,7 +64,7 @@ function getExtensionSourceStore() {
 	switch (chrome.i18n.getMessage("@@extension_id")) {
 		case "eklbfdpploakpkdakoielobggbhemlnm":
 			return "chrome";
-		case "camblegjnngoibgaedlcdaanlmlpplcn":
+		case "ejldiebohnkkdpenfhcpolafbopmdcea":
 			return "opera";
 		default:
 			return "none";
