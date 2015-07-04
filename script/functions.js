@@ -492,14 +492,14 @@ var udf = {
 			}
 
 			// Split domain
-			var reg = /(chrome|chrome-extension|http|https|ftp)\:\/\/([^\/^\:^\[]{1,})/;
+			var reg = /(chrome|chrome-extension|opera|http|https|ftp)\:\/\/([^\/^\:^\[]{1,})/;
 
 			if (reg.test(url)) {
-				var match = url.match(/(chrome|chrome-extension|http|https|ftp)\:\/\/([^\/^\:^\[]{1,})/);
+				var match = url.match(reg);
 
 				// Chrome extension - internal
-				if (match[1] == 'chrome' || match[1] == 'chrome-extension') {
-					return { icon: "images/fugue/computer.png", title: "Chrome browser", popup: 'special.html' };
+				if (match[1] == 'chrome' || match[1] == 'chrome-extension' || match[1] == 'opera') {
+					return { icon: "images/fugue/computer.png", title: "Browser", popup: 'special.html' };
 				}
 
 				// Dotless domain (mostly internal e.g. start, login, hotspot)
@@ -1149,7 +1149,7 @@ function number_format (number, decimals, dec_point, thousands_sep) {
 }
 
 function parseUrl(url) {
-	var match = url.match(/(chrome|chrome-extension|http|https|ftp)\:\/\/([^\/^\:^\[]{1,})/);
+	var match = url.match(/(chrome|chrome-extension|opera|http|https|ftp)\:\/\/([^\/^\:^\[]{1,})/);
 	if (match == null) {
 		match = url.match(/\[([^\.]{3,})\]/);
 		if (match == null) {

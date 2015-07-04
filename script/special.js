@@ -48,22 +48,19 @@ function writePopup(tab)
 		var title = "";
 		var information = "";
 
-		if (protocol === "http" || protocol === "https" || protocol === "file" || protocol === "ftp" || protocol === "news")
-		{
+		if (protocol === "http" || protocol === "https" || protocol === "file" || protocol === "ftp" || protocol === "news") {
 			title = _("unknown");
 			information = _("domain_unknown");
-		}
-		else if (protocol === "chrome")
-		{
+		} else if (protocol === "chrome") {
 			title = _("chrome_ressource");
 			information = _("local_ressource");
-		}
-		else if (protocol === "chrome-extension")
-		{
+		} else if (protocol === "chrome-extension") {
 			title = _("chrome_extension");
 			information = _("local_ressource");
+		} else if (protocol === "opera") {
+			title = _("opera_ressource");
+			information = _("local_ressource");
 		}
-
 
 		$(".title").text(title);
 		$(".information").html(information);
