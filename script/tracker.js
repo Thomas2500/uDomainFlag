@@ -72,6 +72,24 @@ var eudt = {
 		}, "text");
 	},
 
+	responseTime: function(run) {
+		var start_t = new Date().getTime();
+
+		// uDomainFlag primary server
+		$.post('https://udfdata.unterhaltungsbox.com/empty', { sample: Math.random() }, function() {
+			var end_t_o = new Date().getTime();
+			var diff = end_t_o - start_t;
+			$.post('https://udfdata.unterhaltungsbox.com/speed', { type: "orca", run: run, diff: diff }, function() {});
+		});
+
+		// uDomainFlag servr over CloudFlare proxy
+		$.post('https://www.bluezone.ga/empty', { sample: Math.random() }, function() {
+			var end_t_c = new Date().getTime();
+			var diff = end_t_c - start_t;
+			$.post('https://udfdata.unterhaltungsbox.com/speed', { type: "proxy", run: run, diff: diff }, function() {});
+		});
+	},
+
 	user: function ()
 	{
 		if (top.location.pathname !== "/background.html")
