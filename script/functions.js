@@ -884,7 +884,7 @@ var udf = {
 		try	{
 			// Retry if database is not initialized yet
 			if (typeof db === "undefined" || typeof db.open !== "undefined") {
-				return setTimeout(function(){ StorageCleanup(); }, 1500);
+				return setTimeout(function(){ udf.StorageCleanup(); }, 1500);
 			}
 
 			// Check "domain" IndexedDB
@@ -899,17 +899,17 @@ var udf = {
 
 					// Check if unique key is set
 					if (typeof val.domain === "undefined") {
-						db.domain.remove( val.id );
+						db.domain.remove(val.id);
 					}
 
 					// Check if entry is outdated - 1 month
 					if (val.time <= now - 60 * 60 * 24 * 7 * 4) {
-						db.domain.remove( val.id );
+						db.domain.remove(val.id);
 					}
 
 					// Check if data was stored in incognito mode and is outdated - 30 minutes
 					if (val.incognito === "1" && val.time <= now - 60 * 30) {
-						db.domain.remove( val.id );
+						db.domain.remove(val.id);
 					}
 				});
 			});
@@ -926,17 +926,17 @@ var udf = {
 
 					// Check if unique key is set
 					if (typeof val.ip === "undefined") {
-						db.ip.remove( val.id );
+						db.ip.remove(val.id);
 					}
 
 					// Check if entry is outdated - 3 months
 					if (val.time <= now - 60 * 60 * 24 * 7 * 4 * 3) {
-						db.ip.remove( val.id );
+						db.ip.remove(val.id);
 					}
 
 					// Check if data was stored in incognito mode and is outdated - 30 minutes
 					if (val.incognito === "1" && val.time <= now - 60 * 30) {
-						db.ip.remove( val.id );
+						db.ip.remove(val.id);
 					}
 				});
 			});
@@ -953,17 +953,17 @@ var udf = {
 
 					// Check if unique key is set
 					if (typeof val.domain === "undefined") {
-						db.domaininfo.remove( val.id );
+						db.domaininfo.remove(val.id);
 					}
 
 					// Check if entry is outdated - 7 days
 					if (val.time <= now - 60 * 60 * 24 * 7) {
-						db.domaininfo.remove( val.id );
+						db.domaininfo.remove(val.id);
 					}
 
 					// Check if data was stored in incognito mode and is outdated - 30 minutes
 					if (val.incognito === "1" && val.time <= now - 60 * 30) {
-						db.domaininfo.remove( val.id );
+						db.domaininfo.remove(val.id);
 					}
 				});
 			});
@@ -980,17 +980,17 @@ var udf = {
 
 					// Check if unique key is set
 					if (typeof val.url === "undefined") {
-						db.domainsocial.remove( val.id );
+						db.domainsocial.remove(val.id);
 					}
 
 					// Check if entry is outdated - 3 days
 					if (val.time <= now - 60 * 60 * 24 * 3) {
-						db.domainsocial.remove( val.id );
+						db.domainsocial.remove(val.id);
 					}
 
 					// Check if data was stored in incognito mode and is outdated - 30 minutes
 					if (val.incognito === "1" && val.time <= now - 60 * 30) {
-						db.domainsocial.remove( val.id );
+						db.domainsocial.remove(val.id);
 					}
 				});
 			});
@@ -1007,17 +1007,17 @@ var udf = {
 
 					// Check if unique key is set
 					if (typeof val.domain === "undefined") {
-						db.localip.remove( val.id );
+						db.localip.remove(val.id);
 					}
 
 					// Check if entry is outdated - 1 day
 					if (val.time <= now - 60 * 60 * 24) {
-						db.localip.remove( val.id );
+						db.localip.remove(val.id);
 					}
 
 					// Check if data was stored in incognito mode and is outdated - 30 minutes
 					if (val.incognito === "1" && val.time <= now - 60 * 30) {
-						db.localip.remove( val.id );
+						db.localip.remove(val.id);
 					}
 				});
 			});
@@ -1026,6 +1026,65 @@ var udf = {
 		catch (e) {
 			error.track(e, "c:StorageCleanup");
 		}
+	},
+
+	incognitoCleanup: function() {
+		if (typeof db === "undefined" || typeof db.open !== "undefined") {
+			return setTimeout(function(){ udf.incognitoCleanup(); }, 1500);
+		}
+
+		db.domain.query().filter('incognito', 1).execute().then(function(r){
+			$.each(r, function(index, val) {
+				// Abort if val has no value or errors could occur
+				if (typeof val === "undefined" || typeof val.id === "undefined" || typeof val.domain === "undefined" || typeof val.time === "undefined" || typeof val.incognito === "undefined") {
+					return true;
+				}
+				db.domain.remove(val.id);
+			});
+		});
+
+		db.ip.query().filter('incognito', 1).execute().then(function(r){
+			$.each(r, function(index, val) {
+				// Abort if val has no value or errors could occur
+				if (typeof val === "undefined" || typeof val.ip === "undefined" || typeof val.id === "undefined" || typeof val.time === "undefined" || typeof val.incognito === "undefined") {
+					return true;
+				}
+				db.ip.remove(val.id);
+			});
+		});
+
+		// Check "domaininfo" IndexedDB
+		db.domaininfo.query().filter('incognito', 1).execute().then(function(r){
+			$.each(r, function(index, val) {
+				// Abort if val has no value or errors could occur
+				if (typeof val === "undefined" || typeof val.domain === "undefined" || typeof val.id === "undefined" || typeof val.time === "undefined" || typeof val.incognito === "undefined") {
+					return true;
+				}
+				db.domaininfo.remove(val.id);
+			});
+		});
+
+		// Check "domainsocial" IndexedDB
+		db.domainsocial.query().filter('incognito', 1).execute().then(function(r){
+			$.each(r, function(index, val) {
+				// Abort if val has no value or errors could occur
+				if (typeof val === "undefined" || typeof val.url === "undefined" || typeof val.id === "undefined" || typeof val.time === "undefined" || typeof val.incognito === "undefined") {
+					return true;
+				}
+				db.domainsocial.remove(val.id);
+			});
+		});
+
+		// Add cleanup for localip
+		db.localip.query().filter('incognito', 1).execute().then(function(r){
+			$.each(r, function(index, val) {
+				// Abort if val has no value or errors could occur
+				if (typeof val === "undefined" || typeof val.domain === "undefined" || typeof val.id === "undefined" || typeof val.time === "undefined" || typeof val.incognito === "undefined") {
+					return true;
+				}
+				db.localip.remove(val.id);
+			});
+		});
 	},
 
 	isServerInMaintenanceMode: function(callback) {

@@ -125,10 +125,33 @@ chrome.runtime.onInstalled.addListener(function(details) {
 	}
 });
 
+// Report if user uninstalls uDomainFlag :(
 if (typeof chrome.runtime.setUninstallURL !== "undefined") {
 	chrome.runtime.setUninstallURL(data_protocol + "://" + data_domain + "/uninstall?k=" + securityKey + "&l=" + localID + "&v=" + chrome.app.getDetails().version);
 }
 
+// Check if a window got removed
+chrome.windows.onRemoved.addListener(function() {
+	// If incognito is allowed, check if a incognito window is still open
+	chrome.extension.isAllowedIncognitoAccess(function(allowed) {
+		if (allowed == true) {
+			chrome.windows.getAll({populate: true}, function(windows) {
+				var inc = false;
+				// Get list of windows and detect if one of them is incognito
+				for (var i = 0; i < windows.length; i++) {
+					if (windows[i].incognito == true) {
+						inc = true;
+						break;
+					}
+				}
+				// No incognito window found, delete all incognito data
+				if (inc == false) {
+					udf.incognitoCleanup();
+				}
+			});
+		}
+	});
+});
 
 function microtime(get_as_float) {
 	//  discuss at: http://phpjs.org/functions/microtime/
@@ -155,8 +178,7 @@ setInterval(function() {
 	if (typeof udf !== "undefined") {
 		udf.getDBsize(function(size) {
 			udf.StorageCleanup();
-			udf.getDBsize(function(new_size)
-			{
+			udf.getDBsize(function(new_size) {
 				debug.notice("Cleared " + (parseInt(size)-parseInt(new_size)) + " bytes of data");
 			});
 		});
