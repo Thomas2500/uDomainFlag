@@ -127,7 +127,7 @@
         "message": "Keine"
     },
     "open_source": {
-        "message": "uDomainFlag ist unter der GPL Lizenz lizenziert und somit Open Source. Trage auch du etwas bei!\nDer Quellcode ist jederzeit auf <a href=\"https:\/\/github.com\/Thomas2500\/uDomainFlag\">GitHub &raquo; Thomas2500 &raquo; uDomainFlag<\/a> einsehbar.\nDie \u00dcbersetzungen sind unter <a href=\"http:\/\/translate.unterhaltungsbox.com\/\">uTranslate<\/a> erweiterbar."
+        "message": "uDomainFlag ist unter der AGPL Lizenz lizenziert und somit Open Source. Trage auch du etwas bei!\nDer Quellcode ist jederzeit auf <a href=\"https:\/\/github.com\/Thomas2500\/uDomainFlag\">GitHub &raquo; Thomas2500 &raquo; uDomainFlag<\/a> einsehbar.\nDie \u00dcbersetzungen sind unter <a href=\"http:\/\/translate.unterhaltungsbox.com\/\">uTranslate<\/a> erweiterbar."
     },
     "opera_ressource": {
         "message": "Opera Ressource"
@@ -243,9 +243,6 @@
                 "example": "1.2.3.4"
             }
         }
-    },
-    "_export": {
-        "message": "04.07.2015 12:25"
     },
     "_lang": {
         "message": "Deutsch"
