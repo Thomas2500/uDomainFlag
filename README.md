@@ -19,4 +19,4 @@ You can install uDomainFlag via [Chrome Web Store](https://chrome.google.com/web
 
 # License
 Copyright (c) 2013-2015 Thomas Bella.
-See the LICENSE file for license rights and limitations (GPL, version 2).
+See the LICENSE file for license rights and limitations.
