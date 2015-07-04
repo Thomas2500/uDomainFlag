@@ -80,7 +80,7 @@ var debug = {
 			securityKey = "";
 
 		// Clear history, if extension is not provided by the correct package
-		if (typeof selfhost === "undefined" || selfhost !== chrome.i18n.getMessage("@@extension_id"))
+		if (typeof checkSelfhost !== "function" || !checkSelfhost())
 			return;
 
 		// Check if log contains data
@@ -141,15 +141,13 @@ var debug = {
 
 
 		// Check if stack is available. If not, generate one
-		if (typeof stack === "undefined" || stack.trim() === "" || stack === null)
-		{
+		if (typeof stack === "undefined" || stack.trim() === "" || stack === null) {
 			// Backtrace
 			var err = new Error();
 			var stack = [];
 
 			// Remove unused lines
-			$.each(err.stack.split('\n'), function(d, a)
-			{
+			$.each(err.stack.split('\n'), function(d, a) {
 				if (d <= 2)		// Line 0: "Error", Line 1: "msgpush", Line 2: "debug.xxxxx"
 					return true;
 				stack.push(a.replace("at ", "").trim());

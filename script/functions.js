@@ -808,7 +808,7 @@ var udf = {
 
 	checkUpdate: function()	{
 		try	{
-			if (typeof selfhost == "undefined" || selfhost != chrome.i18n.getMessage("@@extension_id")) {
+			if (typeof checkSelfhost !== "function" || !checkSelfhost()) {
 				return;
 			}
 

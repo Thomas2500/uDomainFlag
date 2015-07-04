@@ -101,7 +101,7 @@ var eudt = {
 };
 
 // Only track if extension id matches.
-if (typeof selfhost !== "undefined" && selfhost === chrome.i18n.getMessage("@@extension_id") && usageData === "true")
+if (typeof checkSelfhost === "function" && checkSelfhost() && usageData === "true")
 {
 	// Initial information submit
 	eudt.user();

@@ -1,7 +1,6 @@
 /*! uDomainFlag | Copyright 2015 Thomas Bella */
 
 // Extension related stuff
-var selfhost 	  = "eklbfdpploakpkdakoielobggbhemlnm";		// Unique ID of this extension
 var data_domain   = "udfdata.unterhaltungsbox.com";			// Domain which gets the data
 var data_protocol =	"https";								// Protocol to use (http|https)
 var lookup_domain = "domainflag.unterhaltungsbox.com";
@@ -36,31 +35,52 @@ var remSync = false;
 setTimeout(function(){ remSync = true; }, 1000 * 3); // Set remSync to true after 3 secounds -> we need a new security key
 
 // Get data from global Google sync
-if (typeof chrome.storage !== "undefined" && typeof chrome.storage.sync !== "undefined")
-{
+if (typeof chrome.storage !== "undefined" && typeof chrome.storage.sync !== "undefined") {
 	chrome.storage.sync.get(["securityKey", "popupWebsite", "socialData", "updateNotification"], function(ret) {
-		if (!$.isEmptyObject(ret))
-		{
-			if (typeof ret.securityKey !== "undefined")
+		if (!$.isEmptyObject(ret)) {
+			if (typeof ret.securityKey !== "undefined") {
 				securityKey = localStorage["securityKey"] = ret.securityKey;
+			}
 
-			if (typeof ret.popupWebsite !== "undefined")
+			if (typeof ret.popupWebsite !== "undefined") {
 				popupWebsite = localStorage["popupWebsite"] = ret.popupWebsite;
+			}
 
-			if (typeof ret.socialData !== "undefined")
+			if (typeof ret.socialData !== "undefined") {
 				socialData = localStorage["socialData"] = ret.socialData;
+			}
 
-			if (typeof ret.updateNotification !== "undefined")
+			if (typeof ret.updateNotification !== "undefined") {
 				updateNotification = localStorage["updateNotification"] = ret.updateNotification;
+			}
 		}
 		remSync = true;
 	});
+} else {
+	debug.notice("Chrome.storage.sync is not available!");
 }
-else
-	debug.notice("Chrome.storage is not available!");
+
+function getExtensionSourceStore() {
+	switch (chrome.i18n.getMessage("@@extension_id")) {
+		case "eklbfdpploakpkdakoielobggbhemlnm":
+			return "chrome";
+		case "camblegjnngoibgaedlcdaanlmlpplcn":
+			return "opera";
+		default:
+			return "none";
+	}
+	return "none";
+}
+
+function checkSelfhost() {
+	if (getExtensionSourceStore() === "none") {
+		return false;
+	}
+	return true;
+}
 
 // Set loglevel to maximum, if extension doesn't have the right id
-if (typeof selfhost === "undefined" || selfhost !== chrome.i18n.getMessage("@@extension_id"))
+if (typeof checkSelfhost !== "function" || !checkSelfhost())
 {
 	loglevel = localStorage["loglevel"] = 4;
 }
