@@ -185,10 +185,16 @@ setInterval(function() {
 	}
 }, 1000 * 60 * 60);
 
+// Local IP storage cleanup - every 15 minutes
+setInterval(function() {
+	if (typeof udf !== "undefined") {
+		udf.localIPcleanup();
+	}
+}, 1000 * 60 * 15);
+
 
 // Check for new updates
 udf.checkUpdate();
-
 
 // check response time
 if (usageData == "true") {

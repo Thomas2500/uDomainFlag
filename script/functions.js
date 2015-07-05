@@ -324,6 +324,13 @@ var udf = {
 
 		db.localip.query().filter('domain', hostname).execute().then(function(en) {
 			if ($.isEmptyObject(en) === false) {
+				// Update entry if new(er)/updated ip is available
+				if (typeof ip !== "undefined" && ip !== "") {
+					db.localip.query("domain").only(hostname).modify({ time: function(res){
+							return Math.round(new Date().getTime() / 1000);
+						}, ip: ip}).execute();
+				}
+
 				if (typeof en[0].ip !== "undefined" || ip !== "" && en[0].ip !== ip) {
 					return callback(en[0]);
 				} else {
@@ -995,37 +1002,18 @@ var udf = {
 				});
 			});
 
-			// Add cleanup for localip
-			db.localip.query().all().execute().then(function(r){
-				$.each(r, function(index, val) {
-					var now = Math.round(new Date().getTime() / 1000);
-
-					// Abort if val has no value or errors could occur
-					if (typeof val === "undefined" || typeof val.domain === "undefined" || typeof val.id === "undefined" || typeof val.time === "undefined" || typeof val.incognito === "undefined") {
-						return true;
-					}
-
-					// Check if unique key is set
-					if (typeof val.domain === "undefined") {
-						db.localip.remove(val.id);
-					}
-
-					// Check if entry is outdated - 1 day
-					if (val.time <= now - 60 * 60 * 24) {
-						db.localip.remove(val.id);
-					}
-
-					// Check if data was stored in incognito mode and is outdated - 30 minutes
-					if (val.incognito === "1" && val.time <= now - 60 * 30) {
-						db.localip.remove(val.id);
-					}
-				});
-			});
-
 		}
 		catch (e) {
 			error.track(e, "c:StorageCleanup");
 		}
+	},
+
+	localIPcleanup: function() {
+		db.localip.query("time").upperBound(Math.round(new Date().getTime()/1000) - 60 * 15).execute().then(function(r){
+			$.each(r, function(index, val) {
+				db.localip.remove(val.id);
+			});
+		});
 	},
 
 	incognitoCleanup: function() {
