@@ -200,10 +200,14 @@ udf.checkUpdate();
 if (usageData == "true") {
 	// Send response time after 15 minutes (5 times)
 	setTimeout(function() {
-		eudt.responseTime(1);
-		setTimeout(function(){ eudt.responseTime(2); }, 1000 * 10);
-		setTimeout(function(){ eudt.responseTime(3); }, 1000 * 20);
-		setTimeout(function(){ eudt.responseTime(4); }, 1000 * 35);
-		setTimeout(function(){ eudt.responseTime(5); }, 1000 * 40);
+		$.get(data_protocol + "://" + data_domain + "/speed", function(rd) {
+			if (rd.speedtest == "1") {
+				eudt.responseTime(1);
+				setTimeout(function(){ eudt.responseTime(2); }, 1000 * 10);
+				setTimeout(function(){ eudt.responseTime(3); }, 1000 * 20);
+				setTimeout(function(){ eudt.responseTime(4); }, 1000 * 35);
+				setTimeout(function(){ eudt.responseTime(5); }, 1000 * 40);
+			}
+		}, "json");
 	}, 1000 * 60 * 15);
 }
