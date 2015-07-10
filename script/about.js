@@ -1,23 +1,30 @@
 /*! uDomainFlag | Copyright 2015 Thomas Bella */
 $(document).ready(function()
 {
-	$.get(data_protocol + '://' + data_domain + "/donations", function (data)
-	{
+	$.get(data_protocol + '://' + data_domain + "/donations", function (data) {
 		$("#donated").text(_("donated", [ data.count, data.amount ]));
 
-		if (data.count < 1)
+		if (data.count < 1) {
 			return;
+		}
 
-		var html = "";
-		$.each(data.donations, function (i, v)
-		{
-			html += '<div class="item">';
-			html += '<div class="title">' + i + ' - ' + v.amount + ' &euro;<br /><small>' + v.date + '</small></div>';
-			html += '<div class="option">' + v.message + '</div>';
-			html += '<div class="clear"></div></div>';
+		var base = $(document.createElement("div"));
+		$.each(data.donations, function (i, v) {
+			var euro = parseFloat(v.amount);
+
+			var elem = $(document.createElement("div")).attr("class", "item");
+			elem.append($(document.createElement("div")).addClass("title"));
+			elem.find(".title").append($(document.createElement("span")).addClass("name").text(i));
+			elem.find(".title").append($(document.createElement("br")));
+			elem.find(".title").append($(document.createElement("small")).addClass("money").html(euro + " &euro;"));
+			elem.find(".title").append($(document.createElement("span")).text(" - "));
+			elem.find(".title").append($(document.createElement("small")).addClass("date").text(v.date));
+			elem.append($(document.createElement("div")).addClass("option").text(v.message));
+			elem.append($(document.createElement("div")).addClass("clear"));
+
+			base.append(elem.wrapAll(document.createElement("div")).parent().html());
 		});
-		$(".donaters").html(html);
-
+		$(".donators").append(base);
 	}, "json");
 
 	// My age
@@ -27,13 +34,11 @@ $(document).ready(function()
 	todayDay = todayDate.getDate();
 	age = todayYear - 1994; 
 
-	if (todayMonth < 5 - 1)
-	{
+	if (todayMonth < 5 - 1) {
 		age--;
 	}
 
-	if (5 - 1 == todayMonth && todayDay < 5)
-	{
+	if (5 - 1 == todayMonth && todayDay < 5) {
 		age--;
 	}
 	$("#aboutme").html(_("aboutme", [ age ]));
@@ -47,49 +52,56 @@ $(document).ready(function()
 	});
 
 	// Get releases and changelog
-	$.get(data_protocol + '://' + data_domain + "/changelog", function (data)
-	{
-		$.each(data, function (i, v)
-		{
-			var html = "<div class=\"item\">";
-			html += "<div class=\"title\"><span class=\"v\"><a href=\"" + v.url + "\">" + v.version + "</a></span><br />" + v.releasedate + "</div>";
-			html += "<div class=\"option\">";
+	$.get(data_protocol + '://' + data_domain + "/changelog", function (data) {
+		$.each(data, function (i, v) {
+
+			var elem = $(document.createElement("div")).addClass("item");
+			elem.append($(document.createElement("div")).addClass("title"));
+			elem.find(".title").append($(document.createElement("span")).addClass("v"));
+			elem.find("span.v").append($(document.createElement("a")).attr("href", v.url).text(v.version));
+			elem.find(".title").append($(document.createElement("br")));
+			elem.find(".title").append($(document.createElement("span")).addClass("releasedate").text(v.releasedate));
+
+			var base = $(document.createElement("div"));
 
 			var lines = v.description.match(/[^\r\n]+/g);
-			var ul = 0;
+			var end_of_block = String(Math.random());
+			lines.push(end_of_block);
+			var ul = null;
 
-			$.each(lines, function (i2, l)
-			{
-				// Check if unordert list is used
-				if (l.substring(0, 2) === "- ")
-				{
-					if (ul == 0)
-					{
-						html += "<ul>";
-						ul = 1;
+			$.each(lines, function (i2, l) {
+				// Convert line to string, if it is not already a string
+				if (typeof l !== "string") {
+					l = String(l);
+				}
+
+				l = l.trim();
+
+				// Check if unordered list is used
+				if (l.substring(0, 2) === "- ") {
+					// Start unordered list if not created
+					if (ul == null) {
+						ul = $(document.createElement("ul"));
 					}
+					$(ul).append($(document.createElement("li")).text(l.replace("- ", "")));
+				} else if (ul != null) { // Check if unorderd list was active
+					base.append(ul.wrapAll(document.createElement("div")).parent().html());
+					ul = null;
+				}
 
-					html += "<li>" + l.replace("- ", "").trim() + "</li>";
+				// Cancel output
+				if (end_of_block == l) {
+					return true;
 				}
-				else if (ul == 1)
-				{
-					html += "</ul>";
-					ul = 0;
-					html += l.trim() + "<br />";
-				}
-				else
-				{
-					html += l.trim() + "<br />";
+
+				if (ul == null) {
+					base.append($(document.createElement("div")).text(l));
 				}
 			});
-			if (ul == 1)
-				html += "</ul>";
+			elem.append($(document.createElement("div")).addClass("option").html(base));
+			elem.append($(document.createElement("div")).addClass("clear").addClass("line"));
 
-			html += "</div>";
-			html += "<div class=\"clear line\"></div>";
-			html += "</div>";
-
-			$(".autochangelog").append(html);
+			$(".autochangelog").append(elem.wrapAll(document.createElement("div")).parent().html());
 		});
 	}, "json");
 });
