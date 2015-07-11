@@ -47,12 +47,21 @@ $(document).ready(function()
 
 	$("title").html($("title").text() + " &bull; uDomainFlag");
 
-	$(".spoiler .title").click(function (){
+	$(".spoiler .more").click(function (){
+		if ($('.spoiler .content').css("display") == "block") {
+			$('.expand').removeClass("active");
+		} else {
+			$('.expand').addClass("active");
+		}
 		$(".spoiler .content").slideToggle("fast");
 	});
 
+	$(".spoiler .more").append($(document.createElement("span")).addClass("expand").html("&rsaquo;"));
+
 	// Get releases and changelog
 	$.get(data_protocol + '://' + data_domain + "/changelog", function (data) {
+		var lr = 0;
+
 		$.each(data, function (i, v) {
 
 			var elem = $(document.createElement("div")).addClass("item");
@@ -101,7 +110,12 @@ $(document).ready(function()
 			elem.append($(document.createElement("div")).addClass("option").html(base));
 			elem.append($(document.createElement("div")).addClass("clear").addClass("line"));
 
-			$(".autochangelog").append(elem.wrapAll(document.createElement("div")).parent().html());
+			if (lr < 5) {
+				$(".autochangelog").append(elem.wrapAll(document.createElement("div")).parent().html());
+			} else {
+				$(".oldonline").append(elem.wrapAll(document.createElement("div")).parent().html());
+			}
+			lr++;
 		});
 	}, "json");
 });

@@ -98,9 +98,18 @@ input.seckey {
 	padding: 3px;
 	text-align: center;
 }
-.spoiler .title {
+.spoiler .more {
 	cursor: pointer;
 }
 .spoiler .content {
 	display: none;
+}
+.expand {
+	display: inline-block;
+	margin-left: 8px;
+	cursor: pointer;
+	transition: 250ms linear;
+}
+.expand.active {
+	transform: rotate(90deg);
 }
