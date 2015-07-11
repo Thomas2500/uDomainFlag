@@ -52,21 +52,19 @@ function writePopup(tab) {
 		$(".reportlink a").attr('hidden-weburl', tab.url);
 
 		$(".reportlink a").click(function (){
+			// Create screenshot of the "bad" website if user wants to report it
 			chrome.tabs.captureVisibleTab(null, { format: "png" }, function (image) {
 				// Set data context
-				var url = 'data:text/html;charset=utf8,';
+				var encContent = 'data:text/html;charset=utf8,';
 
 				// create form
 				var form = document.createElement('form');
 				form.method = 'POST';
 				form.action = lookup_protocol + '://' + lookup_domain + '/riskreport';
+				var base = $(form);
 
 				function appendForm(key, value) {
-					var input = document.createElement('input');
-					input.setAttribute("type", "hidden");
-					input.setAttribute('name', key);
-					input.setAttribute('value', value);
-					form.appendChild(input);
+					base.append($(document.createElement("input")).attr("type", "hidden").attr("name", key).val(value));
 				}
 
 				// Adding data to form
@@ -74,10 +72,25 @@ function writePopup(tab) {
 				appendForm('url', $(".reportlink a").attr("hidden-weburl"));
 				appendForm('image', image);
 
-				url += encodeURIComponent(form.outerHTML);
-				url += encodeURIComponent("Please wait.<br />Redirecting you to " + lookup_domain + " ...");
-				url += encodeURIComponent('<script>document.forms[0].submit();</script>');
-				chrome.tabs.create({ url: url });
+				// the form is not longer the base element, create a div
+				base = base.wrapAll(document.createElement("div")).parent();
+
+				// Create nice notification
+				base.append($(document.createTextNode("Please wait a moment.")));
+				base.append($(document.createElement("br")));
+				base.append($(document.createTextNode("Redirecting you to " + lookup_domain + " ...")));
+
+				// Submit form
+				var script = document.createElement("script");
+				script.type = "text/javascript";
+				script.text = "document.forms[0].submit();";
+				base.append($(script));
+
+				// Encode to url
+				encContent += encodeURIComponent(base.html());
+
+				// Create tab with form data as url
+				chrome.tabs.create({ url: encContent });
 			});
 		});
 
