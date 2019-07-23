@@ -6,7 +6,7 @@
 
 	"default_locale": "en",
 
-	"version": "1.2.1.1",
+	"version": "1.2.1.2",
 
 	"background": {
 		"page": "background.html"
@@ -35,7 +35,7 @@
 	},
 
 	"minimum_chrome_version": "34",
-	
+
 	"permissions": [
 		"notifications",
 		"storage",

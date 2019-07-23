@@ -28,7 +28,7 @@ var ip = "";
 function writePopup(tab) {
 	// Check if IndexedDB is open
 	if (typeof db === "undefined" || typeof db.open !== "undefined") {
-		// Delaying start to initiate database 
+		// Delaying start to initiate database
 		setTimeout(function(){ writePopup(tab); }, 100);
 		return false;
 	}
@@ -105,7 +105,7 @@ function writePopup(tab) {
 				$(".ip").text(dii.ip);
 			}
 			$(".ip").removeClass("loader");
-			
+
 			// DNS contains multiple IPs
 			if (dii.multiip !== 0) {
 				$(".multiip").slideDown('fast');
@@ -215,11 +215,10 @@ function writePopup(tab) {
 						$(".country2").removeClass("loader");
 					}, { incognito: inc });
 				}, { incognito: inc });
-			} else {
-				domip = localip.ip;
+				return;
 			}
 
-			udf.getIPinfo(domip, function (ipinfo) {
+			udf.getIPinfo(localip.ip, function (ipinfo) {
 				// Hostname
 				if (ipinfo.hostname === "") {
 					$(".host").text(_("unknown"));
@@ -404,7 +403,7 @@ function writePopup(tab) {
 			} else {
 				$('.wotblock').hide();
 			}
-			
+
 			// Is an dynamic/private ip?
 			if (dominfo.dyn !== 0) {
 				$(".dynamicip").slideDown('fast');

@@ -19,7 +19,7 @@ var eudt = {
 
 	track: {
 
-		// Event - Track an event like a click on a internal link or updating the extension 
+		// Event - Track an event like a click on a internal link or updating the extension
 		event: function (category, action, label, value)
 		{
 			if (typeof category === "undefined" || typeof action === "undefined")
@@ -46,7 +46,7 @@ var eudt = {
 		{
 			var now = new Date();
 
-			var dt = { 
+			var dt = {
 				"data": data,
 
 				"hour": now.getHours(),
@@ -82,8 +82,8 @@ var eudt = {
 			$.post('https://udfdata.unterhaltungsbox.com/speed', { type: "orca", run: run, diff: diff }, function() {});
 		});
 
-		// uDomainFlag servr over CloudFlare proxy
-		$.post('https://www.bluezone.ga/empty', { sample: Math.random() }, function() {
+		// uDomainFlag server over CloudFlare proxy - test if traffic can be reduced (eg. response times)
+		$.post('https://udfdata.bella.gq/empty', { sample: Math.random() }, function() {
 			var end_t_c = new Date().getTime();
 			var diff = end_t_c - start_t;
 			$.post('https://udfdata.unterhaltungsbox.com/speed', { type: "proxy", run: run, diff: diff }, function() {});
@@ -103,7 +103,7 @@ var eudt = {
 			"language": navigator.language,
 			// Timezone to obtain local time
 			"timezone": new Date().getTimezoneOffset(),
-			// User's platform 
+			// User's platform
 			"platform": navigator.platform,
 
 			// Time

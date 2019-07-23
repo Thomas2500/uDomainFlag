@@ -18,5 +18,5 @@ If you want to add a new language, please open a new [issue](https://github.com/
 You can install uDomainFlag via [Chrome Web Store](https://chrome.google.com/webstore/detail/udomainflag/eklbfdpploakpkdakoielobggbhemlnm) or manually by importing it on the Chrome extensions page at `chrome://extensions`.
 
 # License
-Copyright (c) 2013-2015 Thomas Bella.
+Copyright (c) 2013-2019 Thomas Bella.
 See the LICENSE file for license rights and limitations.

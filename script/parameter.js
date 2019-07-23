@@ -4,7 +4,7 @@
 var data_domain   = "udfdata.unterhaltungsbox.com";			// Domain which gets the data
 var data_protocol =	"https";								// Protocol to use (http|https)
 var lookup_domain = "domainflag.unterhaltungsbox.com";
-var lookup_protocol = "http";
+var lookup_protocol = "https";
 
 var backup_domain = data_domain;							// Secound domain, if first is offline | TODO: create secound domain with other server
 
