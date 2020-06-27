@@ -1,114 +1,51 @@
-/*! uDomainFlag | Copyright 2015 Thomas Bella */
-function init()
-{
-	if (typeof db.open !== "undefined")
-		return setTimeout(function(){ init(); }, 200);
+"use strict";
 
-	$("title").html($("title").text() + " &bull; uDomainFlag");
+window.addEventListener('load', function () {
+	document.querySelector(".yourversion").textContent = _("options_yourversion", [extensionVersion, chrome.i18n.getMessage("@@extension_id")]);
+	document.querySelector(".crash-intro").textContent = _("options_crashreports");
+	document.querySelector(".crash-desc").textContent = _("options_crashreports_why");
+	document.querySelector(".versionhistory").textContent = _("options_versionhistory");
+	document.querySelector(".howitworks_intro").textContent = _("options_howitworks");
 
-	udf.getDBsize(function (size)
-	{
-		var sdb = "";
-		if (size > 1000*1000)
-			sdb = number_format(size/(1000*1000), 2) + " MB";
-		else if (size > 1000)
-			sdb = number_format(size/1000, 2) + " KB";
-		else
-			sdb = size + " Bytes";
+	document.querySelector(".links [name=privacy]").textContent = _("options_privacypolicy");
+	document.querySelector(".links [name=imprint]").textContent = _("options_imprint");
 
-		$("div[load-lang=cache_desc]").html(_("cache_desc", [sdb] ));
-	});
-
-	$("#securitykey").val(securityKey);
-
-	// error reports
-	if (errorReports === "true")
-	{
-		$("#error_report").attr('checked', true);
-		$("#error_report_yn").text(_("yes"));
+	if (errorReports == "true") {
+		optionToggle("crashreports", true);
+	} else {
+		optionToggle("crashreports", false);
 	}
 
-	// update notification
-	if (updateNotification === "true")
-	{
-		$("#update").attr('checked', true);
-		$("#update_yn").text(_("yes"));
-	}
-
-	// social data
-	if (socialData === "true")
-	{
-		$("#socialdata").attr('checked', true);
-		$("#socialdata_yn").text(_("yes"));
-	}
-
-	// popup
-	if (popupWebsite === "true")
-	{
-		$("#popup").attr('checked', true);
-		$("#popup_yn").text(_("yes"));
-	}
-
-};
-
-$(document).ready(function()
-{
-
-	$("#clear_cache").click(function()
-	{
-		localStorage["clearDB"] = 1;
-		localStorage["openOptions"] = 1;
-		chrome.runtime.reload();
-	});
-	$("#restart").click(function()
-	{
-		localStorage["openOptions"] = 1;
-		chrome.runtime.reload();
-	});
-
-	$("#securitykey").focus(function(){
-		this.select();
-	});
-
-	$("input[type=checkbox]").change(function()
-	{
-		var status = "";
-		if ($(this).is(':checked'))
-		{
-			$("#" + $(this).attr("id") + "_yn").text(_("yes"));
-			status = "true";
+	// Listen for change events
+	document.querySelector("input[name=crashreports]").addEventListener('change', (event) => {
+		let stringBool = "true";
+		if (event.target.checked == false) {
+			stringBool = "false";
 		}
-		else
-		{
-			$("#" + $(this).attr("id") + "_yn").text(_("no"));
-			status = "false";
-		}
-
-		var varname = $(this).attr("id");
-
-		if (varname == "update")
-			varname = "updateNotification";
-		else if (varname == "socialdata")
-			varname = "socialData";
-		else if (varname == "popup")
-			varname = "popupWebsite";
-		else if (varname == "error_report")
-			varname = "errorReports";
-		else
-			return;
-
-		// Write change to all variables
-		window[varname] = status;
-		localStorage[varname] = status;
-
-		// push change to chrome sync
-		var obj = Object();
-		obj[varname] = status;
-		chrome.storage.sync.set(obj);
+		errorReports = localStorage["errorReports"] = stringBool;
+		chrome.storage.sync.set({ "errorReports": stringBool }, function () {
+			optionToggle("crashreports", event.target.checked);
+		});
 	});
 
-
-
-
-	init();
+	// get current used encryption where data is fetched
+	let request = new XMLHttpRequest();
+	request.open('GET', api_protocol + '://' + api_domain + api_path + '/encryption/', true);
+	request.onload = function () {
+		if (this.status == 200) {
+			let resp = JSON.parse(this.response);
+			document.querySelector(".secureconnection").textContent = _("options_secureconnection", [api_domain, resp[0], resp[1]]);
+		}
+	};
+	request.send();
 });
+
+function optionToggle(name, state){
+	if (state) {
+		document.querySelector("input[name="+name+"]").checked = true;
+		document.querySelector("label[for="+name+"]").textContent = _("enabled");
+	} else {
+		document.querySelector("input[name=" + name + "]").checked = false;
+		document.querySelector("label[for=" + name + "]").textContent = _("disabled");
+	}
+}

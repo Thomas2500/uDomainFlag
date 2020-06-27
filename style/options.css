@@ -1,115 +1,20 @@
 body {
-	
-	background: white;
-	font-family: sans-serif;
-	font-size: 14px;
-}
-
-#wrapper {
-	width: 700px;
-	margin: auto;
-	margin-top: 60px;
-	margin-bottom: 60px;
-}
-
-h1 {
-	font-family: Roboto;
-	border-bottom: 2px solid #eee;
-	margin-bottom: 20px;
-	text-transform: uppercase;
-}
-#settings {
-	padding: 2px;
-	padding-left: 36px;
-	background-image: url('/images/option_favicon.png');
-	background-position: left;
-	background-repeat: no-repeat;
-}
-
-h2 {
-	border-bottom: 1px solid #eee;
-	padding-bottom: 3px;
-	margin-bottom: 10px;
-	font-family: Roboto;
-	font-size: 16px;
-	font-weight: 500;
-	text-transform: uppercase;
-}
-section {
-	margin-bottom: 50px;
-	margin-left: 10px;
-}
-div {
-	display: block;
-}
-div.item {
-	padding: 10px;
-}
-div.title {
-	width: 25%;
-	float: left;
-	font-weight: bold;
-}
-div.title .v{
-	padding-left: 10px;
-}
-div.option {
-	width: 75%;
-	float: right;
-}
-div.clear {
-	clear: both;
-}
-div.line {
-	border-bottom: 1px solid #eee;
-	padding-top: 10px;
-}
-div.note {
-	color: #BBBDB3;
-	font-family: Roboto;
-	font-size: 12px;
-	padding-left: 10px;
+	line-height: 1.5;
 }
 a {
+	color: cornflowerblue;
 	text-decoration: none;
-	color: blue;
 }
-ul {
-	margin: 0px;
-	padding: 0px;
+hr {
+	margin-top: 8px;
+	margin-bottom: 6px;
+	border: 0;
+	border-top: 1px solid #eee;
 }
-.bold {
-	font-weight: bold;
+.howitworks, .crash {
+	margin-bottom: 7px;
 }
-label {
-	font-weight: normal !important;
-}
-span.tn {
-	color: #006400;
-	font-weight: bold;
-}
-small {
-	font-weight: normal !important;
-}
-.space {
-	height: 20px;
-}
-input.seckey {
-	padding: 3px;
-	text-align: center;
-}
-.spoiler .more {
-	cursor: pointer;
-}
-.spoiler .content {
-	display: none;
-}
-.expand {
-	display: inline-block;
-	margin-left: 8px;
-	cursor: pointer;
-	transition: 250ms linear;
-}
-.expand.active {
-	transform: rotate(90deg);
+div.crash-desc {
+	font-style: italic;
+	padding-left: 10px;
 }

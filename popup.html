@@ -1,20 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta charset="utf-8">
 	<title>uDomainFlag</title>
 
-	<script type="text/javascript" src="/script/jquery.min.js"></script>
-	<script type="text/javascript" src="/script/db.js"></script>
-	<script type="text/javascript" src="/script/debug.js"></script>
-	<script type="text/javascript" src="/script/parameter.js"></script>
-	<script type="text/javascript" src="/script/functions.js"></script>
-	<script type="text/javascript" src="/script/bootstrap.js"></script>
-	<script type="text/javascript" src="/script/popup.js"></script>
-	<script type="text/javascript" src="/script/lang.js"></script>
-	<script type="text/javascript" src="/script/tracker.js"></script>
+	<script type="text/javascript" src="script/sentry.min.js"></script>
+	<script type="text/javascript" src="script/parameters.js"></script>
+	<script type="text/javascript" src="script/cache.js"></script>
+	<script type="text/javascript" src="script/domainflag.js"></script>
+	<script type="text/javascript" src="script/popup.js"></script>
+	<script type="text/javascript" src="script/lang.js"></script>
 
-	<link rel="stylesheet" type="text/css" href="/style/bootstrap/bootstrap.css" />
-	<link rel="stylesheet" type="text/css" href="/style/bootstrap/bootstrap-theme.css" />
 	<link rel="stylesheet" type="text/css" href="/style/popup.css" />
 	<link rel="stylesheet" type="text/css" href="/style/roboto.css" />
 </head>
@@ -40,67 +36,39 @@
 			<div class="content ip ipfield loader"></div>
 		</div>
 
-		<div style="display: none;" class="line localipdisplay">
-			<div class="title" load-lang="local_ip"></div>
-			<div class="content localip ipfield loader"></div>
-		</div>
-
 		<div class="line">
-			<div class="title" load-lang="hostname"></div>
-			<div class="content host"></div>
-		</div>
-
-		<div style="display: none;" class="line multiip">
-			<div class="longbox" load-lang="multi_domain"></div>
+			<div class="title" load-lang="hostname">Hostname</div>
+			<div class="content host loader"></div>
 		</div>
 	</div>
 
-	<!-- WoT -->
-	<div class="contentblock cbsmall wotblock">
+	<!-- Multi IP -->
+	<div class="contentblock multiip" style="display: none;">
 		<div class="line">
-			<div class="title wotclickable">Web of Trust <div class="expand wotex">&rsaquo;</div></div>
-			<div class="content"></div>
+			<span class="longbox clickable" load-lang="multi_domain"></span> <span class="expand wotex">&rsaquo;</span>
 		</div>
-		<div class="wotc" style="display: none;">
-			<div class="softline">
-				<div class="title" load-lang="trustworthiness"></div>
-				<div class="content loader we1"></div>
-			</div>
-			<div class="softline">
-				<div class="title" load-lang="vendor"></div>
-				<div class="content loader we2"></div>
-			</div>
-			<div class="softline">
-				<div class="title" load-lang="privacy"></div>
-				<div class="content loader we3"></div>
-			</div>
-			<div class="softline">
-				<div class="title" load-lang="childsafety"></div>
-				<div class="content loader we4"></div>
-			</div>
-		</div>
+
+		<div class="content" style="display: none;"></div>
 	</div>
 
-	<!-- SOCIAL DATA -->
-	<div class="contentblock special" style="display: none;">
+	<!-- ISP -->
+	<div class="contentblock">
 		<div class="line">
-			<div class="title bd-googleplus">Google</div><div class="content google loader"></div>
+			<div class="title">ASN</div>
+			<div class="content asn loader"></div>
 		</div>
+
 		<div class="line">
-			<div class="title bd-facebook">Facebook</div><div class="content facebook loader"></div>
-		</div>
-		<div class="line">
-			<div class="title bd-twitter">Twitter</div><div class="content twitter loader"></div>
-		</div>
-		<div class="line">
-			<div class="title bd-reddit">Reddit</div><div class="content reddit loader"></div>
+			<div class="title" load-lang="desc"></div>
+			<div class="content isp loader"></div>
 		</div>
 	</div>
 
 	<div class="contentblock cbsmall">
 		<div class="line">
-			<div class="neutral reportlink"></div>
-			<div class="neutral infolink"></div>
+			<div class="neutral infolink">
+				<a target="_blank" href="#"><img src="/images/svg/info.svg" alt="i" /> <span class="text-more">More information</span></a>
+			</div>
 		</div>
 	</div>
 </div>

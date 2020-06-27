@@ -1,112 +1,21 @@
 {
-    "about": {
-        "message": "\u00dcber"
+    "browser_extension": {
+        "message": "Browser-Erweiterung"
     },
-    "aboutme": {
-        "message": "Ich bin Thomas Bella, ein junger ($age$) Entwickler aus Siegenfeld, \u00d6sterreich.\nuDomainFlag ist ein gratis Service von unterhaltungsbox.com.\nWenn dir dieses Plugin gef\u00e4llt oder du mich unterst\u00fctzen willst, kaufe mir bitte einen Kaffee ;-)",
-        "placeholders": {
-            "age": {
-                "content": "$1",
-                "example": "My age. I'm born on May 5'th 1994"
-            }
-        }
-    },
-    "alexa_noindex": {
-        "message": "Nicht gelistet"
-    },
-    "cache": {
-        "message": "Zwischenspeicher"
-    },
-    "cache_desc": {
-        "message": "Der Zwischenspeicher ist bereits <strong>$size$<\/strong> gro\u00df. Du kannst diesen Zwischenspeicher mit bet\u00e4tigen des nachfolgenden Buttons leeren.\n<strong>Achtung!<\/strong> Um den kompletten Zwischenspeicher zu l\u00f6schen, wird uDomainFlag neu gestartet.",
-        "placeholders": {
-            "size": {
-                "content": "$1",
-                "example": "Size of the cache with extension (eg. Bytes, KB, MB)"
-            }
-        }
-    },
-    "canbeempty": {
-        "message": "Kann leer bleiben ..."
-    },
-    "child": {
-        "message": "Jugendschutz"
-    },
-    "childsafety": {
-        "message": "Jugendschutz"
-    },
-    "chrome_extension": {
-        "message": "Chrome Erweiterung"
-    },
-    "chrome_ressource": {
-        "message": "Chrome Ressource"
-    },
-    "clear_cache": {
-        "message": "Zwischenspeicher leeren"
-    },
-    "close": {
-        "message": "Schlie\u00dfen"
+    "browser_ressource": {
+        "message": "Browser-cdRessource"
     },
     "description": {
-        "message": "Erhalte zus\u00e4tzliche Informationen \u00fcber eine Domain in der Adresszeile."
+        "message": "Erhalte Informationen einer Domain direkt im Browser beim Aufruf einer Webseite."
     },
-    "display_older_versions": {
-        "message": "Zeige \u00e4ltere Versionen"
+    "desc": {
+        "message": "Beschreibung"
     },
     "domain_unknown": {
-        "message": "Es konnten keine Daten zur aufgerufenen Seite ermittelt werden. Wahrscheinlich handelt es sich hierbei um eine lokale oder ung\u00fcltige Domain."
-    },
-    "donated": {
-        "message": "Es haben bereits $count$ Personen gespendet, dass insgesamt $amount$ \u20ac eingebracht hat.",
-        "placeholders": {
-            "count": {
-                "content": "$1",
-                "example": "Number of donations"
-            },
-            "amount": {
-                "content": "$2",
-                "example": "ingested money"
-            }
-        }
-    },
-    "donators": {
-        "message": "Spender"
-    },
-    "dynamicip": {
-        "message": "Dynamische IP Adresse"
-    },
-    "email": {
-        "message": "E-Mail"
-    },
-    "email_not_required": {
-        "message": "Wenn keine EMail angegeben wird, kann auf deine Nachricht nicht geantwortet werden."
-    },
-    "error_report": {
-        "message": "Absturzbericht"
-    },
-    "error_report_desc": {
-        "message": "Sollen Absturzberichte automatisch an den Entwickler gesendet werden? Das Senden von Absturzberichten verbessert die Stabilit\u00e4t und Funktionalit\u00e4t von uDomainFlag."
-    },
-    "feedback_thankyou": {
-        "message": "Vielen Dank f\u00fcr deine Hilfe, uDomainFlag zu verbessern!"
-    },
-    "general": {
-        "message": "Allgemein"
+        "message": "Es konnten keine Daten zur aufgerufenen Seite ermittelt werden.\nWahrscheinlich handelt es sich hierbei um eine lokale oder ung\u00fcltige Domain."
     },
     "hostname": {
         "message": "Hostname"
-    },
-    "language_please": {
-        "message": "Bitte verfasse deine Nachricht in Deutsch oder Englisch."
-    },
-    "like": {
-        "message": "Gef\u00e4llt mir"
-    },
-    "likes": {
-        "message": "Gef\u00e4llt mir"
-    },
-    "local_ip": {
-        "message": "Lokale IP"
     },
     "local_ressource": {
         "message": "Die aufgerufene Datei wurde vom lokalen Computer bezogen."
@@ -120,129 +29,65 @@
     "name": {
         "message": "Name"
     },
-    "no": {
-        "message": "Nein"
-    },
-    "none": {
-        "message": "Keine"
-    },
-    "open_source": {
-        "message": "uDomainFlag ist unter der AGPL Lizenz lizenziert und somit Open Source. Trage auch du etwas bei!\nDer Quellcode ist jederzeit auf <a href=\"https:\/\/github.com\/Thomas2500\/uDomainFlag\">GitHub &raquo; Thomas2500 &raquo; uDomainFlag<\/a> einsehbar.\nDie \u00dcbersetzungen sind unter <a href=\"http:\/\/translate.unterhaltungsbox.com\/\">uTranslate<\/a> erweiterbar."
-    },
-    "opera_ressource": {
-        "message": "Opera Ressource"
-    },
-    "options": {
-        "message": "Optionen"
-    },
-    "popup": {
-        "message": "Popup"
-    },
-    "popup_desc": {
-        "message": "Normalerweise wird bei einem Klick auf die Flagge eine Infobox mit n\u00fctzlichen Informationen angezeigt. Willst du stattdessen die uDomainFlag Webseite \u00f6ffen lassen?"
-    },
     "privacy": {
         "message": "Datenschutz"
-    },
-    "project_description": {
-        "message": "Diese Erweiterung zeigt dir w\u00e4hrend dem Aufruf der Seite den Standort an, aus welchem Land die Seite bezogen wird.\nZus\u00e4tzlich zum Land wird dir auch die IP Adresse sowie dessen Hostname angezeigt.\n\nW\u00e4hrend des Besuches einer Seite wird eine Flagge in der Adresszeile des Browsers platziert. Diese Flagge zeigt das Herkunftsland des Servers an, von wo aus die Webseite bezogen wird.\n\nWenn du auf die Flagge klickst, werden dir zus\u00e4tzliche Informationen \u00fcber die Seite angezeigt:\n - Standort\n - IP Adresse der Webseite\n - Hostname des Servers\n - Sicherheit der Webseite mittels Web of Trust\n - Webseiten Traffic Analyse mit Alexa Rank\n\nDie perfekte Erweiterung f\u00fcr Privatanwender und Entwickler.\nSo l\u00e4sst sich schnell \u00fcberpr\u00fcfen, ob die aufgerufene Webseite auch tats\u00e4chlich aus dem jeweiligen Land stammt.\n\n\nDatenschutz:\nEs werden keine personenbezogenen Daten \u00fcbermittelt oder gespeichert. Es erfolgt ausschlie\u00dflich eine Speicherung abgerufener Daten im Browser des Benutzers."
-    },
-    "report_risk": {
-        "message": "Gefahr melden"
-    },
-    "restart": {
-        "message": "Neustart"
-    },
-    "restart_desc": {
-        "message": "Klicke auf den nachfolgenden Button, um uDomainFlag neu zu starten.\nBei Bet\u00e4tigung des Button wird dieser Tab automatisch geschlossen und nach dem Neustart wieder ge\u00f6ffnet."
-    },
-    "securitykey": {
-        "message": "Sicherheitsschl\u00fcssel"
-    },
-    "securitykey_desc": {
-        "message": "Der Sicherheitsschl\u00fcssel dient der Absicherung des uDomainFlag Dienstes. Jeder Benutzer erh\u00e4lt einen eigenen privaten Schl\u00fcssel.\nDieser darf <strong>keinesfalls<\/strong> an Dritte weitergegeben werden!"
-    },
-    "socialdata": {
-        "message": "Soziale Daten"
-    },
-    "socialdata_desc": {
-        "message": "Sollen in der Infobox soziale Informationen wie \"Gef\u00e4llt mir\" von Facebook und \"+1\" von Google angezeigt werden?"
-    },
-    "subject": {
-        "message": "Betreff"
-    },
-    "submit": {
-        "message": "Absenden"
-    },
-    "trustworthiness": {
-        "message": "Vertrauenw\u00fcrdigkeit"
-    },
-    "tweet": {
-        "message": "Tweet"
-    },
-    "tweets": {
-        "message": "Tweets"
     },
     "unknown": {
         "message": "Unbekannt"
     },
-    "update": {
-        "message": "Update Benachrichtigung"
-    },
-    "updated": {
-        "message": "Die Erweiterung wurde von Version $last_version$ auf Version $new_version$ aktualisiert.",
-        "placeholders": {
-            "last_version": {
-                "content": "$1",
-                "example": "Old version number"
-            },
-            "new_version": {
-                "content": "$2",
-                "example": "New version number"
-            }
-        }
-    },
-    "update_desc": {
-        "message": "M\u00f6chtest du nach einem Update benachrichtigt werden?"
-    },
-    "usagedata": {
-        "message": "Nutzungsdaten"
-    },
-    "usage_desc": {
-        "message": "Deine Nutzungsdaten helfen uns, uDomainFlag weiter zu verbessern und einen stabilen Betrieb zu gew\u00e4hrleisten. Du kannst jederzeit das Senden von Nutzungsdaten abschalten und wieder einschalten."
-    },
-    "vendor": {
-        "message": "H\u00e4ndlerzuverl\u00e4ssigkeit"
-    },
-    "wotmessage0": {
-        "message": "Diese Seite besitzt noch keinen Ruf."
-    },
-    "wotmessage1": {
-        "message": "Die Webseite hat einen sehr schlechten Ruf."
-    },
-    "wotmessage2": {
-        "message": "Diese Webseite hat einen schlechten Ruf."
-    },
-    "wotmessage3": {
-        "message": "Diese Webseite hat einen m\u00e4\u00dfigen Ruf."
-    },
-    "wotmessage4": {
-        "message": "Diese Webseite hat einen guten Ruf."
-    },
-    "wotmessage5": {
-        "message": "Diese Webseite hat einen sehr guten Ruf."
-    },
-    "yes": {
-        "message": "Ja"
-    },
-    "your_version": {
-        "message": "Du benutzt uDomainFlag $version$.",
+    "options_yourversion": {
+        "message": "Du benutzt uDomainFlag $version$ mit der Erweiterungs-ID $extensionid$.",
         "placeholders": {
             "version": {
                 "content": "$1",
                 "example": "1.2.3.4"
+            },
+            "extensionid": {
+                "content": "$2",
+                "example": "eklbfdpploakpkdakoielobggbhemlnm"
             }
         }
+    },
+    "options_crashreports": {
+        "message": "Absturzberichte sind aktuell"
+    },
+    "options_crashreports_why": {
+        "message": "Absturzberichte helfen bei der Erfassung und Behebung von Fehlern und verbessern die Stabilität der Browsererweiterung. Es werden keine personenbezogenen Daten erfasst oder übermittelt."
+    },
+    "options_secureconnection": {
+        "message": "Deine Verbindung zu $hostname$ wird mittels $protocol$ ($cipher$) gesichert.",
+        "placeholders":{
+            "hostname":{
+                "content": "$1",
+                "example": "udfdata.unterhaltungsbox.com"
+            },
+            "protocol": {
+                "content":"$2",
+                "example":"TLSv1.3"
+            },
+            "cipher": {
+                "content":"$3",
+                "example":"TLS_AES_256_GCM_SHA384"
+            }
+        }
+    },
+    "options_versionhistory": {
+        "message": "Versionshistorie ist verfügbar unter"
+    },
+    "options_howitworks": {
+        "message": "Du willst wissen, wie uDomainFlag im Detail funktioniert? Finde es heraus unter"
+    },
+    "options_privacypolicy": {
+        "message": "Datenschutzerklärung"
+    },
+    "options_imprint": {
+        "message": "Impressum"
+    },
+    "enabled": {
+        "message": "Aktiviert"
+    },
+    "disabled": {
+        "message": "Deaktiviert"
     },
     "_lang": {
         "message": "Deutsch"
