@@ -1,4 +1,8 @@
-// General local cache which is dropped after browser/extension restart
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+
+ // General local cache which is dropped after browser/extension restart
 // remove old entries often to prevent high memory consumption and big cleanup loops
 function Cache(config) {
 	config = config || {};
