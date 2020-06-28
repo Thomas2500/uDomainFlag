@@ -12,6 +12,7 @@ You can help us to translate uDomainFlag into your language! Please use the Engl
 # Installation
 You can install uDomainFlag via multiple browser stores, including:
 - [Chrome Web Store](https://chrome.google.com/webstore/detail/udomainflag/eklbfdpploakpkdakoielobggbhemlnm)
+- [Firefox Browser Add-ons](https://addons.mozilla.org/de/firefox/addon/domain-flag/)
 
 Alternatively you can manually install the extension by importing it on the browser extensions page with enabled developer mode. Please use your browsers documentation on how to enable this setting.
 
