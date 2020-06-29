@@ -3,7 +3,7 @@
         "message": "Browser-Erweiterung"
     },
     "browser_ressource": {
-        "message": "Browser-cdRessource"
+        "message": "Browser-Ressource"
     },
     "description": {
         "message": "Erhalte Informationen einer Domain direkt im Browser beim Aufruf einer Webseite."
