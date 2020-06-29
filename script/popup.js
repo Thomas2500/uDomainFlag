@@ -27,7 +27,20 @@ getCurrentTab(function (data) {
 
 			request.onload = function () {
 				if (this.status == 200) {
-					let parsedData = JSON.parse(this.response);
+					let parsedData;
+					try {
+						parsedData = JSON.parse(this.response);
+					}
+					catch (e) {
+						let status = this.status;
+						let response = this.response;
+						Sentry.withScope(function (scope) {
+							scope.setExtra("domain", domain);
+							scope.setExtra("status", status);
+							scope.setExtra("response", response);
+							Sentry.captureException(e);
+						});
+					}
 					insertLookupResponseData(parsedData);
 				} else {
 					// Something went wrong contacting the server
@@ -109,10 +122,23 @@ function insertLookupResponseData(responseLookupData){
 					return;
 				}
 
-				let response = JSON.parse(this.response);
-				if (response.ips.length >= 1) {
+				let parsedData;
+				try {
+					parsedData = JSON.parse(this.response);
+				}
+				catch (e) {
+					let status = this.status;
+					let response = this.response;
+					Sentry.withScope(function (scope) {
+						scope.setExtra("domain", domain);
+						scope.setExtra("status", status);
+						scope.setExtra("response", response);
+						Sentry.captureException(e);
+					});
+				}
+				if (parsedData.ips.length >= 1) {
 					document.querySelector('.multiip').style.display = "block";
-					document.querySelector('.host').textContent = response.ips[0].hostname;
+					document.querySelector('.host').textContent = parsedData.ips[0].hostname;
 				} else {
 					document.querySelector('.host').textContent = "unknown";
 				}

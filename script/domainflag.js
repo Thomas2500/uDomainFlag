@@ -50,7 +50,20 @@ var df = {
 
 		request.onload = function () {
 			if (this.status == 200) {
-				let parsedData = JSON.parse(this.response);
+				let parsedData;
+				try {
+					parsedData = JSON.parse(this.response);
+				}
+				catch (e){
+					let status = this.status;
+					let response = this.response;
+					Sentry.withScope(function (scope) {
+						scope.setExtra("domain", domain);
+						scope.setExtra("status", status);
+						scope.setExtra("response", response);
+						Sentry.captureException(e);
+					});
+				}
 				if (parsedData === false) {
 					// Something went wrong contacting the server
 					let status = this.status;

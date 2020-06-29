@@ -36,8 +36,21 @@ window.addEventListener('load', function () {
 	request.open('GET', api_protocol + '://' + api_domain + api_path + '/encryption/', true);
 	request.onload = function () {
 		if (this.status == 200) {
-			let resp = JSON.parse(this.response);
-			document.querySelector(".secureconnection").textContent = _("options_secureconnection", [api_domain, resp[0], resp[1]]);
+			let parsedData;
+			try {
+				parsedData = JSON.parse(this.response);
+			}
+			catch (e) {
+				let status = this.status;
+				let response = this.response;
+				Sentry.withScope(function (scope) {
+					scope.setExtra("domain", domain);
+					scope.setExtra("status", status);
+					scope.setExtra("response", response);
+					Sentry.captureException(e);
+				});
+			}
+			document.querySelector(".secureconnection").textContent = _("options_secureconnection", [api_domain, parsedData[0], parsedData[1]]);
 		}
 	};
 	request.send();
