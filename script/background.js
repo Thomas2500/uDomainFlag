@@ -4,7 +4,7 @@
 "use strict";
 
 // local cache to not request a new resolution on every page navigation
-var cache = new Cache({trim: 60*3, ttl: 60*15});
+var cache = new Cache({trim: 60*5, ttl: 60*20});
 // cache to hold the info which IP is used by the client to access a target
 var requestIPcache = new Cache({trim: 60*5, ttl: 60*60*4});
 // request queue
