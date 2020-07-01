@@ -18,7 +18,7 @@ getCurrentTab(function (data) {
 	chrome.runtime.sendMessage({ type: "resolved", url: "https://" + ip + "/" }, function (response) {
 		document.querySelector('.ip').classList.remove("loader");
 		document.querySelector('.name').classList.remove("loader");
-		document.querySelector('.name').textContent = _("unknown");
+		document.querySelector('.name').textContent = _("internal_domain");
 
 		if (response !== null) {
 			document.querySelector('.ip').textContent = response;

@@ -17,6 +17,9 @@
     "hostname": {
         "message": "Hostname"
     },
+    "internal_domain": {
+        "message": "Interne Domain"
+    },
     "local_ressource": {
         "message": "Die aufgerufene Datei wurde vom lokalen Computer bezogen."
     },

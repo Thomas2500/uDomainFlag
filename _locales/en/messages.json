@@ -17,6 +17,9 @@
     "hostname": {
         "message": "Hostname"
     },
+    "internal_domain": {
+        "message": "Internal Domain"
+    },
     "local_ressource": {
         "message": "The requested document was obtained from the local computer."
     },
