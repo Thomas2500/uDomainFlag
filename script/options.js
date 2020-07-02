@@ -54,6 +54,35 @@ window.addEventListener('load', function () {
 		}
 	};
 	request.send();
+
+	// get stats if extension is managed by a company (can also be only a caching instance)
+	let request2 = new XMLHttpRequest();
+	request2.open('GET', api_protocol + '://' + api_domain + api_path + '/flags/companymanaged', true);
+	request2.onload = function () {
+		if (this.status == 200) {
+			let parsedData;
+			try {
+				parsedData = JSON.parse(this.response);
+			}
+			catch (e) {
+				let status = this.status;
+				let response = this.response;
+				Sentry.withScope(function (scope) {
+					scope.setExtra("flag", "companymanaged");
+					scope.setExtra("status", status);
+					scope.setExtra("response", response);
+					Sentry.captureException(e);
+				});
+			}
+			if (parsedData.enabled == true) {
+				document.querySelector(".companymanaged").style.display = "block";
+				document.querySelector(".companymanaged-text").textContent = _("options_companymanaged", [parsedData.extra.company, parsedData.extra.support]);
+			} else {
+				document.querySelector(".companymanaged").style.display = "none";
+			}
+		}
+	};
+	request2.send();
 });
 
 function optionToggle(name, state){

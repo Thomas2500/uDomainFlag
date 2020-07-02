@@ -38,6 +38,19 @@
     "unknown": {
         "message": "Unbekannt"
     },
+    "options_companymanaged": {
+        "message": "Einstellungen dieser Erweiterung können durch $company$ verwaltet werden. Bei Fragen bitte an $support$ wenden.",
+        "placeholders": {
+            "company": {
+                "content": "$1",
+                "example": "Feel Good Inc."
+            },
+            "support": {
+                "content": "$2",
+                "example": "it-support@company.invalid"
+            }
+        }
+    },
     "options_yourversion": {
         "message": "Du benutzt uDomainFlag $version$ mit der Erweiterungs-ID $extensionid$.",
         "placeholders": {

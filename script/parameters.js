@@ -38,10 +38,75 @@ if (typeof chrome !== "undefined") {
 	extensionVersion = "UNKNOWN-VERSION";
 }
 
+// check if error reporting is globally disabled
+// this is possible if a company uses a selfhosted instance
+// and doesn't want error reports to be transmitted
+var crashreportDisabled = false;
+function checkCrashreportDisabled(){
+	let request = new XMLHttpRequest();
+	request.open('GET', api_protocol + '://' + api_domain + api_path + '/flags/disablecrashreport', true);
+	request.onload = function () {
+		if (this.status == 200) {
+			let parsedData;
+			try {
+				parsedData = JSON.parse(this.response);
+			}
+			catch (e) {
+				let status = this.status;
+				let response = this.response;
+				Sentry.withScope(function (scope) {
+					scope.setExtra("flag", "disablecrashreport");
+					scope.setExtra("status", status);
+					scope.setExtra("response", response);
+					Sentry.captureException(e);
+				});
+			}
+			if (parsedData === false) {
+				// Something went wrong contacting the server
+				let status = this.status;
+				let response = this.response;
+				Sentry.withScope(function (scope) {
+					scope.setExtra("flag", "disablecrashreport");
+					scope.setExtra("status", status);
+					scope.setExtra("response", response);
+					scope.setExtra("data", parsedData);
+					Sentry.captureMessage("error parsing json response");
+				});
+				return;
+			}
+			crashreportDisabled = parsedData.enabled;
+		} else {
+			// Something went wrong contacting the server
+			let status = this.status;
+			let response = this.response;
+			Sentry.withScope(function (scope) {
+				scope.setExtra("flag", "disablecrashreport");
+				scope.setExtra("status", status);
+				scope.setExtra("response", response);
+				Sentry.captureMessage("error requesting data from server");
+			});
+			return;
+		}
+	};
+	request.send();
+}
+// Check now and every 15 minutes if condition changes
+checkCrashreportDisabled();
+setInterval(function(){
+	checkCrashreportDisabled();
+}, 1000*60*15);
+
 // enable submission of error reports if errorReporting is not disabled
 if (errorReports && typeof Sentry !== "undefined") {
 	Sentry.init({
 		dsn: sentry_target,
-		release: extensionVersion
+		release: extensionVersion,
+		beforeSend(event) {
+			// check if reporting is disabled by user or remote
+			if (errorReports == false || crashreportDisabled == true) {
+				return null;
+			}
+			return event;
+		}
 	});
 }
