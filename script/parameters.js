@@ -91,10 +91,23 @@ function checkCrashreportDisabled(){
 	request.send();
 }
 // Check now and every 15 minutes if condition changes
-checkCrashreportDisabled();
-setInterval(function(){
+/*
+	--- DISABLED ---
+	Company check is disabled for now because this causes too much requests
+	I have to find a better idea here. Some sort of way to detect if
+	GPO is active of some sort or is member of a domain.
+	Ideas:
+		- check if specific (.local?) domain is reachable and if yes use it for requests
+		- allow overwrite of dfdata.bella.network - DNSSEC?
+		- response modification based on source IP address? (must be static, ...)
+		- how to check if client changed network - in my case VPN connect to company network - network change API?
+	If you have an idea, please let me know!
+
 	checkCrashreportDisabled();
-}, 1000*60*15);
+	setInterval(function(){
+		checkCrashreportDisabled();
+	}, 1000*60*15);
+*/
 
 // enable submission of error reports if errorReporting is not disabled
 if (errorReports && typeof Sentry !== "undefined") {
