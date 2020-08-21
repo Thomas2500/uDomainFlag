@@ -5,8 +5,8 @@
 
 // this is the main gateway between the chrome extension and the API backend
 const api_protocol = "https";
-//const api_domain = "dfdata.bella.network";
-const api_domain = "udfdata.unterhaltungsbox.com";
+const api_domain = "dfdata.bella.network";
+//const api_domain = "udfdata.unterhaltungsbox.com";
 const api_path = "";
 
 const lookup_domain = "domainflag.unterhaltungsbox.com";
