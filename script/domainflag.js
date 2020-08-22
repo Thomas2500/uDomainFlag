@@ -48,7 +48,17 @@ var df = {
 		let request = new XMLHttpRequest();
 		request.open('GET', api_protocol + '://' + api_domain + api_path + '/lookup/' + domain, true);
 
-		request.onload = function () {
+		// Timeout after 35 seconds
+		request.timeout = 1000*35;
+		request.ontimeout = function() {
+			Sentry.withScope(function(scope) {
+				scope.setExtra("server", api_domain);
+				Sentry.captureMessage("timeout contacting server");
+			});
+			requestQueue.remove(domain);
+			api_domain = api_domain_fallback;
+		};
+
 			if (this.status == 200) {
 				let parsedData;
 				try {
