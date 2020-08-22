@@ -5,13 +5,13 @@
 
 // this is the main gateway between the chrome extension and the API backend
 const api_protocol = "https";
-const api_domain = "dfdata.bella.network";
-//const api_domain = "udfdata.unterhaltungsbox.com";
+var api_domain = "dfdata.bella.network";
+const api_domain_primary = "dfdata.bella.network";
+const api_domain_fallback = "udfdata.unterhaltungsbox.com";
 const api_path = "";
 
 const lookup_domain = "domainflag.unterhaltungsbox.com";
 const lookup_protocol = "https";
-
 
 // Target where sentry pushes the error records to
 const sentry_target = "https://cefee7041a9d4b9ab9d71a3364cff5c2@sentry.bella.pm/6";
@@ -37,6 +37,32 @@ if (typeof chrome !== "undefined") {
 } else {
 	extensionVersion = "UNKNOWN-VERSION";
 }
+
+// check if new domain is reachable and fallback to old domain including recovery after some time
+// recovery is tried every 10 minutes - both domains refer to the same backend
+setInterval(function() {
+	if (api_domain != api_domain_primary) {
+		let request = new XMLHttpRequest();
+		request.open('GET', api_protocol + '://' + api_domain_primary + api_path + '/reachable', true);
+		request.onload = function() {
+			if (this.status == 200 && this.response.trim() == "Be kind whenever possible. It is always possible.") {
+				api_domain = api_domain_primary;
+			} else {
+				// Something went wrong and the content doesn't match our prediction
+				api_domain = api_domain_fallback;
+				let status = this.status;
+				let response = this.response;
+				Sentry.withScope(function(scope) {
+					scope.setExtra("action", "reachable");
+					scope.setExtra("status", status);
+					scope.setExtra("response", response);
+					Sentry.captureMessage("invalid response from reachable check");
+				});
+			}
+		};
+		request.send();
+	}
+}, 1000*60*10);
 
 // check if error reporting is globally disabled
 // this is possible if a company uses a selfhosted instance

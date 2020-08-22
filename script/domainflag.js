@@ -59,6 +59,7 @@ var df = {
 			api_domain = api_domain_fallback;
 		};
 
+		request.onload = function() {
 			if (this.status == 200) {
 				let parsedData;
 				try {
@@ -67,24 +68,26 @@ var df = {
 				catch (e){
 					let status = this.status;
 					let response = this.response;
-					Sentry.withScope(function (scope) {
+					Sentry.withScope(function(scope) {
 						scope.setExtra("domain", domain);
 						scope.setExtra("status", status);
 						scope.setExtra("response", response);
 						Sentry.captureException(e);
 					});
+					api_domain = api_domain_fallback;
 				}
 				if (parsedData === false) {
 					// Something went wrong contacting the server
 					let status = this.status;
 					let response = this.response;
-					Sentry.withScope(function (scope) {
+					Sentry.withScope(function(scope) {
 						scope.setExtra("domain", domain);
 						scope.setExtra("status", status);
 						scope.setExtra("response", response);
 						scope.setExtra("data", parsedData);
 						Sentry.captureMessage("error parsing json response");
 					});
+					api_domain = api_domain_fallback;
 					// TODO: error symbol
 					return;
 				}
@@ -96,24 +99,31 @@ var df = {
 				// Something went wrong contacting the server
 				let status = this.status;
 				let response = this.response;
-				Sentry.withScope(function (scope) {
+				Sentry.withScope(function(scope) {
 					scope.setExtra("domain", domain);
 					scope.setExtra("status", status);
 					scope.setExtra("response", response);
+					scope.setExtra("server", api_domain);
 					Sentry.captureMessage("error requesting data from server");
 				});
 				requestQueue.remove(domain);
+				api_domain = api_domain_fallback;
 				// TODO: error symbol
 				return;
 			}
 		};
 
-		request.onerror = function () {
+		request.onerror = function() {
 			requestQueue.remove(domain);
 			// There was a connection error of some sort
 			// this is nothing we should report because we do not have error data
 			// or can do anything about it. mostly connection issues from the user
 			// TODO: error symbol
+			Sentry.withScope(function(scope) {
+				scope.setExtra("server", api_domain);
+				Sentry.captureMessage("error contacting server");
+			});
+			api_domain = api_domain_fallback;
 		};
 
 		request.send();
