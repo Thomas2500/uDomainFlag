@@ -3,20 +3,22 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 "use strict";
 
-// this is the main gateway between the chrome extension and the API backend
+// this is the main access address for the browser extension to the API backend
+// if the primary domain can't be reached, fall back to the fallback domain
 const api_protocol = "https";
 var api_domain = "dfdata.bella.network";
 const api_domain_primary = "dfdata.bella.network";
 const api_domain_fallback = "udfdata.unterhaltungsbox.com";
 const api_path = "";
 
+// link to more information page to show additional data
 const lookup_domain = "domainflag.unterhaltungsbox.com";
 const lookup_protocol = "https";
 
-// Target where sentry pushes the error records to
+// Target where sentry pushes error records to
 const sentry_target = "https://cefee7041a9d4b9ab9d71a3364cff5c2@sentry.bella.pm/6";
 
-// error reporting (sentry)
+// error reporting (sentry) can be disabled by the user
 var errorReports = (typeof localStorage["errorReports"] !== "undefined") ? localStorage["errorReports"] : "true";
 localStorage["errorReports"] = errorReports;
 
@@ -65,8 +67,7 @@ setInterval(function() {
 }, 1000*60*10);
 
 // check if error reporting is globally disabled
-// this is possible if a company uses a selfhosted instance
-// and doesn't want error reports to be transmitted
+// this is possible if a company requested the exclusion or uses a selfhosted instance with disabled error reports
 var crashreportDisabled = false;
 function checkCrashreportDisabled(){
 	let request = new XMLHttpRequest();
@@ -76,37 +77,30 @@ function checkCrashreportDisabled(){
 			let parsedData;
 			try {
 				parsedData = JSON.parse(this.response);
+				if (typeof parsedData.enabled === "undefined") {
+					throw "unexpected json contents";
+				}
+				crashreportDisabled = parsedData.enabled;
 			}
 			catch (e) {
 				let status = this.status;
 				let response = this.response;
 				Sentry.withScope(function (scope) {
 					scope.setExtra("flag", "disablecrashreport");
-					scope.setExtra("status", status);
-					scope.setExtra("response", response);
-					Sentry.captureException(e);
-				});
-			}
-			if (parsedData === false) {
-				// Something went wrong contacting the server
-				let status = this.status;
-				let response = this.response;
-				Sentry.withScope(function (scope) {
-					scope.setExtra("flag", "disablecrashreport");
+					scope.setExtra("responseURL", request.responseURL);
 					scope.setExtra("status", status);
 					scope.setExtra("response", response);
 					scope.setExtra("data", parsedData);
-					Sentry.captureMessage("error parsing json response");
+					Sentry.captureException(e);
 				});
-				return;
 			}
-			crashreportDisabled = parsedData.enabled;
 		} else {
 			// Something went wrong contacting the server
 			let status = this.status;
 			let response = this.response;
 			Sentry.withScope(function (scope) {
 				scope.setExtra("flag", "disablecrashreport");
+				scope.setExtra("responseURL", request.responseURL);
 				scope.setExtra("status", status);
 				scope.setExtra("response", response);
 				Sentry.captureMessage("error requesting data from server");
