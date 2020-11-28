@@ -10,7 +10,7 @@ uDomainFlag is an extension for various browsers and allows you to get additiona
 
 ## Installation
 
-You can install uDominFlag [<img valign="middle" src="https://img.shields.io/github/release/Thomas2500/uDomainFlag.svg?logo=github&style=flat-square&labelColor=333">](https://github.com/Thomas2500/uDomainFlag/releases) using various browser stores, including:
+You can install uDomainFlag [<img valign="middle" src="https://img.shields.io/github/release/Thomas2500/uDomainFlag.svg?logo=github&style=flat-square&labelColor=333">](https://github.com/Thomas2500/uDomainFlag/releases) using various browser stores, including:
 - [Google **Chrome** Web Store][link-cws] [<img valign="middle" src="https://img.shields.io/chrome-web-store/v/eklbfdpploakpkdakoielobggbhemlnm.svg?label=%20&labelColor=333&logo=google-chrome&style=flat-square">][link-cws]
 - [Mozilla **Firefox** Add-on][link-mao] [<img valign="middle" src="https://img.shields.io/amo/v/domain-flag.svg?label=%20&labelColor=333&logo=firefox&style=flat-square">][link-mao]
 - [Microsoft **EDGE**-Add-On][link-mse] [<img valign="middle" src="https://img.shields.io/badge/dynamic/json?label=%20&labelColor=333&logo=microsoft-edge&query=%24.version&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Ffbokifoifbpkgbonofeejgodpdafpkjb&style=flat-square">][link-mse]
@@ -21,7 +21,7 @@ Alternatively you can manually install the extension by importing it on the brow
 ## Features
 
 - Country flag on website visit
-- Special icon for internal or special ressources
+- Special icon for internal or special resources
 - Always up2date data using online lookups
 - Available for most browsers
 - Privacy focused without tracking
@@ -55,12 +55,12 @@ View of an internal or special purpose website was opened.
 
 * Settings page of the extension. First containing the used version and extension ID with link to changelog.
 * After the introduction a link to the [HowItWorks](https://domainflag.unterhaltungsbox.com/extension/howitworks)-Page how uDomainFlag itself works and to which server uDomainFlag is connected to with the used encryption.
-* The crashreporting option is enabled by default and can be disabled here. When disabling, crash reporing will be disabled for all uDomainFlag instances. If you synchronize your browser settings, this configuration option will also be synced.
+* The crashreporting option is enabled by default and can be disabled here. When disabling, crash reporting will be disabled for all uDomainFlag instances. If you synchronize your browser settings, this configuration option will also be synced.
 
 ## Releases
 
 A list of all releases including changelog can be found at [Releases](https://github.com/Thomas2500/uDomainFlag/releases).
-Depending on the store, it can take multipe days upto weeks until a new release is published everywhere.
+Depending on the store, it can take multiple days up to weeks until a new release is published everywhere.
 
 ## Webpage
 
@@ -85,13 +85,13 @@ This extension uses the following permissions:
 * **Read your browsing history** - Needed to determine the currently viewed website.
 * **Read and change all your data on the websites you visit** - Also used to determine the viewed website and additionally to detect the used IP address of the target server. (E.g. to show if website uses a private IP address)
 
-uDomainFlag connects primarily to [dfdata.bella.network](https://dfdata.bella.network/) for location data. where you can also find attitional information about the backend.
+uDomainFlag connects primarily to [dfdata.bella.network](https://dfdata.bella.network/) for location data, where you can also find additional information about the backend.
 
 ## Privacy Policy
 
 The full version is available at [imprint.unterhaltungsbox.com](https://imprint.unterhaltungsbox.com/).
 
-The extension itself logs errors using Sentry and transmits there errors to my private selfhosted sentry instance. Error logging can be disabled within the extension settings and this setting is synchronisized to other instances if logged in within the browser.
+The extension itself logs errors using Sentry and transmits there errors to my private selfhosted sentry instance. Error logging can be disabled within the extension settings and this setting is synchronized to other instances if logged in within the browser.
 
 > uDomainFlag collects crash reports which can be permanently disabled within the extension settings.
 >
