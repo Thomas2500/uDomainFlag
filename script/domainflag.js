@@ -37,6 +37,8 @@ var df = {
 			return df.domainLookupResultData({ lookup: data, request: cache.get(domain) })
 		}
 
+		// wait until lookup has finished and execute again
+		// this prevents multiple lookups of the same domain when multiple tabs open (e.g. session restore)
 		if (requestQueue.has(domain)) {
 			return setTimeout(function(){
 				df.domainLookup(data);
@@ -71,20 +73,27 @@ var df = {
 					Sentry.withScope(function(scope) {
 						scope.setExtra("domain", domain);
 						scope.setExtra("status", status);
+						scope.setExtra("responseURL", request.responseURL);
 						scope.setExtra("response", response);
 						Sentry.captureException(e);
 					});
-					api_domain = api_domain_fallback;
+					// TODO: error symbol
+					if (api_domain != api_domain_fallback) {
+						api_domain = api_domain_fallback;
+						requestQueue.remove(domain);
+						df.domainLookup(data);
+					}
+					return;
 				}
-				if (parsedData === false) {
+				if (parsedData === false || typeof parsedData === "undefined") {
 					// Something went wrong contacting the server
 					let status = this.status;
 					let response = this.response;
 					Sentry.withScope(function(scope) {
 						scope.setExtra("domain", domain);
 						scope.setExtra("status", status);
+						scope.setExtra("responseURL", request.responseURL);
 						scope.setExtra("response", response);
-						scope.setExtra("data", parsedData);
 						Sentry.captureMessage("error parsing json response");
 					});
 					api_domain = api_domain_fallback;
@@ -103,6 +112,7 @@ var df = {
 					scope.setExtra("domain", domain);
 					scope.setExtra("status", status);
 					scope.setExtra("response", response);
+					scope.setExtra("responseURL", request.responseURL);
 					scope.setExtra("server", api_domain);
 					Sentry.captureMessage("error requesting data from server");
 				});
@@ -120,6 +130,7 @@ var df = {
 			// or can do anything about it. mostly connection issues from the user
 			// TODO: error symbol
 			Sentry.withScope(function(scope) {
+				scope.setExtra("responseURL", request.responseURL);
 				scope.setExtra("server", api_domain);
 				Sentry.captureMessage("error contacting server");
 			});
