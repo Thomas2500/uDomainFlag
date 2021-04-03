@@ -40,5 +40,8 @@
 		"tabs",
 		"webRequest",
 		"<all_urls>"
-	]
+	],
+	"storage": {
+		"managed_schema": "managed_storage.json"
+	}
 }

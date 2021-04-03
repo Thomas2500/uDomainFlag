@@ -18,3 +18,9 @@ div.crash-desc {
 	font-style: italic;
 	padding-left: 10px;
 }
+span.companymanaged_title {
+	font-weight: bold;
+}
+.companymanaged img, .crashreport_managed img {
+	vertical-align: middle;
+}

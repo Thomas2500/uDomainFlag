@@ -9,6 +9,7 @@
 	<script type="text/javascript" src="script/cache.js"></script>
 	<script type="text/javascript" src="script/domainflag.js"></script>
 	<script type="text/javascript" src="script/options.js"></script>
+	<script type="text/javascript" src="script/lang.js"></script>
 
 	<link rel="stylesheet" type="text/css" href="/style/roboto.css" />
 	<link rel="stylesheet" type="text/css" href="/style/options.css" />
@@ -18,39 +19,40 @@
 <div class="container">
 	<!-- Options -->
 	<div class="version">
-		<span class="yourversion"></span><br>
-		<span class="versionhistory"></span> <a href="https://domainflag.unterhaltungsbox.com/extension/changelog" target="_blank">Extension Changelog</a>.
-	</div>
-	<hr />
-
-	<div class="companymanaged" style="display: none;">
-		<span class="companymanaged-text"></span>
-		<hr />
+		<span class="yourversion"></span> <a href="https://domainflag.bella.network/extension/changelog" load-lang="options_changelog" target="_blank">Extension Changelog</a>.
 	</div>
 
 	<div class="howitworks">
-		<span class="howitworks_intro"></span> <a href="https://domainflag.unterhaltungsbox.com/extension/howitworks" target="_blank">HowItWorks</a>.
-	</div>
-	<div class="secureconnection">
+		<span load-lang="options_howitworks" class="howitworks_intro"></span> <a href="https://domainflag.bella.network/extension/howitworks" target="_blank">HowItWorks</a>.
 	</div>
 
 	<hr />
-	<div class="crash">
-		<span class="crash-intro"></span>: <input type="checkbox" id="crashreports" name="crashreports" /> <label
-			for="crashreports">Disabled</label><br>
-		<div class="crash-desc"></div>
+
+	<div class="companymanaged" style="display: none;">
+		<img src="/images/fugue/office-network.png" alt="" /> <span class="companymanaged_title" load-lang="options_companymanaged_title"></span><br>
+		<span load-lang="options_companymanaged"></span>
+		<hr />
 	</div>
 
+	<div class="secureconnection"></div>
+
+	<hr />
+	<div class="crash">
+		<span load-lang="options_crashreports"></span>: <input type="checkbox" id="crashreports" name="crashreports" /> <label for="crashreports">Disabled</label><span style="display: none;" class="crashreport_managed"> <img src="/images/fugue/office-network.png" alt="" /></span><br>
+		<div load-lang="options_crashreports_why" class="crash-desc"></div>
+	</div>
+
+	<hr />
 	<div class="links">
-		<a href="https://domainflag.unterhaltungsbox.com/legal/privacy" name="privacy" target="_blank">Privacy Policy</a> |
-		<a href="https://imprint.unterhaltungsbox.com/" name="imprint" target="_blank">Imprint</a> |
+		<a href="https://domainflag.bella.network/legal/privacy" load-lang="options_privacypolicy" name="privacy" target="_blank">Privacy Policy</a> |
+		<a href="https://imprint.unterhaltungsbox.com/" load-lang="options_imprint" name="imprint" target="_blank">Imprint</a> |
 		<a href="https://github.com/Thomas2500/uDomainFlag" name="github" target="_blank">SourceCode on GitHub</a>
 	</div>
 	<hr />
 
 	<!-- Footer -->
 	<div class="footer">
-		Copyright &copy; <a href="https://thomas.bella.network" target="_blank">Thomas Bella</a>, 2013-2020 - Made with ❤️ in Austria
+		Copyright &copy; <a href="https://thomas.bella.network/?ref=uDomainFlag" target="_blank">Thomas Bella</a>, 2013-2021 - Made with ❤️ in Austria
 	</div>
 </div>
 </body>

@@ -48,17 +48,17 @@ var df = {
 
 		// requested url is not special and not in cache, request data from server
 		let request = new XMLHttpRequest();
-		request.open('GET', api_protocol + '://' + api_domain + api_path + '/lookup/' + domain, true);
+		let clientSecret = "";
+		if (localStorage["policySecret"] != "") {
+			clientSecret = "?secret=" + localStorage["policySecret"];
+		}
+		request.open('GET', api_protocol + '://' + api_domain + api_path + '/lookup/' + domain + clientSecret, true);
 
 		// Timeout after 35 seconds
-		request.timeout = 1000*35;
+		request.timeout = 1000*45;
 		request.ontimeout = function() {
-			Sentry.withScope(function(scope) {
-				scope.setExtra("server", api_domain);
-				Sentry.captureMessage("timeout contacting server");
-			});
 			requestQueue.remove(domain);
-			api_domain = api_domain_fallback;
+			api_domain = df.handleFallback();
 		};
 
 		request.onload = function() {
@@ -68,6 +68,7 @@ var df = {
 					parsedData = JSON.parse(this.response);
 				}
 				catch (e){
+					df.setFlag({ tab: data.tab, icon: "images/fugue/network-status-busy.png", title: "uDomainFlag server not reachable", popup: 'offline.html' });
 					let status = this.status;
 					let response = this.response;
 					Sentry.withScope(function(scope) {
@@ -77,9 +78,8 @@ var df = {
 						scope.setExtra("response", response);
 						Sentry.captureException(e);
 					});
-					// TODO: error symbol
-					if (api_domain != api_domain_fallback) {
-						api_domain = api_domain_fallback;
+					if (api_domain != df.handleFallback()) {
+						api_domain = df.handleFallback();
 						requestQueue.remove(domain);
 						df.domainLookup(data);
 					}
@@ -87,6 +87,7 @@ var df = {
 				}
 				if (parsedData === false || typeof parsedData === "undefined") {
 					// Something went wrong contacting the server
+					df.setFlag({ tab: data.tab, icon: "images/fugue/network-status-busy.png", title: "uDomainFlag server not reachable", popup: 'offline.html' });
 					let status = this.status;
 					let response = this.response;
 					Sentry.withScope(function(scope) {
@@ -96,8 +97,7 @@ var df = {
 						scope.setExtra("response", response);
 						Sentry.captureMessage("error parsing json response");
 					});
-					api_domain = api_domain_fallback;
-					// TODO: error symbol
+					api_domain = df.handleFallback();
 					return;
 				}
 				// Set cache and pass to result
@@ -106,6 +106,7 @@ var df = {
 				requestQueue.remove(domain);
 			} else {
 				// Something went wrong contacting the server
+				df.setFlag({ tab: data.tab, icon: "images/fugue/network-status-busy.png", title: "uDomainFlag server not reachable", popup: 'offline.html' });
 				let status = this.status;
 				let response = this.response;
 				Sentry.withScope(function(scope) {
@@ -117,24 +118,15 @@ var df = {
 					Sentry.captureMessage("error requesting data from server");
 				});
 				requestQueue.remove(domain);
-				api_domain = api_domain_fallback;
-				// TODO: error symbol
+				api_domain = df.handleFallback();
 				return;
 			}
 		};
 
 		request.onerror = function() {
 			requestQueue.remove(domain);
-			// There was a connection error of some sort
-			// this is nothing we should report because we do not have error data
-			// or can do anything about it. mostly connection issues from the user
-			// TODO: error symbol
-			Sentry.withScope(function(scope) {
-				scope.setExtra("responseURL", request.responseURL);
-				scope.setExtra("server", api_domain);
-				Sentry.captureMessage("error contacting server");
-			});
-			api_domain = api_domain_fallback;
+			df.setFlag({ tab: data.tab, icon: "images/fugue/network-status-busy.png", title: "uDomainFlag server not reachable", popup: 'offline.html' });
+			api_domain = df.handleFallback();
 		};
 
 		request.send();
@@ -331,18 +323,11 @@ var df = {
 				if (tld == 'invalid') {
 					return { icon: "images/special-flag/cross-circle.png", title: "invalid network", popup: 'special.html' };
 				}
-			} else {
-				// Check if domain is an IPv6 address
-				var reg = /\[([0-9a-fA-F\:\%]*)\]/;
-				if (reg.test(url)) {
-					var match = url.match(reg);
-					var domain = match[1];
-				}
 			}
 			// Check if IP is internal
-			var isinternal = this.isInternal(domain);
-			if (isinternal !== false) {
-				return isinternal;
+			let isInternal = this.isInternal(domain);
+			if (isInternal !== false) {
+				return isInternal;
 			}
 			return false;
 		}
@@ -515,12 +500,29 @@ var df = {
 		}
 
 		return out;
+	},
+
+	handleFallback: function(){
+		if (typeof localStorage["policyDisableServerFallback"] !== "undefined" && localStorage["policyDisableServerFallback"] == "true") {
+			if (typeof localStorage["policyServer"] !== "undefined") {
+				if (localStorage["policyServer"] != "" && localStorage["policyServer"] != "false") {
+					return localStorage["policyServer"];
+				}
+			}
+			return api_domain_primary;
+		}
+		if (typeof localStorage["policyServer"] !== "undefined" && localStorage["policyServer"] != "" && localStorage["policyServer"] != "false") {
+			if (api_domain == localStorage["policyServer"]) {
+				return api_domain_primary;
+			}
+		}
+		return api_domain_fallback;
 	}
 };
 
 // Simple internationalization
 function _(variable, object) {
-	var lang = variable;
+	let lang = variable;
 	if (typeof object === "undefined") {
 		lang = chrome.i18n.getMessage(variable).replace(/\n/g, "<br />");
 	} else {
@@ -530,6 +532,7 @@ function _(variable, object) {
 	if (lang.length == 0) {
 		Sentry.withScope(function (scope) {
 			scope.setExtra("variable", variable);
+			scope.setExtra("ui_locale", chrome.i18n.getMessage("@@ui_locale"));
 			Sentry.captureMessage("given language string not found or translated");
 		});
 		lang = "#>>" + variable + "<< unknown#";

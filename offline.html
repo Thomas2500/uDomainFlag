@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>uDomainFlag</title>
+	<script type="text/javascript" src="script/sentry.min.js"></script>
+	<script type="text/javascript" src="script/parameters.js"></script>
+	<script type="text/javascript" src="script/cache.js"></script>
+	<script type="text/javascript" src="script/domainflag.js"></script>
+	<script type="text/javascript" src="script/lang.js"></script>
+	<script type="text/javascript" src="script/offline.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="style/popup.css" />
+	<link rel="stylesheet" type="text/css" href="style/roboto.css" />
+</head>
+
+<body>
+	<div class="container graybox">
+		<!-- ERROR INFO -->
+		<div class="header">
+			<div class="title name" load-lang="offline_title"></div>
+		</div>
+
+		<!-- BASIC INFO -->
+		<div class="contentblock colormatch">
+			<div class="offline_description"></div>
+			<div style="display: none;" class="companymanaged">
+				<hr />
+				<div class="infocontainer">
+					<div class="icon">
+						<img src="images/fugue/office-network.png" alt="" />
+					</div>
+					<div class="info" style="font-size: 95%;" load-lang="offline_companymanaged"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

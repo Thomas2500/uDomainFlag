@@ -38,7 +38,10 @@
     "unknown": {
         "message": "Unknown"
     },
-    "options_companymanaged": {
+    "options_companymanaged_title": {
+        "message": "Company managed"
+    },
+    "options_companymanaged_fill": {
         "message": "Settings of this extension can be managed by $company$. If you have any questions, please contact $support$.",
         "placeholders": {
             "company": {
@@ -50,6 +53,9 @@
                 "example": "it-support@company.invalid"
             }
         }
+    },
+    "options_companymanaged": {
+        "message": "Settings of this extension are managed by your organization."
     },
     "options_yourversion": {
         "message": "You are using uDomainFlag $version$ with extension ID $extensionid$.",
@@ -68,14 +74,14 @@
         "message": "Crashreporting is currently"
     },
     "options_crashreports_why": {
-        "message": "Crash reports help in the detection and correction of errors and improve the stability of the browser extension. No personal data is collected or transmitted."
+        "message": "Crash reports help in the detection and correction of errors and improve the stability of uDomainFlag. No personal data is collected or transmitted."
     },
     "options_secureconnection": {
         "message": "Your connection to $hostname$ is secured using $protocol$ ($cipher$).",
         "placeholders": {
             "hostname": {
                 "content": "$1",
-                "example": "udfdata.unterhaltungsbox.com"
+                "example": "dfdata.bella.network"
             },
             "protocol": {
                 "content": "$2",
@@ -87,8 +93,17 @@
             }
         }
     },
-    "options_versionhistory": {
-        "message": "Changelog is available at"
+    "options_secureconnection_failed": {
+        "message": "Your connection to $hostname$ failed. The full functionality of uDomainFlag is not available.",
+        "placeholders": {
+            "hostname": {
+                "content": "$1",
+                "example": "dfdata.bella.network"
+            }
+        }
+    },
+    "options_changelog": {
+        "message": "Changelog"
     },
     "options_howitworks": {
         "message": "Do you want to know how uDomainFlag works in detail? Find out below"
@@ -104,6 +119,21 @@
     },
     "disabled": {
         "message": "Disabled"
+    },
+    "offline_title": {
+        "message": "Server not reachable"
+    },
+    "offline_description": {
+        "message": "The server $hostname$ could not be reached or returned an incorrect answer.\nPlease try again later.",
+        "placeholders": {
+            "hostname": {
+                "content": "$1",
+                "example": "dfdata.bella.network"
+            }
+        }
+    },
+    "offline_companymanaged": {
+        "message": "uDomainFlag is currently managed by your company. There may be a configuration problem."
     },
     "_lang": {
         "message": "English"

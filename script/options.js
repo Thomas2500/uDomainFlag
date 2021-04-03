@@ -5,18 +5,21 @@
 
 window.addEventListener('load', function () {
 	document.querySelector(".yourversion").textContent = _("options_yourversion", [extensionVersion, chrome.i18n.getMessage("@@extension_id")]);
-	document.querySelector(".crash-intro").textContent = _("options_crashreports");
-	document.querySelector(".crash-desc").textContent = _("options_crashreports_why");
-	document.querySelector(".versionhistory").textContent = _("options_versionhistory");
-	document.querySelector(".howitworks_intro").textContent = _("options_howitworks");
 
-	document.querySelector(".links [name=privacy]").textContent = _("options_privacypolicy");
-	document.querySelector(".links [name=imprint]").textContent = _("options_imprint");
-
+	// Preset checkbox accordingly based by settings
 	if (errorReports == "true") {
 		optionToggle("crashreports", true);
 	} else {
 		optionToggle("crashreports", false);
+		// Disable checkbox if option is forced by GPO
+		if (localStorage["policyDisableCrashReports"] == "true") {
+			document.querySelector("input[name=crashreports]").disabled = true;
+			document.querySelector("input[name=crashreports]").style.cursor = "not-allowed";
+			document.querySelector("label[for=crashreports]").style.textDecoration = "line-through";
+			document.querySelector("label[for=crashreports]").style.cursor = "not-allowed";
+			document.querySelector("label[for=crashreports]").style.color = "gray";
+			document.querySelector(".crashreport_managed").style.display = "inline";
+		}
 	}
 
 	// Listen for change events
@@ -41,6 +44,8 @@ window.addEventListener('load', function () {
 				parsedData = JSON.parse(this.response);
 			}
 			catch (e) {
+				document.querySelector(".secureconnection").textContent = _("options_secureconnection_failed", [api_domain]);
+				document.querySelector(".secureconnection").style.color = "red";
 				let status = this.status;
 				let response = this.response;
 				Sentry.withScope(function (scope) {
@@ -49,40 +54,48 @@ window.addEventListener('load', function () {
 					scope.setExtra("response", response);
 					Sentry.captureException(e);
 				});
+				return
 			}
 			document.querySelector(".secureconnection").textContent = _("options_secureconnection", [api_domain, parsedData[0], parsedData[1]]);
 		}
 	};
+	request.onerror = function(){
+		document.querySelector(".secureconnection").textContent = _("options_secureconnection_failed", [api_domain]);
+		document.querySelector(".secureconnection").style.color = "red";
+	}
 	request.send();
 
 	// get stats if extension is managed by a company (can also be only a caching instance)
-	let request2 = new XMLHttpRequest();
-	request2.open('GET', api_protocol + '://' + api_domain + api_path + '/flags/companymanaged', true);
-	request2.onload = function () {
-		if (this.status == 200) {
-			let parsedData;
-			try {
-				parsedData = JSON.parse(this.response);
+	// TODO: Settings can be set without standalone/caching instance
+	if (companySettings) {
+		document.querySelector(".companymanaged").style.display = "block";
+		let request2 = new XMLHttpRequest();
+		request2.open('GET', api_protocol + '://' + api_domain + api_path + '/flags/companymanaged', true);
+		request2.onload = function () {
+			if (this.status == 200) {
+				let parsedData;
+				try {
+					parsedData = JSON.parse(this.response);
+				}
+				catch (e) {
+					let status = this.status;
+					let response = this.response;
+					Sentry.withScope(function (scope) {
+						scope.setExtra("flag", "companymanaged");
+						scope.setExtra("status", status);
+						scope.setExtra("response", response);
+						Sentry.captureException(e);
+					});
+				}
+				if (parsedData.enabled == true) {
+					document.querySelector(".companymanaged-text").textContent = _("options_companymanaged_fill", [parsedData.extra.company, parsedData.extra.support]);
+				}
 			}
-			catch (e) {
-				let status = this.status;
-				let response = this.response;
-				Sentry.withScope(function (scope) {
-					scope.setExtra("flag", "companymanaged");
-					scope.setExtra("status", status);
-					scope.setExtra("response", response);
-					Sentry.captureException(e);
-				});
-			}
-			if (parsedData.enabled == true) {
-				document.querySelector(".companymanaged").style.display = "block";
-				document.querySelector(".companymanaged-text").textContent = _("options_companymanaged", [parsedData.extra.company, parsedData.extra.support]);
-			} else {
-				document.querySelector(".companymanaged").style.display = "none";
-			}
-		}
-	};
-	request2.send();
+		};
+		request2.send();
+	} else {
+		document.querySelector(".companymanaged").style.display = "none";
+	}
 });
 
 function optionToggle(name, state){

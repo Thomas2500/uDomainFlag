@@ -6,17 +6,20 @@
 // this is the main access address for the browser extension to the API backend
 // if the primary domain can't be reached, fall back to the fallback domain
 const api_protocol = "https";
-var api_domain = "dfdata.bella.network";
 const api_domain_primary = "dfdata.bella.network";
 const api_domain_fallback = "udfdata.unterhaltungsbox.com";
+var api_domain = api_domain_primary;
 const api_path = "";
 
 // link to more information page to show additional data
-const lookup_domain = "domainflag.unterhaltungsbox.com";
+const lookup_domain = "domainflag.bella.network";
 const lookup_protocol = "https";
 
 // Target where sentry pushes error records to
 const sentry_target = "https://cefee7041a9d4b9ab9d71a3364cff5c2@sentry.bella.pm/6";
+
+// set to true if policy settings exists and extension is therefore managed
+var companySettings = false;
 
 // error reporting (sentry) can be disabled by the user
 var errorReports = (typeof localStorage["errorReports"] !== "undefined") ? localStorage["errorReports"] : "true";
@@ -25,8 +28,44 @@ localStorage["errorReports"] = errorReports;
 // get settings from synced storage
 if (typeof chrome.storage !== "undefined" && typeof chrome.storage.sync !== "undefined") {
 	chrome.storage.sync.get(["errorReports"], function (syncedStorage) {
-		if (typeof syncedStorage.errorReports !== "undefined") {
+		// check if error reports are disabled by policy - this overrules custom settings when disabled
+		// when policy is set to false (do not disable), user can still decide if data should be transmitted
+		// sync storage should not be overwritten because this can be a company device with a private browser profile
+		if (typeof localStorage["policyDisableCrashReports"] !== "undefined" && localStorage["policyDisableCrashReports"]) {
+			errorReports = localStorage["errorReports"] = false;
+		} else if (typeof syncedStorage.errorReports !== "undefined") {
 			errorReports = localStorage["errorReports"] = syncedStorage.errorReports;
+		}
+	});
+}
+
+// get settings from managed storage
+if (typeof chrome.storage !== "undefined" && typeof chrome.storage.managed !== "undefined") {
+	chrome.storage.managed.get(["DisableCrashReports", "Server", "DisableServerFallback", "Secret"], function (syncedStorage) {
+		if (typeof syncedStorage.DisableCrashReports !== "undefined") {
+			companySettings = true;
+			localStorage["policyDisableCrashReports"] = syncedStorage.DisableCrashReports;
+			errorReports = localStorage["errorReports"] = syncedStorage.DisableCrashReports;
+		} else {
+			localStorage["policyDisableCrashReports"] = null;
+		}
+		if (typeof syncedStorage.Server !== "undefined" && localStorage["policyServer"] != "" && localStorage["policyServer"] != "false") {
+			companySettings = true;
+			api_domain = localStorage["policyServer"] = syncedStorage.Server;
+		} else {
+			localStorage["policyServer"] = null;
+		}
+		if (typeof syncedStorage.DisableServerFallback !== "undefined") {
+			companySettings = true;
+			localStorage["policyDisableServerFallback"] = syncedStorage.DisableServerFallback;
+		} else {
+			localStorage["policyDisableServerFallback"] = null;
+		}
+		if (typeof syncedStorage.Secret !== "undefined") {
+			companySettings = true;
+			localStorage["policySecret"] = syncedStorage.Secret;
+		} else {
+			localStorage["policySecret"] = null;
 		}
 	});
 }
@@ -43,15 +82,19 @@ if (typeof chrome !== "undefined") {
 // check if new domain is reachable and fallback to old domain including recovery after some time
 // recovery is tried every 10 minutes - both domains refer to the same backend
 setInterval(function() {
-	if (api_domain != api_domain_primary) {
+	let serverToCheck = api_domain_primary;
+	if (typeof localStorage["policyServer"] !== "undefined" && localStorage["policyServer"] != "" && localStorage["policyServer"] != "false") {
+		serverToCheck = localStorage["policyServer"];
+	}
+	if (api_domain != serverToCheck) {
 		let request = new XMLHttpRequest();
-		request.open('GET', api_protocol + '://' + api_domain_primary + api_path + '/reachable', true);
+		request.open('GET', api_protocol + '://' + serverToCheck + api_path + '/reachable', true);
 		request.onload = function() {
 			if (this.status == 200 && this.response.trim() == "Be kind whenever possible. It is always possible.") {
-				api_domain = api_domain_primary;
+				api_domain = serverToCheck;
 			} else {
 				// Something went wrong and the content doesn't match our prediction
-				api_domain = api_domain_fallback;
+				api_domain = df.handleFallback();
 				let status = this.status;
 				let response = this.response;
 				Sentry.withScope(function(scope) {
@@ -66,69 +109,6 @@ setInterval(function() {
 	}
 }, 1000*60*10);
 
-// check if error reporting is globally disabled
-// this is possible if a company requested the exclusion or uses a selfhosted instance with disabled error reports
-var crashreportDisabled = false;
-function checkCrashreportDisabled(){
-	let request = new XMLHttpRequest();
-	request.open('GET', api_protocol + '://' + api_domain + api_path + '/flags/disablecrashreport', true);
-	request.onload = function () {
-		if (this.status == 200) {
-			let parsedData;
-			try {
-				parsedData = JSON.parse(this.response);
-				if (typeof parsedData.enabled === "undefined") {
-					throw "unexpected json contents";
-				}
-				crashreportDisabled = parsedData.enabled;
-			}
-			catch (e) {
-				let status = this.status;
-				let response = this.response;
-				Sentry.withScope(function (scope) {
-					scope.setExtra("flag", "disablecrashreport");
-					scope.setExtra("responseURL", request.responseURL);
-					scope.setExtra("status", status);
-					scope.setExtra("response", response);
-					scope.setExtra("data", parsedData);
-					Sentry.captureException(e);
-				});
-			}
-		} else {
-			// Something went wrong contacting the server
-			let status = this.status;
-			let response = this.response;
-			Sentry.withScope(function (scope) {
-				scope.setExtra("flag", "disablecrashreport");
-				scope.setExtra("responseURL", request.responseURL);
-				scope.setExtra("status", status);
-				scope.setExtra("response", response);
-				Sentry.captureMessage("error requesting data from server");
-			});
-			return;
-		}
-	};
-	request.send();
-}
-// Check now and every 15 minutes if condition changes
-/*
-	--- DISABLED ---
-	Company check is disabled for now because this causes too much requests
-	I have to find a better idea here. Some sort of way to detect if
-	GPO is active of some sort or is member of a domain.
-	Ideas:
-		- check if specific (.local?) domain is reachable and if yes use it for requests
-		- allow overwrite of dfdata.bella.network - DNSSEC?
-		- response modification based on source IP address? (must be static, ...)
-		- how to check if client changed network - in my case VPN connect to company network - network change API?
-	If you have an idea, please let me know!
-
-	checkCrashreportDisabled();
-	setInterval(function(){
-		checkCrashreportDisabled();
-	}, 1000*60*15);
-*/
-
 // enable submission of error reports if errorReporting is not disabled
 if (errorReports && typeof Sentry !== "undefined") {
 	Sentry.init({
@@ -136,7 +116,7 @@ if (errorReports && typeof Sentry !== "undefined") {
 		release: extensionVersion,
 		beforeSend(event) {
 			// check if reporting is disabled by user or remote
-			if (errorReports == false || crashreportDisabled == true) {
+			if (errorReports == false || localStorage["errorReports"] == "false") {
 				return null;
 			}
 			return event;

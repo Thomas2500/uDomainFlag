@@ -26,6 +26,7 @@ Alternatively you can manually install the extension by importing it on the brow
 - Available for most browsers
 - Privacy focused without tracking
 - Quick overview of additional IP addresses and contacted ASN within popup view
+- GroupPolicy based settings
 
 ## Screenshots
 
@@ -56,6 +57,13 @@ View of an internal or special purpose website was opened.
 * Settings page of the extension. First containing the used version and extension ID with link to changelog.
 * After the introduction a link to the [HowItWorks](https://domainflag.unterhaltungsbox.com/extension/howitworks)-Page how uDomainFlag itself works and to which server uDomainFlag is connected to with the used encryption.
 * The crashreporting option is enabled by default and can be disabled here. When disabling, crash reporting will be disabled for all uDomainFlag instances. If you synchronize your browser settings, this configuration option will also be synced.
+
+## Company use
+
+Some settings can be managed using registry keys (e.g. over GPO) on Windows, using MCX preferences on macOS or an JSON config file on Linux. An example of which settings can be configured for your users:
+
+* **Server**: Target server to use instead of dfdata.bella.network
+* **DisableCrashReports**: Turns off crash reporting and does not allow the user to enable it again.
 
 ## Releases
 

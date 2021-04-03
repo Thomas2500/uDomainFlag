@@ -38,8 +38,11 @@
     "unknown": {
         "message": "Unbekannt"
     },
-    "options_companymanaged": {
-        "message": "Einstellungen dieser Erweiterung können durch $company$ verwaltet werden. Bei Fragen bitte an $support$ wenden.",
+    "options_companymanaged_title": {
+        "message": "Unternehmensverwaltet"
+    },
+    "options_companymanaged_fill": {
+        "message": "Einstellungen dieser Erweiterung werden durch $company$ verwaltet. Bei Fragen wende dich bitte an $support$.",
         "placeholders": {
             "company": {
                 "content": "$1",
@@ -50,6 +53,9 @@
                 "example": "it-support@company.invalid"
             }
         }
+    },
+    "options_companymanaged": {
+        "message": "Einstellungen dieser Erweiterung werden durch deine Orginasition verwaltet."
     },
     "options_yourversion": {
         "message": "Du benutzt uDomainFlag $version$ mit der Erweiterungs-ID $extensionid$.",
@@ -68,14 +74,14 @@
         "message": "Absturzberichte sind aktuell"
     },
     "options_crashreports_why": {
-        "message": "Absturzberichte helfen bei der Erfassung und Behebung von Fehlern und verbessern die Stabilität der Browsererweiterung. Es werden keine personenbezogenen Daten erfasst oder übermittelt."
+        "message": "Absturzberichte helfen bei der Erfassung und Behebung von Fehlern und verbessern die Stabilität von uDomainFlag. Es werden keine personenbezogenen Daten erfasst oder übermittelt."
     },
     "options_secureconnection": {
         "message": "Deine Verbindung zu $hostname$ wird mittels $protocol$ ($cipher$) gesichert.",
         "placeholders":{
             "hostname":{
                 "content": "$1",
-                "example": "udfdata.unterhaltungsbox.com"
+                "example": "dfdata.bella.network"
             },
             "protocol": {
                 "content":"$2",
@@ -87,8 +93,17 @@
             }
         }
     },
-    "options_versionhistory": {
-        "message": "Versionshistorie ist verfügbar unter"
+    "options_secureconnection_failed": {
+        "message": "Deine Verbindung zu $hostname$ ist fehlgeschlagen. uDomainFlag steht nicht in vollem Funktionsumfang zur Verfügung.",
+        "placeholders":{
+            "hostname":{
+                "content": "$1",
+                "example": "dfdata.bella.network"
+            }
+        }
+    },
+    "options_changelog": {
+        "message": "Versionshistorie"
     },
     "options_howitworks": {
         "message": "Du willst wissen, wie uDomainFlag im Detail funktioniert? Finde es heraus unter"
@@ -104,6 +119,21 @@
     },
     "disabled": {
         "message": "Deaktiviert"
+    },
+    "offline_title": {
+        "message": "Server nicht erreichbar"
+    },
+    "offline_description": {
+        "message": "Der Server $hostname$ konnte nicht erreicht werden oder liefert eine falsche Antwort zurück.\nBitte versuche es später erneut.",
+        "placeholders": {
+            "hostname": {
+                "content": "$1",
+                "example": "dfdata.bella.network"
+            }
+        }
+    },
+    "offline_companymanaged": {
+        "message": "uDomainFlag wird derzeit von deinem Unternehmen verwaltet. Möglicherweise liegt ein Konfigurationsproblem vor."
     },
     "_lang": {
         "message": "Deutsch"

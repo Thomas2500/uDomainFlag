@@ -1,0 +1,25 @@
+{
+	"type": "object",
+	"properties": {
+		"Server": {
+			"title": "Custom lookup server",
+			"description": "Lookups will be made using HTTPS:443 against the given server. Target must be reachable with a valid certificate.",
+			"type": "string"
+		},
+		"DisableServerFallback": {
+			"title": "Disalbe server fallback",
+			"description": "Disable fallback to upstream servers if custom server isn't reachable. Do not use this function if your server is only reachable internally.",
+			"type": "boolean"
+		},
+		"Secret": {
+			"title": "Connection secret",
+			"description": "If your server is publicy reachable, you can restrict answers to users which provide this secret to your server.",
+			"type": "string"
+		},
+		"DisableCrashReports": {
+			"title": "Disable submission of crash reports",
+			"description": "Forces the extension to disable crash reports. When used the user can't turn reports back on.",
+			"type": "boolean"
+		}
+	}
+}

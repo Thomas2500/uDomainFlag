@@ -1,5 +1,6 @@
 body {
 	min-width: 400px;
+	max-width: 500px;
 	overflow-x: hidden;
 	font-family: 'Roboto', sans-serif;
 	font-size: 14px;
@@ -103,6 +104,12 @@ body {
 	width: auto;
 	text-align: right;
 }
+hr {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	border: 0;
+	border-top: 1px solid #eee;
+}
 
 /* FIELDS */
 .ipfield {
@@ -160,6 +167,29 @@ body {
 	color: blue;
 }
 
+/* icon with infotext */
+.infocontainer {
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
+}
+.infocontainer .icon {
+	margin: 0 12px 0 0;
+	vertical-align: middle;
+	flex-shrink: 1;
+	flex-basis: auto;
+	display: inline-block;
+}
+.infocontainer .icon img {
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+	vertical-align: middle;
+}
+.infocontainer .info {
+	flex-grow: 1;
+}
+
 /* GREEN BOX */
 .greenbox > .header {
 	background-color: #4CAF50;
@@ -170,7 +200,7 @@ body {
 .greenbox > .contentblock .line > .title {
 	color: #1D421E;
 }
-.greenbox > .contentblock .line > .content {
+.greenbox > .contentblock .line > .content, .greenbox .colormatch {
 	color: #4CAF50;
 }
 
@@ -184,7 +214,7 @@ body {
 .graybox > .contentblock .line > .title {
 	color: #292929;
 }
-.graybox > .contentblock .line > .content {
+.graybox > .contentblock .line > .content, .graybox .colormatch {
 	color: #999999;
 }
 .information {
@@ -202,7 +232,7 @@ body {
 .yellowbox > .contentblock .line > .title {
 	color: #F59B00;
 }
-.yellowbox > .contentblock .line > .content {
+.yellowbox > .contentblock .line > .content, .yellowbox .colormatch {
 	color: #FFA000;
 }
 
@@ -216,6 +246,6 @@ body {
 .redbox > .contentblock .line > .title {
 	color: #521A09;
 }
-.redbox > .contentblock .line > .content {
+.redbox > .contentblock .line > .content, .redbox .colormatch {
 	color: #E64A19;
 }
