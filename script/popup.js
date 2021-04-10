@@ -85,8 +85,8 @@ function insertLookupResponseData(responseLookupData){
 	document.querySelector('.text-more').textContent = _("more_info");
 
 	// try to determine local used ip
-	// if not available fallback to first IP from remote
-	// because of the parser we have to ass "https://" to the url
+	// if not available fallback to first IP from remote,
+	// because of the used parser we have to pass "https://" to the url
 	chrome.runtime.sendMessage({ type: "resolved", url: "https://" + responseLookupData.query }, function (response) {
 		if (response !== null) {
 			document.querySelector('.ip').textContent = response;
@@ -102,6 +102,13 @@ function insertLookupResponseData(responseLookupData){
 				document.querySelector('.ip').classList.remove("loader");
 			}
 		}
+
+		// MultiIP may be filled, remove primary displayed IP from list
+		document.querySelectorAll('.multiip .content .line .content').forEach(function(singleElement){
+			if (singleElement.textContent == document.querySelector('.ip').textContent) {
+				singleElement.parentElement.remove();
+			}
+		});
 
 		// try to determine hostname based on IP
 		if (document.querySelector('.ip').textContent != "unknown" && document.querySelector('.ip').textContent != "") {
@@ -192,6 +199,7 @@ function insertLookupResponseData(responseLookupData){
 				let ipValueField = document.createElement('div');
 				ipValueField.classList.add('content');
 				ipValueField.textContent = value.ip;
+				ipValueField.setAttribute('title', value.hostname);
 				let mainObject = document.createElement('div');
 				mainObject.classList.add('line');
 				mainObject.appendChild(ipfield);
