@@ -71,6 +71,11 @@ window.addEventListener('load', function () {
 		document.querySelector(".companymanaged").style.display = "block";
 		let request2 = new XMLHttpRequest();
 		request2.open('GET', api_protocol + '://' + api_domain + api_path + '/flags/companymanaged', true);
+		// Provide secret as header if provided by configuration
+		if (localStorage["policySecret"] != "") {
+			request2.setRequestHeader("Secret", localStorage["policySecret"]);
+		}
+
 		request2.onload = function () {
 			if (this.status == 200) {
 				let parsedData;

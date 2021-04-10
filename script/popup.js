@@ -25,6 +25,11 @@ getCurrentTab(function (data) {
 			let request = new XMLHttpRequest();
 			request.open('GET', api_protocol + '://' + api_domain + api_path + '/lookup/' + domain, true);
 
+			// Provide secret as header if provided by configuration
+			if (localStorage["policySecret"] != "") {
+				request.setRequestHeader("Secret", localStorage["policySecret"]);
+			}
+
 			request.onload = function () {
 				if (this.status == 200) {
 					let parsedData;
@@ -114,6 +119,11 @@ function insertLookupResponseData(responseLookupData){
 			// requested url is not special and not in cache, request data from server
 			let request = new XMLHttpRequest();
 			request.open('GET', api_protocol + '://' + api_domain + api_path + '/lookup/' + document.querySelector('.ip').textContent, true);
+
+			// Provide secret as header if provided by configuration
+			if (localStorage["policySecret"] != "") {
+				request.setRequestHeader("Secret", localStorage["policySecret"]);
+			}
 
 			request.onload = function () {
 				if (this.status != 200) {

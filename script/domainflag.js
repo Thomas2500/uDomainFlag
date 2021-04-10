@@ -48,11 +48,12 @@ var df = {
 
 		// requested url is not special and not in cache, request data from server
 		let request = new XMLHttpRequest();
-		let clientSecret = "";
+		request.open('GET', api_protocol + '://' + api_domain + api_path + '/lookup/' + domain, true);
+
+		// Provide secret as header if provided by configuration
 		if (localStorage["policySecret"] != "") {
-			clientSecret = "?secret=" + localStorage["policySecret"];
+			request.setRequestHeader("Secret", localStorage["policySecret"]);
 		}
-		request.open('GET', api_protocol + '://' + api_domain + api_path + '/lookup/' + domain + clientSecret, true);
 
 		// Timeout after 35 seconds
 		request.timeout = 1000*45;
