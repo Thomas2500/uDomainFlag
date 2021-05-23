@@ -97,7 +97,7 @@ uDomainFlag connects primarily to [dfdata.bella.network](https://dfdata.bella.ne
 
 ## Privacy Policy
 
-The full version is available at [imprint.unterhaltungsbox.com](https://imprint.unterhaltungsbox.com/).
+The full version is available at [thomas.bella.network/privacy](https://thomas.bella.network/privacy).
 
 The extension itself logs errors using Sentry and transmits there errors to my private selfhosted sentry instance. Error logging can be disabled within the extension settings and this setting is synchronized to other instances if logged in within the browser.
 
