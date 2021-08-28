@@ -70,6 +70,9 @@
             }
         }
     },
+    "options_crashreporting": {
+        "message": "Crash reporting"
+    },
     "options_crashreports": {
         "message": "Crashreporting is currently"
     },
@@ -104,6 +107,12 @@
     },
     "options_changelog": {
         "message": "Changelog"
+    },
+    "options_version": {
+        "message": "Version"
+    },
+    "options_connection": {
+        "message": "Connection"
     },
     "options_howitworks": {
         "message": "Do you want to know how uDomainFlag works in detail? Find out below"
