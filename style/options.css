@@ -27,7 +27,7 @@ div.crash-desc {
 span.companymanaged_title {
 	font-weight: bold;
 }
-.companymanaged img, .crashreport_managed img {
+img.titleimg {
 	vertical-align: middle;
 }
 @media (prefers-color-scheme: dark) {
