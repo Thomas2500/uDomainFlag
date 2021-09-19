@@ -55,7 +55,7 @@ View of an internal or special purpose website was opened.
 ![Extension settings with options](https://media.bella.network/domainflag/settings.png)
 
 * Settings page of the extension. First containing the used version and extension ID with link to changelog.
-* After the introduction a link to the [HowItWorks](https://domainflag.unterhaltungsbox.com/extension/howitworks)-Page how uDomainFlag itself works and to which server uDomainFlag is connected to with the used encryption.
+* After the introduction a link to the [HowItWorks](https://domainflag.bella.network/howitworks?ref=https://github.com/Thomas2500/uDomainFlag)-Page how uDomainFlag itself works and to which server uDomainFlag is connected to with the used encryption.
 * The crashreporting option is enabled by default and can be disabled here. When disabling, crash reporting will be disabled for all uDomainFlag instances. If you synchronize your browser settings, this configuration option will also be synced.
 
 ## Company use
@@ -65,6 +65,8 @@ Some settings can be managed using registry keys (e.g. over GPO) on Windows, usi
 * **Server**: Target server to use instead of dfdata.bella.network
 * **DisableCrashReports**: Turns off crash reporting and does not allow the user to enable it again.
 
+More details on all available settings and how to configure these can be found on the [Admin Policies for uDomainFlag](https://domainflag.bella.network/enterprise?ref=https://github.com/Thomas2500/uDomainFlag) page.
+
 ## Releases
 
 A list of all releases including changelog can be found at [Releases](https://github.com/Thomas2500/uDomainFlag/releases).
@@ -72,7 +74,7 @@ Depending on the store, it can take multiple days up to weeks until a new releas
 
 ## Webpage
 
-uDomainFlag is also available as website at [domainflag.unterhaltungsbox.com](http://domainflag.unterhaltungsbox.com/) with some additional information. This page is opened when "additional information" is clicked within the extension.
+uDomainFlag is also available as website at [domainflag.bella.network](http://domainflag.bella.network/?ref=https://github.com/Thomas2500/uDomainFlag) with some additional information. This page is opened when "additional information" is clicked within the extension.
 
 ## Development & contribution
 
@@ -85,7 +87,7 @@ uDomainFlag is also available as website at [domainflag.unterhaltungsbox.com](ht
 You have found a bug or have a suggestion for a feature, then please open an [Issue on GitHub](https://github.com/Thomas2500/uDomainFlag/issues). We are also open for PRs!
 
 ## Translation
-Please help to translate uDomainFlag into other language! You can use the English (`en`) / German (`de`) language files as reference which are located within the `_locales` folder.
+Please help translate uDomainFlag into other languages! You can use the English (`en`) and German (`de`) language files as reference which are located within the [_locales](/_locales/) folder.
 
 ## Permissions required
 
@@ -93,11 +95,11 @@ This extension uses the following permissions:
 * **Read your browsing history** - Needed to determine the currently viewed website.
 * **Read and change all your data on the websites you visit** - Also used to determine the viewed website and additionally to detect the used IP address of the target server. (E.g. to show if website uses a private IP address)
 
-uDomainFlag connects primarily to [dfdata.bella.network](https://dfdata.bella.network/) for location data, where you can also find additional information about the backend.
+uDomainFlag connects primarily to [dfdata.bella.network](https://dfdata.bella.network/?ref=https://github.com/Thomas2500/uDomainFlag) for location data, where you can also find additional information about the backend.
 
 ## Privacy Policy
 
-The full version is available at [thomas.bella.network/privacy](https://thomas.bella.network/privacy).
+The full version is available at [domainflag.bella.network/privacy](https://domainflag.bella.network/privacy?ref=https://github.com/Thomas2500/uDomainFlag).
 
 The extension itself logs errors using Sentry and transmits there errors to my private selfhosted sentry instance. Error logging can be disabled within the extension settings and this setting is synchronized to other instances if logged in within the browser.
 
