@@ -25,9 +25,10 @@ var df = {
 		}
 
 		// check if resolved ip is local
+		// skip if companySettings are active and local lookup is possible
 		if (data.ip != null) {
 			let special = df.isInternal(data.ip);
-			if (special !== false) {
+			if (special !== false && !companySettings) {
 				return df.setFlag(df.deepExtend({}, special, data));
 			}
 		}
@@ -407,12 +408,12 @@ var df = {
 				return { icon: "images/fugue/home-network.png", title: "Benchmark network", popup: 'special.html' };
 			}
 
-			// Private & documantation
+			// Private & documentation
 			if (ip.match(/^198\.51\.100\.([0-9]{1,3})$/)) {
 				return { icon: "images/fugue/home-network.png", title: "Example range for documentation and private use", popup: 'internal.html' };
 			}
 
-			// Private & documantation
+			// Private & documentation
 			if (ip.match(/^203\.0\.113\.([0-9]{1,3})$/)) {
 				return { icon: "images/fugue/home-network.png", title: "Example range for documentation and private use", popup: 'special.html' };
 			}
