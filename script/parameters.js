@@ -83,7 +83,7 @@ if (typeof chrome !== "undefined") {
 // recovery is tried every 10 minutes - both domains refer to the same backend
 setInterval(function() {
 	let serverToCheck = api_domain_primary;
-	if (typeof localStorage["policyServer"] !== "undefined" && localStorage["policyServer"] != "" && localStorage["policyServer"] != "false") {
+	if (typeof localStorage["policyServer"] !== "undefined" && localStorage["policyServer"] != "" && localStorage["policyServer"] != "false" && localStorage["policyServer"] != "null") {
 		serverToCheck = localStorage["policyServer"];
 	}
 	if (api_domain != serverToCheck) {
