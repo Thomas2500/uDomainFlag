@@ -12,7 +12,7 @@
         "message": "Beschreibung"
     },
     "domain_unknown": {
-        "message": "Es konnten keine Daten zur aufgerufenen Seite ermittelt werden.\nWahrscheinlich handelt es sich hierbei um eine lokale oder ung\u00fcltige Domain."
+        "message": "Es konnten keine Daten zur aufgerufenen Seite ermittelt werden.\nWahrscheinlich handelt es sich hierbei um eine lokale oder ungültige Domain."
     },
     "hostname": {
         "message": "Hostname"
@@ -81,25 +81,25 @@
     },
     "options_secureconnection": {
         "message": "Deine Verbindung zu $hostname$ wird mittels $protocol$ ($cipher$) gesichert.",
-        "placeholders":{
-            "hostname":{
+        "placeholders": {
+            "hostname": {
                 "content": "$1",
                 "example": "dfdata.bella.network"
             },
             "protocol": {
-                "content":"$2",
-                "example":"TLSv1.3"
+                "content": "$2",
+                "example": "TLSv1.3"
             },
             "cipher": {
-                "content":"$3",
-                "example":"TLS_AES_256_GCM_SHA384"
+                "content": "$3",
+                "example": "TLS_AES_256_GCM_SHA384"
             }
         }
     },
     "options_secureconnection_failed": {
         "message": "Deine Verbindung zu $hostname$ ist fehlgeschlagen. uDomainFlag steht nicht in vollem Funktionsumfang zur Verfügung.",
-        "placeholders":{
-            "hostname":{
+        "placeholders": {
+            "hostname": {
                 "content": "$1",
                 "example": "dfdata.bella.network"
             }

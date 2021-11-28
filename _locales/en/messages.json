@@ -74,7 +74,7 @@
         "message": "Crash reporting"
     },
     "options_crashreports": {
-        "message": "Crashreporting is currently"
+        "message": "Crash reporting is currently"
     },
     "options_crashreports_why": {
         "message": "Crash reports help in the detection and correction of errors and improve the stability of uDomainFlag. No personal data is collected or transmitted."

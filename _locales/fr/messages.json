@@ -18,7 +18,7 @@
         "message": "Nom d'hôte"
     },
     "internal_domain": {
-        "message": "Réseau interne"
+        "message": "Domaine interne"
     },
     "local_ressource": {
         "message": "La page a été récupéré localement depuis votre ordinateur."
