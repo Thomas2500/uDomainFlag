@@ -87,7 +87,14 @@ uDomainFlag is also available as website at [domainflag.bella.network](http://do
 You have found a bug or have a suggestion for a feature, then please open an [Issue on GitHub](https://github.com/Thomas2500/uDomainFlag/issues). We are also open for PRs!
 
 ## Translation
-Please help translate uDomainFlag into other languages! You can use the English (`en`) and German (`de`) language files as reference which are located within the [_locales](/_locales/) folder.
+
+Please help translate uDomainFlag into other languages!
+
+You can use [Weblate on weblate.bella.pm](https://weblate.bella.pm/engage/udomainflag/) to improve current translations or to add a new language to uDomainFlag!
+
+[<img src="https://weblate.bella.pm/widgets/udomainflag/-/extension/287x66-black.png" valign="middle" />](https://weblate.bella.pm/engage/udomainflag/)
+
+Alternatively you can use the English (`en`) and German (`de`) language files as reference which are located within the [_locales](/_locales/) folder.
 
 ## Permissions required
 
