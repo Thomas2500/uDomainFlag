@@ -16,7 +16,7 @@ const lookup_domain = "domainflag.bella.network";
 const lookup_protocol = "https";
 
 // Target where sentry pushes error records to
-const sentry_target = "https://cefee7041a9d4b9ab9d71a3364cff5c2@sentry.bella.pm/6";
+const sentry_target = "https://536650d775194abb959ebeb9f9e744e2@sentry.bella.pm/12";
 
 // set to true if policy settings exists and extension is therefore managed
 var companySettings = false;
