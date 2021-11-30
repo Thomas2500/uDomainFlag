@@ -123,6 +123,12 @@
     "options_imprint": {
         "message": "Imprint"
     },
+    "options_translation": {
+        "message": "Translation"
+    },
+    "options_help_translate": {
+        "message": "Help us translate uDomainFlag into your language at:"
+    },
     "enabled": {
         "message": "Enabled"
     },
