@@ -146,5 +146,11 @@
     },
     "_lang": {
         "message": "Français"
+    },
+    "options_translation": {
+        "message": "Traduction"
+    },
+    "options_help_translate": {
+        "message": "Aidez-nous à traduire uDomainFlag dans votre langue sur :"
     }
 }
