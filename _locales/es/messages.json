@@ -146,5 +146,11 @@
     },
     "options_crashreports": {
         "message": "El informe de fallos es actualmente"
+    },
+    "options_translation": {
+        "message": "Traducción"
+    },
+    "options_help_translate": {
+        "message": "Ayúdanos a traducir uDomainFlag a tu idioma en:"
     }
 }
