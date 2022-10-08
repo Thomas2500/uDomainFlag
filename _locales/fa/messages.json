@@ -1,0 +1,156 @@
+{
+    "multi_domain": {
+        "message": "دامنه به چندین آدرس IP اشاره دارد."
+    },
+    "name": {
+        "message": "نام"
+    },
+    "privacy": {
+        "message": "حریم خصوصی"
+    },
+    "options_companymanaged": {
+        "message": "تنظیمات این افزونه توسط سازمان شما مدیریت می‌شود."
+    },
+    "options_crashreporting": {
+        "message": "گزارش خرابی"
+    },
+    "options_crashreports": {
+        "message": "گزارش خرابی در حال انجام است"
+    },
+    "options_secureconnection": {
+        "message": "اتصال شما به $hostname$ با استفاده از $protocol$ ($cipher$) ایمن شده است.",
+        "placeholders": {
+            "hostname": {
+                "content": "$1",
+                "example": "dfdata.bella.network"
+            },
+            "protocol": {
+                "content": "$2",
+                "example": "TLSv1.3"
+            },
+            "cipher": {
+                "content": "$3",
+                "example": "TLS_AES_256_GCM_SHA384"
+            }
+        }
+    },
+    "options_changelog": {
+        "message": "گزارش تغییرات"
+    },
+    "options_version": {
+        "message": "نسخه"
+    },
+    "options_connection": {
+        "message": "اتصال"
+    },
+    "options_howitworks": {
+        "message": "آیا می‌خواهید بدانید که uDomainFlag چگونه این جزییات را نشان می‌دهد؟ در زیر بخوانید"
+    },
+    "domain_unknown": {
+        "message": "هیچ اطلاعاتی برای صفحه درخواست شده پیدا نشد. ممکن است یک دامنه خصوصی یا نامعتبر باشد.."
+    },
+    "hostname": {
+        "message": "نام میزبان"
+    },
+    "desc": {
+        "message": "توضیحات"
+    },
+    "browser_ressource": {
+        "message": "منبع مرورگر"
+    },
+    "browser_extension": {
+        "message": "افزونه مرورگر"
+    },
+    "description": {
+        "message": "هنگام بازدید از یک وب سایت، اطلاعات دامنه را مستقیما در مرورگر دریافت کنید."
+    },
+    "internal_domain": {
+        "message": "دامنه داخلی"
+    },
+    "more_info": {
+        "message": "اطلاعات تکمیلی"
+    },
+    "unknown": {
+        "message": "ناشناخته"
+    },
+    "options_companymanaged_fill": {
+        "message": "تنظیمات این افزونه می‌تواند توسط $company$ مدیریت شود. اگر سوالی دارید، لطفا با $support$ تماس بگیرید.",
+        "placeholders": {
+            "company": {
+                "content": "$1",
+                "example": "Feel Good Inc."
+            },
+            "support": {
+                "content": "$2",
+                "example": "it-support@company.invalid"
+            }
+        }
+    },
+    "_lang": {
+        "message": "انگلیسی"
+    },
+    "disabled": {
+        "message": "غیرفعال"
+    },
+    "offline_title": {
+        "message": "سرور قابل دسترس نمی‌باشد"
+    },
+    "offline_description": {
+        "message": "سرور $hostname$ قابل دسترسی نبود یا پاسخ ناردستی برگرداند.\nلطفا بعدا دوباره امتحان کنید.",
+        "placeholders": {
+            "hostname": {
+                "content": "$1",
+                "example": "dfdata.bella.network"
+            }
+        }
+    },
+    "offline_companymanaged": {
+        "message": "uDomainFlag در حال حاضر توسط سازمان شما مدیریت می‌شود. ممکن است مشکل پیکربندی بوجود بیاورد."
+    },
+    "local_ressource": {
+        "message": "فایل درخواستی از رایانه شما دریافت شد."
+    },
+    "options_companymanaged_title": {
+        "message": "توسط سازمان شما مدیریت می‌شود"
+    },
+    "options_crashreports_why": {
+        "message": "گزارش‌های خرابی به تشخیص و رفع خطاها کمک می‌کند و پایداری uDomainFlag را بهبود می‌دهد. هیچ اطلاعات شخصی جمع آوری یا ارسال نمی شود."
+    },
+    "options_yourversion": {
+        "message": "شما از uDomainFlag $version$ با شناسه افزونه $extensionid$ استفاده می‌کنید.",
+        "placeholders": {
+            "version": {
+                "content": "$1",
+                "example": "1.2.3.4"
+            },
+            "extensionid": {
+                "content": "$2",
+                "example": "eklbfdpploakpkdakoielobggbhemlnm"
+            }
+        }
+    },
+    "options_secureconnection_failed": {
+        "message": "اتصال شما به $hostname$ ناموفق بود. عملکرد کامل uDomainFlag در دسترس نیست.",
+        "placeholders": {
+            "hostname": {
+                "content": "$1",
+                "example": "dfdata.bella.network"
+            }
+        }
+    },
+    "options_privacypolicy": {
+        "message": "سیاست حفظ حریم خصوصی"
+    },
+    "options_translation": {
+        "message": "ترجمه"
+    },
+    "options_help_translate": {
+        "message": "در ترجمه uDomainFlag به زبان شما به ما کمک کنید:"
+    },
+    "enabled": {
+        "message": "فعال کردن"
+    },
+    "options_imprint": {
+        "message": "حقوق"
+    }
+}
