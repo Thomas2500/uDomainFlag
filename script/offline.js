@@ -4,8 +4,13 @@
 "use strict";
 
 window.addEventListener('load', function () {
-	if (companySettings && lookup_domain != api_domain_primary && lookup_domain != api_domain_fallback) {
+	writeContent();
+});
+
+async function writeContent(){
+	let currentDomain = await getAPIDomain();
+	if (currentDomain != api_domain_primary && currentDomain != api_domain_fallback) {
 		document.querySelector('.companymanaged').style.display = "inline";
 	}
-	document.querySelector('.offline_description').innerHTML = _("offline_description", [api_domain]);
-});
+	document.querySelector('.offline_description').innerHTML = _("offline_description", [currentDomain]);
+}

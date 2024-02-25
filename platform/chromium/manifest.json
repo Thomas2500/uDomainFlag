@@ -4,14 +4,14 @@
 	"name": "uDomainFlag",
 	"description": "__MSG_description__",
 
-	"manifest_version": 2,
+	"manifest_version": 3,
 
 	"default_locale": "en",
 
 	"version": "2.1.1",
 
 	"background": {
-		"page": "background.html"
+		"service_worker": "background.js"
 	},
 
 	"icons": {
@@ -29,18 +29,23 @@
 
 	"options_ui": {
 		"page": "options.html",
-		"open_in_tab": false,
-		"chrome_style": true
+		"open_in_tab": false
 	},
 
-	"minimum_chrome_version": "34",
+	"minimum_chrome_version": "88",
 
 	"permissions": [
 		"storage",
 		"tabs",
+		"activeTab",
 		"webRequest",
-		"<all_urls>"
+		"alarms"
 	],
+
+	"host_permissions": [
+		"*://*/*"
+	],
+
 	"storage": {
 		"managed_schema": "managed_storage.json"
 	}

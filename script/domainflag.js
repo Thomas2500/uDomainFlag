@@ -3,12 +3,26 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 "use strict";
 
-var df = {
+let storageCache = [];
 
-	domainLookup: function(data){
+const df = {
+	processLastError: function(){
+		if (chrome.runtime.lastError) {
+			console.warn(chrome.runtime.lastError);
+			Sentry.withScope(function (scope) {
+				scope.setExtra("lastError", chrome.runtime.lastError);
+				Sentry.captureMessage("lastError");
+			});
+		}
+	},
+
+	countryLookup: async function(data){
 		// Check if local domain or local ip is requested
 		let special = df.isSpecial(data.url);
 		if (special !== false) {
+			if (typeof data.ip !== "undefined" && data.ip !== null) {
+				special.popup += "#ip=" + data.ip;
+			}
 			return df.setFlag(df.deepExtend({}, special, data));
 		}
 
@@ -20,6 +34,7 @@ var df = {
 			return df.setFlag({ tab: data.tab, icon: "images/fugue/question-white.png", title: "No data found", popup: 'special.html' });
 		}
 
+		// Set data.ip to null if data is not available
 		if (typeof data.ip === "undefined") {
 			data.ip = null;
 		}
@@ -28,113 +43,79 @@ var df = {
 		// skip if companySettings are active and local lookup is possible
 		if (data.ip != null) {
 			let special = df.isInternal(data.ip);
-			if (special !== false && !companySettings) {
+			if (special !== false) {
+				if (typeof data.ip !== "undefined" && data.ip !== null) {
+					special.popup += "#ip=" + data.ip;
+				}
 				return df.setFlag(df.deepExtend({}, special, data));
 			}
 		}
 
-		// check if given domain is stored within cache
-		if (cache.has(domain)) {
-			return df.domainLookupResultData({ lookup: data, request: cache.get(domain) })
-		}
-
-		// wait until lookup has finished and execute again
-		// this prevents multiple lookups of the same domain when multiple tabs open (e.g. session restore)
-		if (requestQueue.has(domain)) {
-			return setTimeout(function(){
-				df.domainLookup(data);
-			}, 250);
-		}
-		requestQueue.set(domain, true);
-
-		// requested url is not special and not in cache, request data from server
-		let request = new XMLHttpRequest();
-		request.open('GET', api_protocol + '://' + api_domain + api_path + '/lookup/' + domain, true);
-
-		// Provide secret as header if provided by configuration
-		if (localStorage["policySecret"] != "") {
-			request.setRequestHeader("Secret", localStorage["policySecret"]);
-		}
-
-		// Timeout after 35 seconds
-		request.timeout = 1000*45;
-		request.ontimeout = function() {
-			requestQueue.remove(domain);
-			api_domain = df.handleFallback();
+		// create header for request
+		let headers = {
+			'Content-Type': 'application/json',
+			'Secret': await df.getValueFromStorage("Secret"),
+			'X-UUID': await df.getValueFromStorage("UUID"),
 		};
 
-		request.onload = function() {
-			if (this.status == 200) {
-				let parsedData;
-				try {
-					parsedData = JSON.parse(this.response);
+		// if secret is not set, remove it from header
+		// only active if relay service server is enabled by company policy
+		if (headers.Secret === null || headers.Secret === undefined || headers.Secret === "") {
+			delete headers.Secret;
+		}
+
+		// if relay dynamic path response is enabled, add header of current url
+		// this allows dynamic icon change based on the current url
+		// only active if relay service server is enabled by company policy
+		if (await df.getValueFromStorage("RDPR") == "enabled") {
+			headers["X-RDPR"] = data.url;
+		}
+
+		// if relay locally used resolved ip is enabled, add header of current ip
+		// this allows to display a different icon if MITM was detected
+		// only active if relay service server is enabled by company policy
+		if (data.ip != null && await df.getValueFromStorage("RLURIP") == "enabled") {
+			headers["X-RLURIP"] = data.ip;
+		}
+
+		// fetch country of destination from upstream server
+		fetch(api_protocol + '://' + (await df.getAPIDomain()) + api_path + '/country/' + domain, {
+			method: 'GET',
+			cache: 'default',
+			headers: headers,
+		}).then(response => response.json(), df.processLastError).then((parsedData) => {
+			if (parsedData.success) {
+				let meta = { lookup: data, request: parsedData };
+				if (data.ip != null) {
+					meta.ip = data.ip;
 				}
-				catch (e){
-					df.setFlag({ tab: data.tab, icon: "images/fugue/network-status-busy.png", title: "uDomainFlag server not reachable", popup: 'offline.html' });
-					let status = this.status;
-					let response = this.response;
-					Sentry.withScope(function(scope) {
-						scope.setExtra("domain", domain);
-						scope.setExtra("status", status);
-						scope.setExtra("responseURL", request.responseURL);
-						scope.setExtra("response", response);
-						Sentry.captureException(e);
-					});
-					if (api_domain != df.handleFallback()) {
-						api_domain = df.handleFallback();
-						requestQueue.remove(domain);
-						df.domainLookup(data);
-					}
-					return;
+
+				df.domainCountryLookupResultData(meta);
+			} else if (parsedData.success === false) {
+				let error = "uDomainFlag server was not able to resolve the country of the domain.\nPlease try again later.";
+				if (typeof parsedData.error !== "undefined") {
+					error = parsedData.error;
 				}
-				if (parsedData === false || typeof parsedData === "undefined") {
-					// Something went wrong contacting the server
-					df.setFlag({ tab: data.tab, icon: "images/fugue/network-status-busy.png", title: "uDomainFlag server not reachable", popup: 'offline.html' });
-					let status = this.status;
-					let response = this.response;
-					Sentry.withScope(function(scope) {
-						scope.setExtra("domain", domain);
-						scope.setExtra("status", status);
-						scope.setExtra("responseURL", request.responseURL);
-						scope.setExtra("response", response);
-						Sentry.captureMessage("error parsing json response");
-					});
-					api_domain = df.handleFallback();
-					return;
-				}
-				// Set cache and pass to result
-				cache.set(domain, parsedData);
-				df.domainLookupResultData({lookup: data, request: parsedData});
-				requestQueue.remove(domain);
+				df.setFlag({ tab: data.tab, icon: "images/special-flag/unknown.png", title: error, popup: 'popup.html' });
 			} else {
-				// Something went wrong contacting the server
 				df.setFlag({ tab: data.tab, icon: "images/fugue/network-status-busy.png", title: "uDomainFlag server not reachable", popup: 'offline.html' });
-				let status = this.status;
-				let response = this.response;
-				Sentry.withScope(function(scope) {
+				Sentry.withScope(function (scope) {
 					scope.setExtra("domain", domain);
-					scope.setExtra("status", status);
 					scope.setExtra("response", response);
-					scope.setExtra("responseURL", request.responseURL);
-					scope.setExtra("server", api_domain);
-					Sentry.captureMessage("error requesting data from server");
+					Sentry.captureMessage("no success response from backend");
 				});
-				requestQueue.remove(domain);
 				api_domain = df.handleFallback();
 				return;
 			}
-		};
-
-		request.onerror = function() {
-			requestQueue.remove(domain);
+		}).catch((result) => {
+			console.log(result);
 			df.setFlag({ tab: data.tab, icon: "images/fugue/network-status-busy.png", title: "uDomainFlag server not reachable", popup: 'offline.html' });
 			api_domain = df.handleFallback();
-		};
-
-		request.send();
+			console.warn(api_domain);
+		});
 	},
 
-	domainLookupResultData: function(data){
+	domainCountryLookupResultData: function(data){
 		// Check if data is correct
 		if (typeof data !== "object") {
 			throw new Error("First argument must be an object");
@@ -158,38 +139,113 @@ var df = {
 		// Problem on backend, show question mark
 		if (!data.request.success) {
 			console.warn(data);
+			let title = "Error fetching data from server.\nPlease try again later.";
+			if (typeof data.request.error !== "undefined" && data.request.error !== "") {
+				title = data.request.error;
+			}
+
+			Sentry.withScope(function (scope) {
+				scope.setExtra("data", data);
+				Sentry.captureMessage("no success response from backend");
+			});
+
 			return df.setFlag({
 				tab: data.lookup.tab,
 				icon: "images/fugue/question-white.png",
-				title: "Error fetching data from server.\nPlease try again",
+				title: title,
 				popup: 'special.html'
 			});
 		}
 
 		let title = "";
-		if (typeof data.request.location.country !== "undefined") {
-			title += data.request.location.country + "\n";
-		} else {
-			title += data.request.location.shortcountry + "\n";
+		if (typeof data.request.shortcountry !== "undefined") {
+			if (data.request.shortcountry.length == 2) {
+				let tryCountryLookup = getCountryName(data.request.shortcountry);
+				title += tryCountryLookup;
+			} else {
+				title += data.request.shortcountry;
+			}
 		}
 
-		if (typeof data.request.location.region !== "undefined") {
-			title += data.request.location.region + "\n";
+		// determine if custom icon is available
+		let flagIcon = data.request.shortcountry.toLowerCase();
+		if (typeof data.request.customflag !== "undefined") {
+			flagIcon = data.request.customflag;
 		}
 
-		if (typeof data.request.location.city !== "undefined") {
-			title += data.request.location.city;
+		let popup = "popup.html#";
+		if (typeof data.ip !== "undefined" && data.ip !== null) {
+			popup += "ip=" + data.ip;
 		}
 
 		// Everything looked up, set correct flag
 		df.setFlag({
 			tab: data.lookup.tab,
-			icon: data.request.location.shortcountry.toLowerCase(),
-			title: title
+			icon: flagIcon,
+			title: title,
+			popup: popup
 		});
 	},
 
-	setFlag: function(data) {
+	callbackLookup: async function(backend, data, callback){
+		// parse url to a domain
+		let domain = df.parseUrl(data.url);
+
+		// If something is wrong with the domain, display a question symbol
+		if (domain === false || domain === "" || domain === "false") {
+			return callback({ success: false, error: "Invalid domain name requested" });
+		}
+
+		// Set data.ip to null if data is not available
+		if (typeof data.ip === "undefined") {
+			data.ip = null;
+		}
+
+		// create header for request
+		let headers = {
+			'Content-Type': 'application/json',
+			'Secret': await df.getValueFromStorage("Secret"),
+			'X-UUID': await df.getValueFromStorage("UUID"),
+		};
+
+		// if secret is not set, remove it from header
+		// only active if relay service server is enabled by company policy
+		if (headers.Secret === null || headers.Secret === undefined || headers.Secret === "") {
+			delete headers.Secret;
+		}
+
+		// if relay dynamic path response is enabled, add header of current url
+		// this allows dynamic icon change based on the current url
+		// only active if relay service server is enabled by company policy
+		if (await df.getValueFromStorage("RDPR") == "enabled") {
+			headers["X-RDPR"] = data.url;
+		}
+
+		// if relay locally used resolved ip is enabled, add header of current ip
+		// this allows to display a different icon if MITM was detected
+		// only active if relay service server is enabled by company policy
+		if (data.ip != null && await df.getValueFromStorage("RLURIP") == "enabled") {
+			headers["X-RLURIP"] = data.ip;
+		}
+
+		// fetch lookup of destination from upstream server
+		fetch(api_protocol + '://' + (await df.getAPIDomain()) + api_path + '/' + backend + '/' + domain, {
+			method: 'GET',
+			cache: 'default',
+			headers: headers,
+		}).then(response => response.json()).then((parsedData) => {
+			if (typeof parsedData.success !== "undefined") {
+				return callback(parsedData);
+			}
+		}).catch((result) => {
+			console.warn(result);
+			api_domain = df.handleFallback();
+			return callback({ success: false, error: "uDomainFlag server not reachable", catch: result });
+		});
+	},
+
+	// setFlag sets a flag icon and title for a tab
+	setFlag: async function(data) {
 		try {
 			// Check if data is correct
 			if (typeof data !== "object") {
@@ -201,49 +257,53 @@ var df = {
 				throw new Error("Object.tab must be specified");
 			}
 
+			// ignore request if tab is less than 0 because it is a background page
 			if (data.tab <= 0){
 				return;
 			}
 
-			// get/find icon
-			var icon = "images/logo-16x16.png";
+			// load icon first because icon is reset on every page navigation
+			var icon;
 			if (typeof data.icon !== "undefined" && data.icon !== "") {
-				if (data.icon.length === 2 || data.icon === "null") {
-					icon = "images/flag/" + data.icon + ".png";
+				if (data.icon.length === 2 || data.icon === "null" || data.icon === "catalonia" || data.icon == "england" || data.icon === "scotland" || data.icon === "wales" || data.icon === "fam") {
+					// icon is a country code
+					icon = await createImageBitmap(await (await fetch("images/flag/" + data.icon + ".png")).blob());
+				} else if (data.icon.substring(0, 7) == "images/") {
+					// Locally stored icon (e.g. custom flag)
+					icon = await createImageBitmap(await (await fetch(data.icon)).blob());
 				} else {
-					icon = data.icon;
+					// Icon from server supplied using customflag
+					// we expect a base64 encoded image like data:image/png;base64,[...] here
+					icon = await createImageBitmap(await (await fetch(data.icon)).blob());
 				}
-			}
-
-			// removed, painted using canvas
-			//chrome.browserAction.setIcon({ tabId: data.tab, path: icon });
-
-			if (typeof data.popup !== "undefined") {
-				chrome.browserAction.setPopup({ tabId: data.tab, popup: data.popup });
 			} else {
-				chrome.browserAction.setPopup({ tabId: data.tab, popup: 'popup.html' });
-			}
-
-			if (typeof data.title !== "undefined") {
-				chrome.browserAction.setTitle({ tabId: data.tab, title: data.title });
+				// no icon specified, use default icon
+				icon = await createImageBitmap(await (await fetch("images/logo-16x16.png").blob()));
 			}
 
 			// in some browsers the icon is painted blurry because it is always stretched
 			// create a pseudo 16x16 canvas element and place flag inside
-			var canvas = document.createElement("canvas");
-			canvas.width = 16;
-			canvas.height = 16;
+			// this will prevent the icon from being stretched and will look sharp
+			var canvas = new OffscreenCanvas(16, 16);
 			var ctx = canvas.getContext("2d");
 			ctx.clearRect(0, 0, 16, 16);
+			ctx.drawImage(icon, Math.floor((16 - icon.width) / 3), Math.floor((16 - icon.height) / 2));
+			chrome.action.setIcon({ tabId: data.tab, imageData: ctx.getImageData(0, 0, 16, 16) });
 
-			var image = new Image();
-			image.onload = function () {
-				ctx.drawImage(image, Math.floor((16 - image.width) / 3), Math.floor((16 - image.height) / 2));
-				chrome.browserAction.setIcon({ tabId: data.tab, imageData: ctx.getImageData(0, 0, 16, 16) });
-			};
-			image.src = icon;
+			// set popup data before changing other data
+			if (typeof data.popup !== "undefined") {
+				await chrome.action.setPopup({ tabId: data.tab, popup: data.popup });
+			} else {
+				await chrome.action.setPopup({ tabId: data.tab, popup: 'popup.html' });
+			}
+
+			// set title if a title is available
+			if (typeof data.title !== "undefined") {
+				chrome.action.setTitle({ tabId: data.tab, title: data.title });
+			}
 		}
 		catch (e) {
+			console.error(e);
 			Sentry.withScope(function (scope) {
 				scope.setExtra("setflag", data);
 				Sentry.captureException(e);
@@ -270,23 +330,13 @@ var df = {
 			}
 
 			// Split domain
-			var reg = /(brave|edge|chrome|chrome-extension|extension|opera|http|https|ftp)\:\/\/([^\/^\:^\[]{1,})/;
-			var regFirefox = /(about)\:([^\/^\:^\[]{1,})/;
-
-			if (regFirefox.test(url)) {
-				var match = url.match(regFirefox);
-
-				// firefox internal url
-				if (match[1] == 'about') {
-					return { icon: "images/fugue/computer.png", title: "Browser", popup: 'special.html' };
-				}
-			}
+			var reg = /(.*)\:\/\/([^\/^\:^\[]{1,})/;
 
 			if (reg.test(url)) {
 				var match = url.match(reg);
 
 				// Chrome extension - internal
-				if (match[1] == 'chrome' || match[1] == 'chrome-extension' || match[1] == 'opera' || match[1] == 'edge' || match[1] == 'extension' || match[1] == 'brave') {
+				if (match[1] == 'chrome' || match[1] == 'about' || match[1] == 'chrome-extension' || match[1] == 'opera' || match[1] == 'edge' || match[1] == 'extension' || match[1] == 'brave') {
 					return { icon: "images/fugue/computer.png", title: "Browser", popup: 'special.html' };
 				}
 
@@ -504,7 +554,100 @@ var df = {
 		return out;
 	},
 
-	handleFallback: function(){
+	schedule: async function (data) {
+		if (data === null || typeof data.name === "undefined") {
+			return false;
+		}
+
+		// execute based on schedule name
+		switch (data.name) {
+			case "reachableCheck":
+				df.handleFallbackRecovery();
+				break;
+			case "companySync":
+				df.getServerFeatureFlag("companysync", function (response) {
+					if (response !== false && response.enabled === true && typeof response.extra !== "undefined") {
+						for (const [key, value] of Object.entries(response.extra)) {
+							saveObjectInLocalStorage({ [key]: value });
+
+							// remove matching entry from storageCache
+							if (typeof storageCache[key] !== "undefined") {
+								delete storageCache[key];
+							}
+						}
+					}
+				});
+				break;
+			default:
+				return false;
+		}
+	},
+
+	handleOnInstalled: function(details) {
+		// Check if UUID is set
+		df.checkUUID();
+		console.log("onInstalled: " + details.reason);
+
+		if (typeof details.previousVersion == "undefined") {
+			// extension was newly installed - currently nothing is needed
+			// to prepare extension for use
+		} else if (typeof details.reason !== "undefined" && details.reason == "update" || details.previousVersion != chrome.runtime.getManifest().version) {
+			// update was performed
+			// clear all caches
+			chrome.storage.local.clear();
+		}
+	},
+
+	handleUpdate: function() {
+		chrome.runtime.reload();
+	},
+
+	getAPIDomain: async function() {
+		// get API domain from session storage
+		let apiDomain = await getObjectFromSessionStorage("Server");
+		if (typeof apiDomain !== "undefined" && apiDomain !== null && apiDomain !== "") {
+			saveObjectInSessionStorage({Server: apiDomain});
+			return apiDomain;
+		}
+
+		// session storage is not filled, determine if managed storage set a domain
+		let managedDomain = await getObjectFromManagedStorage("Server");
+		if (typeof managedDomain !== "undefined" && managedDomain !== null && managedDomain !== "") {
+			saveObjectInSessionStorage({Server: managedDomain});
+			return managedDomain;
+		}
+
+		// managed storage is not filled, use default domain
+		saveObjectInSessionStorage({Server: api_domain_primary});
+		return api_domain_primary;
+	},
+
+	handleFallback: async function(){
+		// get from managed storage the configured server - if set
+		let server = await getObjectFromManagedStorage("Server");
+		if (server !== undefined && server !== null && server !== "") {
+			// determine if fallback is enabled
+			// and use fallback address if target can't be reached
+			let fallback = await getObjectFromManagedStorage("DisableServerFallback");
+			if (fallback !== undefined && fallback !== null && (fallback === true || fallback === "true" || fallback === "1")) {
+				console.log("Setting "+server);
+				saveObjectInSessionStorage({Server: server});
+				return server;
+			}
+			console.log("Setting " + api_domain_primary);
+			saveObjectInSessionStorage({Server: api_domain_primary});
+			return api_domain_primary;
+		}
+
+		// get currently used server from session storage
+		server = await getObjectFromSessionStorage("Server");
+		if (server !== undefined && server !== null && server !== "" && server != api_domain_primary) {
+			console.log("Setting " + api_domain_secondary);
+			saveObjectInSessionStorage({Server: api_domain_secondary});
+			return api_domain_secondary;
+		}
+
+		/*
 		if (typeof localStorage["policyDisableServerFallback"] !== "undefined" && localStorage["policyDisableServerFallback"] == "true") {
 			if (typeof localStorage["policyServer"] !== "undefined") {
 				if (localStorage["policyServer"] != "" && localStorage["policyServer"] != "false") {
@@ -518,8 +661,142 @@ var df = {
 				return api_domain_primary;
 			}
 		}
+		*/
+		console.warn("fallback called");
 		return api_domain_fallback;
-	}
+	},
+
+	getServerFeatureFlag: async function(flagLabel, callback){
+		// create header for request
+		let headers = {
+			'Content-Type': 'application/json',
+			'Secret': await df.getValueFromStorage("Secret"),
+			'X-UUID': await df.getValueFromStorage("UUID"),
+		};
+
+		// if secret is not set, remove it from header
+		if (headers.Secret === null || headers.Secret === undefined || headers.Secret === "") {
+			delete headers.Secret;
+		}
+
+		await fetch(api_protocol + '://' + (await df.getAPIDomain()) + api_path + '/flags/' + flagLabel, {
+			method: 'GET',
+			cache: 'no-cache',
+			headers: headers,
+		}).then(response => response.json()).then((parsedData) => {
+			// if response contains the key "enabled", it was valid and can be returned
+			if (typeof parsedData.enabled !== "undefined") {
+				return callback(parsedData);
+			}
+
+			// if response is not valid, return false
+			return false;
+		}).catch((result) => {
+			return false;
+		});
+	},
+
+	handleFallbackRecovery: async function(){
+		// get currently used domain from session storage
+		let server = await getObjectFromSessionStorage("Server");
+		// if content of variable isn't set, we have to initiate it with getAPIDomain
+		if (typeof server === "undefined" || server === null || server === "") {
+			server = await df.getAPIDomain();
+		}
+
+		let serverToCheck = null;
+
+		// get from managed storage the configured server - if set
+		let managedDomain = await getObjectFromManagedStorage("Server");
+		if (managedDomain !== undefined && managedDomain !== null && managedDomain !== "") {
+			// check if server is managed domain, if true we do not need to recover
+			if (server == managedDomain) {
+				return;
+			}
+			// fallback occured and we have to check if primary is reachable
+			serverToCheck = managedDomain;
+		}
+
+		if (server != api_domain_primary) {
+			// fallback occured and we have to check if primary is reachable
+			serverToCheck = api_domain_primary;
+		}
+
+		if (serverToCheck !== null) {
+			// check using fetch if target is reachable
+			let response = await fetch(api_protocol + '://' + serverToCheck + api_path + '/reachable', {
+				method: 'GET',
+				cache: 'no-cache',
+				headers: {
+					'Content-Type': 'plain/text',
+					'Secret': await getObjectFromManagedStorage(["Secret"]),
+				},
+			})
+			.then((response) => response.text())
+			.then((data) => {
+				// target seems to be reachable
+				// check if response is correct and matches the expected response
+				if (data.trim() == "Be kind whenever possible. It is always possible.") {
+					// set serverToCheck as new server
+					saveObjectInSessionStorage({Server: serverToCheck});
+				} else {
+					// target is not reachable, do not try to recover
+				}
+				console.log('Success:', data);
+			})
+			.catch((error) => {
+				// target is not reachable, do not try to recover
+			});
+		}
+	},
+
+	// generateUUID generates a UUID v4
+	generateUUID: function() {
+		return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
+			(c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+		);
+	},
+
+	// checkUUID checks if UUID is set, if not generate one and set it to sync storage
+	// this is used to identify malicious requests and sources to early drop the request
+	// and prevent further processing. After malicious request detection the header is removed
+	// and the request is processed normally.
+	checkUUID: async function() {
+		// check if UUID is set, if not generate one and set it to sync storage
+		let uuid = await getObjectFromSyncStorage("UUID");
+		if (typeof uuid === "undefined" || uuid === null || uuid === "") {
+			let uuid = df.generateUUID();
+			saveObjectInSyncStorage({ "UUID": uuid });
+		}
+	},
+
+	// getValueFromStorage gets a value from storage
+	// first check if value is available from local variable
+	// if not check if value is available in managed storage
+	// if not check if value is available in sync storage
+	// if not check if value is available in local storage
+	// if not return null
+	getValueFromStorage: async function(key) {
+		if (typeof storageCache[key] !== "undefined") {
+			return storageCache[key];
+		}
+		let value = await getObjectFromManagedStorage(key);
+		if (value !== undefined && value !== null && value !== "") {
+			storageCache[key] = value;
+			return value;
+		}
+		value = await getObjectFromSyncStorage(key);
+		if (value !== undefined && value !== null && value !== "") {
+			storageCache[key] = value;
+			return value;
+		}
+		value = await getObjectFromLocalStorage(key);
+		if (value !== undefined && value !== null && value !== "") {
+			storageCache[key] = value;
+			return value;
+		}
+		return null;
+	},
 };
 
 // Simple internationalization

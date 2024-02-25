@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 "use strict";
 
-var getCurrentTab = function (callback) {
+const getCurrentTab = function (callback) {
 	chrome.tabs.query({
 		windowId: chrome.windows.WINDOW_ID_CURRENT,
 		active: true
@@ -13,17 +13,23 @@ var getCurrentTab = function (callback) {
 };
 
 getCurrentTab(function (data) {
-	let ip = df.parseUrl(data.url);
-
-	chrome.runtime.sendMessage({ type: "resolved", url: "https://" + ip + "/" }, function (response) {
-		document.querySelector('.ip').classList.remove("loader");
-		document.querySelector('.name').classList.remove("loader");
-		document.querySelector('.name').textContent = _("internal_domain");
-
-		if (response !== null) {
-			document.querySelector('.ip').textContent = response;
-		} else {
-			document.querySelector('.ip').textContent = _("unknown");
-		}
+	// get current URL which may contain additional data, e.g. popup.html#ip=185.128.246.155&a=b
+	let url = new URL(window.location.href);
+	let metadata = {};
+	url = url.hash.replace("#", "");
+	url.split("&").forEach(function (item) {
+		metadata[item.split("=")[0]] = item.split("=")[1]
 	});
+
+	document.querySelector('.ip').classList.remove("loader");
+	document.querySelector('.name').classList.remove("loader");
+	document.querySelector('.name').textContent = _("internal_domain");
+
+	if (metadata.ip !== null) {
+		document.querySelector('.ip').textContent = metadata.ip;
+	} else {
+		document.querySelector('.ip').textContent = _("unknown");
+	}
+
+	// if company
 });

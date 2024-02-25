@@ -1,5 +1,6 @@
 body {
 	line-height: 1.5;
+	padding: 0px 5px;
 }
 a {
 	color: cornflowerblue;
@@ -33,7 +34,7 @@ img.titleimg {
 @media (prefers-color-scheme: dark) {
 	body {
 		background-color: #292a2d;
-		color: rgb(154,160,166);
+		color: rgb(184, 191, 197);
 	}
 	h2 {
 		color: rgb(232,234,237);
@@ -41,4 +42,7 @@ img.titleimg {
 	a {
 		color: rgb(138,180,248);
 	}
+}
+.footer, .links {
+	text-align: center;
 }

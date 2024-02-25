@@ -166,6 +166,9 @@ hr {
 	text-decoration: none;
 	color: blue;
 }
+.infolink a:hover {
+	text-decoration: underline;
+}
 
 /* icon with infotext */
 .infocontainer {
@@ -248,4 +251,13 @@ hr {
 }
 .redbox > .contentblock .line > .content, .redbox .colormatch {
 	color: #E64A19;
+}
+
+/* GENERAL */
+.contentblock .ip a, .contentblock .asn a {
+	color: inherit;
+	text-decoration: none;
+}
+.contentblock .ip a:hover, .contentblock .asn a:hover {
+	text-decoration: underline;
 }

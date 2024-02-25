@@ -6,7 +6,7 @@
 
 > Browser extension to see the location of the viewed website
 
-uDomainFlag is an extension for various browsers and allows you to get additional information about a domain while browsing a web page.
+uDomainFlag is an extension for various browsers and allows you to get additional information about a domain while browsing a web page. This includes the country flag of the server, the IP address used to connect to the server and the Autonomous System Number (ASN) of the server. This information is displayed in the extension popup and can be used to verify the authenticity of a website.
 
 ## Installation
 

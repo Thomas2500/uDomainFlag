@@ -3,218 +3,185 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 "use strict";
 
-var getCurrentTab = function (callback) {
+const getCurrentTab = function (callback) {
 	chrome.tabs.query({
 		windowId: chrome.windows.WINDOW_ID_CURRENT,
 		active: true
 	}, function (tabs) {
 		callback(tabs[0]);
+		df.processLastError();
 	});
 };
 
 getCurrentTab(function (data) {
-	chrome.runtime.sendMessage({ type: "popup", url: data.url }, function (response) {
-		if (response !== null) {
-			insertLookupResponseData(response);
-		} else {
-
-			// parse url to a domain
-			let domain = df.parseUrl(data.url);
-
-			// requested url is not special and not in cache, request data from server
-			let request = new XMLHttpRequest();
-			request.open('GET', api_protocol + '://' + api_domain + api_path + '/lookup/' + domain, true);
-
-			// Provide secret as header if provided by configuration
-			if (localStorage["policySecret"] != "") {
-				request.setRequestHeader("Secret", localStorage["policySecret"]);
-			}
-
-			request.onload = function () {
-				if (this.status == 200) {
-					let parsedData;
-					try {
-						parsedData = JSON.parse(this.response);
-					}
-					catch (e) {
-						let status = this.status;
-						let response = this.response;
-						Sentry.withScope(function (scope) {
-							scope.setExtra("domain", domain);
-							scope.setExtra("status", status);
-							scope.setExtra("response", response);
-							Sentry.captureException(e);
-						});
-					}
-					insertLookupResponseData(parsedData);
-				} else {
-					// Something went wrong contacting the server
-					let status = this.status;
-					let response = this.response;
-					Sentry.withScope(function (scope) {
-						scope.setExtra("domain", domain);
-						scope.setExtra("status", status);
-						scope.setExtra("response", response);
-						Sentry.captureMessage("error requesting data from server");
-					});
-					// TODO: error symbol
-					return;
-				}
-			};
-
-			request.onerror = function () {
-				// There was a connection error of some sort
-				// this is nothing we should report because we do not have error data
-				// or can do anything about it. mostly connection issues from the user
-				// TODO: error symbol
-			};
-
-			request.send();
-
-		}
+	// get current URL which may contain additional data, e.g. popup.html#ip=185.128.246.155&a=b
+	let url = new URL(window.location.href);
+	let metadata = {};
+	url = url.hash.replace("#", "");
+	url.split("&").forEach(function (item) {
+		metadata[item.split("=")[0]] = item.split("=")[1]
 	});
-});
 
-function insertLookupResponseData(responseLookupData){
-	if (responseLookupData.success == false) {
-		// data can't be fetched. display error page
+	// fetch current data from server
+	df.callbackLookup('resolve', { url: data.url, meta: metadata }, function (responseLookupData) {
+		console.log(responseLookupData);
 
-		return;
-	}
-	document.querySelector('.infolink a').href = lookup_protocol + '://' + lookup_domain + '/l/' + responseLookupData.query;
-	document.querySelector('.text-more').textContent = _("more_info");
-
-	// try to determine local used ip
-	// if not available fallback to first IP from remote,
-	// because of the used parser we have to pass "https://" to the url
-	chrome.runtime.sendMessage({ type: "resolved", url: "https://" + responseLookupData.query }, function (response) {
-		if (response !== null) {
-			document.querySelector('.ip').textContent = response;
+		if (responseLookupData === null || responseLookupData.success === false || responseLookupData.success == "false") {
+			// data can't be fetched
+			document.querySelector('.ip a').textContent = "unknown";
 			document.querySelector('.ip').classList.remove("loader");
-		} else {
-			// fallback to IP which was used for geo lookup
-			if (responseLookupData.location.ip != "") {
-				document.querySelector('.ip').textContent = responseLookupData.location.ip;
+			document.querySelector('.host').textContent = "unknown";
+			document.querySelector('.host').classList.remove("loader");
+			return;
+		}
+
+		// try to determine local used ip
+		// if not available fallback to first IP from remote,
+		let hasWrittenIP = false;
+		if (typeof metadata.ip !== "undefined" && metadata.ip != "") {
+			// determine if IP is not included in responseLookupData.ips
+			let found = false;
+			let hostname = "";
+			responseLookupData.ips.forEach(function (singleItem) {
+				if (singleItem.ip == metadata.ip) {
+					found = true;
+					hostname = singleItem.hostname;
+				}
+			});
+
+			if (found) {
+				document.querySelector('.ip a').textContent = metadata.ip;
+				// remove ending dot from hostname
+				if (hostname.endsWith(".")) {
+					hostname = hostname.substring(0, hostname.length - 1);
+				}
+				if (hostname != "") {
+					document.querySelector('.host').textContent = hostname;
+				} else {
+					document.querySelector('.host').textContent = "N/A";
+				}
 				document.querySelector('.ip').classList.remove("loader");
-			} else {
-				// sorry, nothing to display
-				document.querySelector('.ip').textContent = "unknown";
-				document.querySelector('.ip').classList.remove("loader");
+				document.querySelector('.host').classList.remove("loader");
+				hasWrittenIP = true;
 			}
 		}
 
-		// MultiIP may be filled, remove primary displayed IP from list
-		document.querySelectorAll('.multiip .content .line .content').forEach(function(singleElement){
-			if (singleElement.textContent == document.querySelector('.ip').textContent) {
-				singleElement.parentElement.remove();
-			}
-		});
-
-		// try to determine hostname based on IP
-		if (document.querySelector('.ip').textContent != "unknown" && document.querySelector('.ip').textContent != "") {
-			responseLookupData.ips.forEach(function(singleItem){
-				if (singleItem.ip == document.querySelector('.ip').textContent) {
+		if (!hasWrittenIP && responseLookupData.ips.length >= 1) {
+			// always prefer IPv4 - check if IPv4 address is available and when yes show it as primary
+			let hasIPv4 = false;
+			responseLookupData.ips.forEach(function (singleItem) {
+				if (singleItem.ip.indexOf(":") == -1) {
+					hasIPv4 = true;
+					document.querySelector('.ip a').textContent = singleItem.ip;
+					// remove ending dot from hostname
+					if (singleItem.hostname.substring(singleItem.hostname.length - 1) == ".") {
+						singleItem.hostname = singleItem.hostname.substring(0, singleItem.hostname.length - 1);
+					}
 					document.querySelector('.host').textContent = singleItem.hostname;
-					document.querySelector('.host').classList.remove("loader");
+				}
+			});
+
+			if (!hasIPv4) {
+				document.querySelector('.ip a').textContent = responseLookupData.ips[0].ip;
+				// remove ending dot from hostname
+				if (responseLookupData.ips[0].hostname.substring(responseLookupData.ips[0].hostname.length - 1) == ".") {
+					responseLookupData.ips[0].hostname = responseLookupData.ips[0].hostname.substring(0, responseLookupData.ips[0].hostname.length - 1);
+				}
+				if (responseLookupData.ips[0].hostname != "") {
+					document.querySelector('.host').textContent = responseLookupData.ips[0].hostname;
+				} else {
+					document.querySelector('.host').textContent = "N/A";
+				}
+			}
+
+			document.querySelector('.ip').classList.remove("loader");
+			document.querySelector('.host').classList.remove("loader");
+		} else if (!hasWrittenIP) {
+			// sorry, nothing to display
+			document.querySelector('.ip a').textContent = "unknown";
+			document.querySelector('.ip').classList.remove("loader");
+			document.querySelector('.host').textContent = "unknown";
+			document.querySelector('.host').classList.remove("loader");
+		}
+
+		// create list of all IPs
+		if (responseLookupData.ips.length > 1) {
+			responseLookupData.ips.forEach(function (value) {
+				// skip already displayed records
+				if (value.ip != document.querySelector('.ip a').textContent) {
+					let ipfield = document.createElement('div');
+					ipfield.classList.add('title');
+					ipfield.textContent = 'IP';
+					let ipValueField = document.createElement('div');
+					ipValueField.classList.add('content');
+					ipValueField.textContent = value.ip;
+					if (value.hostname.substring(value.hostname.length - 1) == ".") {
+						value.hostname = value.hostname.substring(0, value.hostname.length - 1);
+					}
+					ipValueField.setAttribute('title', value.hostname);
+					let mainObject = document.createElement('div');
+					mainObject.classList.add('line');
+					mainObject.appendChild(ipfield);
+					mainObject.appendChild(ipValueField);
+					document.querySelector('.multiip .content').appendChild(mainObject);
+				}
+			});
+			document.querySelector('.multiip').style.display = "block";
+			document.querySelector('.multiip .clickable').addEventListener("click", function () {
+				if (document.querySelector('.multiip .content').style.display == "none") {
+					document.querySelector('.multiip .content').style.display = "block";
+				} else {
+					document.querySelector('.multiip .content').style.display = "none";
 				}
 			});
 		}
-		// TODO: nothing found, make new request to lookup hostname of IP
 
-		// nothing found, assume IP as hostname
-		if (document.querySelector('.host').textContent == "") {
-			// requested url is not special and not in cache, request data from server
-			let request = new XMLHttpRequest();
-			request.open('GET', api_protocol + '://' + api_domain + api_path + '/lookup/' + document.querySelector('.ip').textContent, true);
-
-			// Provide secret as header if provided by configuration
-			if (localStorage["policySecret"] != "") {
-				request.setRequestHeader("Secret", localStorage["policySecret"]);
-			}
-
-			request.onload = function () {
-				if (this.status != 200) {
-					document.querySelector('.host').textContent = "unknown";
-					document.querySelector('.host').classList.remove("loader");
-					return;
-				}
-
-				let parsedData;
-				try {
-					parsedData = JSON.parse(this.response);
-				}
-				catch (e) {
-					let status = this.status;
-					let response = this.response;
-					Sentry.withScope(function (scope) {
-						scope.setExtra("domain", domain);
-						scope.setExtra("status", status);
-						scope.setExtra("response", response);
-						Sentry.captureException(e);
-					});
-				}
-				if (parsedData.ips.length >= 1) {
-					document.querySelector('.multiip').style.display = "block";
-					document.querySelector('.host').textContent = parsedData.ips[0].hostname;
-				} else {
-					document.querySelector('.host').textContent = "unknown";
-				}
-				document.querySelector('.host').classList.remove("loader");
-			};
-			request.onerror = function () {
-				document.querySelector('.host').textContent = "unknown";
-				document.querySelector('.host').classList.remove("loader");
-			};
-			request.send();
+		// if .ip has a value, set hyperlink to lookup page
+		if (document.querySelector('.ip a').textContent != "unknown" && document.querySelector('.ip a').textContent != "") {
+			document.querySelector('.ip a').href = lookup_protocol + '://' + lookup_domain + '/ip/' + document.querySelector('.ip').textContent;
 		}
 	});
-
-	document.querySelector('.country').textContent = responseLookupData.location.country;
-
-	let tx = "";
-	if (responseLookupData.location.region != "") {
-		tx = responseLookupData.location.region;
-	}
-	if (responseLookupData.location.city != "") {
-		if (tx == "") {
-			tx = responseLookupData.location.city;
-		} else {
-			tx += ", " + responseLookupData.location.city;
+	df.callbackLookup('location', { url: data.url, meta: metadata }, function (responseLookupData) {
+		console.log(responseLookupData);
+		if (responseLookupData === null || responseLookupData.success === false || responseLookupData.success == "false") {
+			// data can't be fetched. display error page
+			//window.location.href = "error.html";
+			return;
 		}
-	}
-	document.querySelector('.country2').textContent = tx;
 
-	document.querySelector('.asn').textContent = "AS" + responseLookupData.isp.asn;
-	document.querySelector('.asn').classList.remove("loader");
-	document.querySelector('.isp').textContent = responseLookupData.isp.description;
-	document.querySelector('.isp').classList.remove("loader");
+		document.querySelector('.infolink a').href = lookup_protocol + '://' + lookup_domain + '/ip/' + responseLookupData.query;
+		document.querySelector('.text-more').textContent = _("more_info");
 
-	if (responseLookupData.ips.length > 1) {
-		responseLookupData.ips.forEach(function(value){
-			// skip already displayed records
-			if (value.ip != document.querySelector('.ip').textContent) {
-				let ipfield = document.createElement('div');
-				ipfield.classList.add('title');
-				ipfield.textContent = 'IP';
-				let ipValueField = document.createElement('div');
-				ipValueField.classList.add('content');
-				ipValueField.textContent = value.ip;
-				ipValueField.setAttribute('title', value.hostname);
-				let mainObject = document.createElement('div');
-				mainObject.classList.add('line');
-				mainObject.appendChild(ipfield);
-				mainObject.appendChild(ipValueField);
-				document.querySelector('.multiip .content').appendChild(mainObject);
-			}
-		});
-		document.querySelector('.multiip').style.display = "block";
-		document.querySelector('.multiip .clickable').addEventListener("click", function(){
-			if (document.querySelector('.multiip .content').style.display == "none") {
-				document.querySelector('.multiip .content').style.display = "block";
+		document.querySelector('.country').textContent = responseLookupData.country;
+
+		let tx = "";
+		if (responseLookupData.region != "") {
+			tx = responseLookupData.region;
+		}
+		if (responseLookupData.city != "") {
+			if (tx == "") {
+				tx = responseLookupData.city;
 			} else {
-				document.querySelector('.multiip .content').style.display = "none";
+				tx += ", " + responseLookupData.city;
 			}
-		});
-	}
-	//document.querySelector('.country').textContent = responseLookupData.location.country;
-}
+		}
+		document.querySelector('.country2').textContent = tx;
+	});
+	df.callbackLookup('asn', { url: data.url, meta: metadata }, function (response) {
+		console.log(response);
+		if (response === null || response.success === false || response.success == "false") {
+			// data can't be fetched. display error page
+			document.querySelector('.asn a').textContent = "unknown";
+			document.querySelector('.asn').classList.remove("loader");
+			document.querySelector('.isp').textContent = "unknown";
+			document.querySelector('.isp').classList.remove("loader");
+			return;
+		}
+
+		document.querySelector('.asn a').textContent = "AS" + response.asn;
+		document.querySelector('.asn a').href = lookup_protocol + '://' + lookup_domain + '/asn/' + response.asn;
+		document.querySelector('.asn').classList.remove("loader");
+		document.querySelector('.isp').textContent = response.description;
+		document.querySelector('.isp').classList.remove("loader");
+	});
+});
