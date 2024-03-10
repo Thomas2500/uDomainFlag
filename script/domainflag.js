@@ -93,10 +93,10 @@ const df = {
 				df.domainCountryLookupResultData(meta);
 			} else if (parsedData.success === false) {
 				let error = "uDomainFlag server was not able to resolve the country of the domain.\nPlease try again later.";
-				if (typeof parsedData.error !== "undefined") {
+				if (typeof parsedData.error !== "undefined" && parsedData.error !== "" && parsedData.error != "doh: all query failed") {
 					error = parsedData.error;
 				}
-				df.setFlag({ tab: data.tab, icon: "images/special-flag/unknown.png", title: error, popup: 'popup.html' });
+				df.setFlag({ tab: data.tab, icon: "images/special-flag/unknown.png", title: error, popup: 'special.html' });
 			} else {
 				df.setFlag({ tab: data.tab, icon: "images/fugue/network-status-busy.png", title: "uDomainFlag server not reachable", popup: 'offline.html' });
 				Sentry.withScope(function (scope) {

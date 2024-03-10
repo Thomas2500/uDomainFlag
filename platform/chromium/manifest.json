@@ -8,7 +8,7 @@
 
 	"default_locale": "en",
 
-	"version": "2.1.1",
+	"version": "2.3.0",
 
 	"background": {
 		"service_worker": "background.js"
@@ -22,7 +22,7 @@
 		"256": "images/logo-256x256.png"
 	},
 
-	"browser_action": {
+	"action": {
 		"browser_style": false,
 		"default_icon": "images/info.png"
 	},

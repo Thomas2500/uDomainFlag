@@ -24,8 +24,6 @@ getCurrentTab(function (data) {
 
 	// fetch current data from server
 	df.callbackLookup('resolve', { url: data.url, meta: metadata }, function (responseLookupData) {
-		console.log(responseLookupData);
-
 		if (responseLookupData === null || responseLookupData.success === false || responseLookupData.success == "false") {
 			// data can't be fetched
 			document.querySelector('.ip a').textContent = "unknown";
@@ -142,7 +140,6 @@ getCurrentTab(function (data) {
 		}
 	});
 	df.callbackLookup('location', { url: data.url, meta: metadata }, function (responseLookupData) {
-		console.log(responseLookupData);
 		if (responseLookupData === null || responseLookupData.success === false || responseLookupData.success == "false") {
 			// data can't be fetched. display error page
 			//window.location.href = "error.html";
@@ -168,7 +165,6 @@ getCurrentTab(function (data) {
 		document.querySelector('.country2').textContent = tx;
 	});
 	df.callbackLookup('asn', { url: data.url, meta: metadata }, function (response) {
-		console.log(response);
 		if (response === null || response.success === false || response.success == "false") {
 			// data can't be fetched. display error page
 			document.querySelector('.asn a').textContent = "unknown";

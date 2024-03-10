@@ -4,14 +4,14 @@
 	"name": "uDomainFlag",
 	"description": "__MSG_description__",
 
-	"manifest_version": 2,
+	"manifest_version": 3,
 
 	"default_locale": "en",
 
-	"version": "2.1.1",
+	"version": "2.3.0",
 
 	"background": {
-		"page": "background.html"
+		"scripts": ["script/sentry.min.js", "script/storage.js", "script/country.js", "script/parameters.js", "script/domainflag.js", "background.js"]
 	},
 
 	"icons": {
@@ -22,30 +22,31 @@
 		"256": "images/logo-256x256.png"
 	},
 
-	"browser_action": {
+	"action": {
 		"browser_style": false,
 		"default_icon": "images/info.png"
 	},
 	"browser_specific_settings": {
 		"gecko": {
 			"id": "udf@bella.network",
-			"strict_min_version": "57.0"
+			"strict_min_version": "109.0"
 		}
 	},
 
 	"options_ui": {
 		"page": "options.html",
-		"open_in_tab": false,
-		"browser_style": true
+		"open_in_tab": false
 	},
 
 	"permissions": [
 		"storage",
 		"tabs",
-		"webRequest",
-		"<all_urls>"
+		"activeTab",
+		"alarms",
+		"webRequest"
 	],
-	"storage": {
-		"managed_schema": "managed_storage.json"
-	}
+
+	"host_permissions": [
+		"*://*/*"
+	]
 }

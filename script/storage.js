@@ -27,7 +27,6 @@ const getObjectFromLocalStorage = async function (key) {
  * @param {*} obj
  */
 const saveObjectInLocalStorage = async function (obj) {
-	console.log(obj);
 	return new Promise((resolve, reject) => {
 		try {
 			chrome.storage.local.set(obj, function () {
@@ -115,15 +114,27 @@ const saveObjectInSessionStorage = async function (obj) {
  */
 const getObjectFromManagedStorage = async function (key) {
 	return new Promise((resolve, reject) => {
-		try {
-			if (typeof key === "string") {
-				key = [key];
-			}
-			chrome.storage.managed.get(key, function (value) {
-				resolve(value[key]);
-			});
-		} catch (ex) {
-			reject(ex);
+		// detect if key is an array
+		if (typeof key === "string") {
+			key = [key];
 		}
+
+		// On Firefox, managed storage must be accessed through the storage.managed API
+		if (typeof browser !== "undefined") {
+			browser.storage.managed.get(key).then((value) => {
+				resolve(value[key]);
+			}).catch((ex) => {
+				resolve(undefined);
+			});
+		}
+
+		chrome.storage.managed.get(key, function (value) {
+			if (chrome.runtime.lastError) {
+				resolve(undefined);
+			}
+			if (typeof value === "object") {
+				resolve(value[key]);
+			}
+		});
 	});
 };

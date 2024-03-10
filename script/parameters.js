@@ -25,6 +25,15 @@ Sentry.init({
 	dsn: sentry_target,
 	environment: "production",
 	release: chrome.runtime.getManifest().version,
+	autoSessionTracking: false,
+
+	// pre check if crash reports are disabled by user or GPO
+	beforeSend(event, hint) {
+		if (!Sentry.getCurrentHub().getClient().getOptions().enabled) {
+			return null;
+		}
+		return event;
+	}
 });
 
 getObjectFromManagedStorage(["DisableCrashReports"]).then(function (value) {
@@ -32,6 +41,9 @@ getObjectFromManagedStorage(["DisableCrashReports"]).then(function (value) {
 		console.log(value);
 		if (value == "true" || value === true) {
 			Sentry.getCurrentHub().getClient().getOptions().enabled = false;
+			Sentry.init({
+				enabled: false
+			});
 			return;
 		}
 	}
@@ -41,6 +53,9 @@ getObjectFromManagedStorage(["DisableCrashReports"]).then(function (value) {
 			console.log(value);
 			if (value == "true" || value === true) {
 				Sentry.getCurrentHub().getClient().getOptions().enabled = false;
+				Sentry.init({
+					enabled: false
+				});
 				return;
 			}
 		}

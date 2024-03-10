@@ -3,14 +3,18 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 "use strict";
 
-importScripts('script/sentry.min.js', 'script/storage.js', 'script/country.js', 'script/parameters.js', 'script/domainflag.js');
+// in firefox, the background script is not allowed to use importScripts
+// if getObjectFromLocalStorage is not defined, we are in firefox
+if (typeof getObjectFromLocalStorage === "undefined") {
+	importScripts('script/sentry.min.js', 'script/storage.js', 'script/country.js', 'script/parameters.js', 'script/domainflag.js');
+}
 
 // set up scheduler to perform some background tasks
 chrome.alarms.onAlarm.addListener(df.schedule);
 chrome.alarms.create("reachableCheck", { periodInMinutes: 5.0 });
 chrome.alarms.create("companySync", {
 	periodInMinutes: 15.0,
-	delayInMinutes: 1.0
+	delayInMinutes: 0.5
 });
 
 // set up listener on application installation, update and startup
@@ -22,10 +26,6 @@ chrome.runtime.onStartup.addListener(function() {
 
 	// Prefill session cache with used API domain
 	df.getAPIDomain();
-});
-
-chrome.action.onClicked.addListener(tab => {
-	console.log(tab);
 });
 
 let ipCache = {};
